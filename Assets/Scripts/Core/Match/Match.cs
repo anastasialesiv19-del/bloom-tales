@@ -5,11 +5,13 @@ namespace Core.Match
 {
     public class Match
     {
+        private readonly List<Pos> _cells;
         public IReadOnlyList<Pos> Cells { get; }
 
         public Match(List<Pos> cells)
         {
-            Cells = cells;
+            _cells = cells;
+            Cells = _cells;
         }
     }
 }
