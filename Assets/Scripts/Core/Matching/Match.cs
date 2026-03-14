@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Core.Board;
 
-namespace Core.Match
+namespace Core.Matching
 {
     public class Match
     {

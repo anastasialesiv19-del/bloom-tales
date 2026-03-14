@@ -2,7 +2,7 @@
 using System.Linq;
 using Core.Board;
 
-namespace Core.Match
+namespace Core.Matching
 {
     public static class MatchFinder
     {

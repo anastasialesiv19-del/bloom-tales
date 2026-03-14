@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Core.Match;
+using Core.Matching;
 
 namespace Core.Board
 {

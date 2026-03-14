@@ -2,7 +2,7 @@
 using Core.Board;
 using NUnit.Framework;
 using Core.Generation;
-using Core.Match;
+using Core.Matching;
 
 
 namespace Tests.EditMode

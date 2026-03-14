@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Board;
-using Core.Match;
+using Core.Matching;
 
 
 namespace Core.Generation
