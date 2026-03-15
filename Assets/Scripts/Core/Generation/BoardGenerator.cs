@@ -27,7 +27,7 @@ namespace Core.Generation
                     board.Set(piecePos.Row, piecePos.Col, pieceType);
                 }
                 
-                if (MatchFinder.FindMatches(board).Count == 0) return board;
+                if (BoardShuffler.IsPlayableBoard(board)) return board;
             }
 
             throw new InvalidOperationException("Board generation failed");
@@ -42,21 +42,21 @@ namespace Core.Generation
             
             if (row >= 2)
             {
-                left1 = board.Get(row - 1, col); left2 = board.Get(row - 2, col);
-                if (left1 == left2 && left1 != PieceType.Empty)
+                up1 = board.Get(row - 1, col); up2 = board.Get(row - 2, col);
+                if (up1 == up2 && up1 != PieceType.Empty)
                 {
-                    if(!forbiddenTypes.Contains(left1))
-                        forbiddenTypes.Add(left1);
+                    if(!forbiddenTypes.Contains(up1))
+                        forbiddenTypes.Add(up2);
                 }
             }
 
             if (col >= 2)
             {
-                up1 = board.Get(row, col - 1); up2 = board.Get(row, col - 2);
-                if (up1 == up2 && up1 != PieceType.Empty)
+                left1 = board.Get(row, col - 1); left2 = board.Get(row, col - 2);
+                if (left1 == left2 && left1 != PieceType.Empty)
                 {
-                    if(!forbiddenTypes.Contains(up1))
-                        forbiddenTypes.Add(up1);
+                    if(!forbiddenTypes.Contains(left1))
+                        forbiddenTypes.Add(left1);
                 }
 
             }
