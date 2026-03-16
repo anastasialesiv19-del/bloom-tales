@@ -27,7 +27,6 @@ namespace Tests.EditMode
 
             var result = HintFinder.FindBestHint(board);
             
-           // Assert.IsTrue(result.HasHint);
             Assert.IsTrue(result.Move.HasValue);
         }
 
@@ -79,7 +78,6 @@ namespace Tests.EditMode
             
             var result = HintFinder.FindBestHint(board);
             
-            //Assert.IsFalse(result.HasHint);
             Assert.IsFalse(result.Move.HasValue);
         }
 
@@ -103,9 +101,94 @@ namespace Tests.EditMode
             board.Set(2, 3, PieceType.Red);
 
             var result = HintFinder.FindBestHint(board);
-            
-            //Assert.IsTrue(result.HasHint);
+
             Assert.IsTrue(result.Move.HasValue);
+            
+            bool matchCreated = MoveFinder.CreatesMatch(board, result.Move.Value.From, result.Move.Value.To);
+            
+            Assert.IsTrue(matchCreated);
+        }
+
+        [Test]
+        public void FindAdaptiveHint_ReturnsNoHint_WhenPolicyReturnsNone()
+        {
+            var board = new BoardModel(3, 4);
+            board.Set(0, 0, PieceType.Yellow);
+            board.Set(0, 1, PieceType.Blue);
+            board.Set(0, 2, PieceType.Green);
+            board.Set(0, 3, PieceType.Red);
+
+            board.Set(1, 0, PieceType.Green);
+            board.Set(1, 1, PieceType.Green);
+            board.Set(1, 2, PieceType.Red);
+            board.Set(1, 3, PieceType.Green);
+
+            board.Set(2, 0, PieceType.Yellow);
+            board.Set(2, 1, PieceType.Blue);
+            board.Set(2, 2, PieceType.Green);
+            board.Set(2, 3, PieceType.Red);
+
+            var context = new HintContext(2, 0);
+            var result = HintFinder.FindAdaptiveHint(board, context);
+            
+            Assert.IsFalse(result.Move.HasValue);
+            Assert.AreEqual(HintStrength.None, result.Strength);
+        }
+
+        [Test]
+        public void FindAdaptiveHint_ReturnsSoftHint_WhenBoardHasMoveAndIdleIsMedium()
+        {
+            var board = new BoardModel(3, 4);
+            board.Set(0, 0, PieceType.Yellow);
+            board.Set(0, 1, PieceType.Blue);
+            board.Set(0, 2, PieceType.Green);
+            board.Set(0, 3, PieceType.Red);
+
+            board.Set(1, 0, PieceType.Green);
+            board.Set(1, 1, PieceType.Green);
+            board.Set(1, 2, PieceType.Red);
+            board.Set(1, 3, PieceType.Green);
+
+            board.Set(2, 0, PieceType.Yellow);
+            board.Set(2, 1, PieceType.Blue);
+            board.Set(2, 2, PieceType.Green);
+            board.Set(2, 3, PieceType.Red);
+
+            var context = new HintContext(5, 0);
+            var result = HintFinder.FindAdaptiveHint(board, context);
+            
+            Assert.IsTrue(result.Move.HasValue);
+            Assert.AreEqual(HintStrength.Soft, result.Strength);
+            
+            bool matchCreated = MoveFinder.CreatesMatch(board, result.Move.Value.From, result.Move.Value.To);
+            
+            Assert.IsTrue(matchCreated);
+        }
+
+        [Test]
+        public void FindAdaptiveHint_ReturnsStrongHint_WhenBoardHasMoveAndIdleIsLong()
+        {
+            var board = new BoardModel(3, 4);
+            board.Set(0, 0, PieceType.Yellow);
+            board.Set(0, 1, PieceType.Blue);
+            board.Set(0, 2, PieceType.Green);
+            board.Set(0, 3, PieceType.Red);
+
+            board.Set(1, 0, PieceType.Green);
+            board.Set(1, 1, PieceType.Green);
+            board.Set(1, 2, PieceType.Red);
+            board.Set(1, 3, PieceType.Green);
+
+            board.Set(2, 0, PieceType.Yellow);
+            board.Set(2, 1, PieceType.Blue);
+            board.Set(2, 2, PieceType.Green);
+            board.Set(2, 3, PieceType.Red);
+
+            var context = new HintContext(9, 0);
+            var result = HintFinder.FindAdaptiveHint(board, context);
+            
+            Assert.IsTrue(result.Move.HasValue);
+            Assert.AreEqual(HintStrength.Strong, result.Strength);
             
             bool matchCreated = MoveFinder.CreatesMatch(board, result.Move.Value.From, result.Move.Value.To);
             
