@@ -22,5 +22,13 @@ namespace Core.Hint
             }
             return new HintResult(bestMove);
         }
+
+        public static HintResult FindAdaptiveHint(BoardModel board, HintContext context)
+        {
+            var strength = HintPolicy.GetStrength(context);
+            if(strength ==  HintStrength.None) return new HintResult(null, HintStrength.None);
+            var result = FindBestHint(board);
+            return new HintResult(result.Move, strength);
+        }
     }
 }
