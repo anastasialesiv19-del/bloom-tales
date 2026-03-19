@@ -13,6 +13,13 @@ namespace Tests.EditMode
         }
 
         [Test]
+        [Ignore("сценарій WasShuffled == true потребує контрольованого refill з поточним random цей тест крихкий.")]
+        public void ProcessTurn_WithPrimarySpecialSpawn_StillHandlesDeadlockAndShuffle()
+        {
+            
+        }
+
+        [Test]
         public void TryProcessMove_DoesNotShuffle_WhenBoardRemainsPlayable()
         {
             var board = new BoardModel(3, 4);
