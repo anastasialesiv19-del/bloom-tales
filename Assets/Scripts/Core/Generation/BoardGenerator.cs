@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Board;
 using Core.Matching;
 
 
@@ -10,10 +9,9 @@ namespace Core.Generation
     public static class BoardGenerator
     {
         static Random _random = new Random();
-        private static readonly PieceType[] AllSpawnable =
-            Enum.GetValues(typeof(PieceType))
-                .Cast<PieceType>()
-                .Where(t => t != PieceType.Empty)
+        private static readonly PieceColor[] AllSpawnable =
+            Enum.GetValues(typeof(PieceColor))
+                .Cast<PieceColor>()
                 .ToArray();
         
         public static BoardModel Generate(int height, int width)
@@ -23,53 +21,61 @@ namespace Core.Generation
                 var board = new BoardModel(height,width);
                 foreach (var piecePos in board.AllPositions())
                 {
-                    var pieceType = PickTypeForCell(piecePos.Row, piecePos.Col, board);
-                    board.Set(piecePos.Row, piecePos.Col, pieceType);
+                    var piece = PieceForCell(piecePos.Row, piecePos.Col, board);
+                    board.Set(piecePos.Row, piecePos.Col, piece);
                 }
                 
                 if (BoardShuffler.IsPlayableBoard(board)) return board;
             }
-
             throw new InvalidOperationException("Board generation failed");
         }
 
-        private static PieceType PickTypeForCell(int row, int col, BoardModel board)
+        private static Piece PieceForCell(int row, int col, BoardModel board)
         {
-            List<PieceType> allowedTypes = new List<PieceType>();
-            List<PieceType> forbiddenTypes = new List<PieceType>();
-            PieceType left1 = 0, left2 = 0;
-            PieceType up1 = 0, up2 = 0;
+            List<PieceColor> allowedColors = new List<PieceColor>();
+            List<PieceColor> forbiddenColors = new List<PieceColor>();
             
             if (row >= 2)
             {
-                up1 = board.Get(row - 1, col); up2 = board.Get(row - 2, col);
-                if (up1 == up2 && up1 != PieceType.Empty)
-                {
-                    if(!forbiddenTypes.Contains(up1))
-                        forbiddenTypes.Add(up2);
+                var pieceColor1 = board.Get(row - 1, col).Color;
+                var pieceColor2 = board.Get(row - 2, col).Color;
+                if (pieceColor1 != null && pieceColor2 != null){
+                    var up1 = pieceColor1.Value;
+                    var up2 = pieceColor2.Value;
+                    
+                    if (up1 == up2)
+                    {
+                        if (!forbiddenColors.Contains(up1))
+                            forbiddenColors.Add(up2);
+                    }
                 }
             }
 
             if (col >= 2)
             {
-                left1 = board.Get(row, col - 1); left2 = board.Get(row, col - 2);
-                if (left1 == left2 && left1 != PieceType.Empty)
-                {
-                    if(!forbiddenTypes.Contains(left1))
-                        forbiddenTypes.Add(left1);
+                var pieceColor1 = board.Get(row, col - 1).Color;
+                var pieceColor2 = board.Get(row, col - 2).Color;
+                if (pieceColor1 != null && pieceColor2 != null){
+                    var left1 = pieceColor1.Value;
+                    var left2 = pieceColor2.Value;
+                    
+                    if (left1 == left2)
+                    {
+                        if(!forbiddenColors.Contains(left1))
+                            forbiddenColors.Add(left1);
+                    }
                 }
-
             }
             
-            foreach (PieceType type in AllSpawnable)
+            foreach (PieceColor color in AllSpawnable)
             {
-                if (!forbiddenTypes.Contains(type))
-                {
-                    allowedTypes.Add(type);
+                if (!forbiddenColors.Contains(color))
+                { 
+                    allowedColors.Add(color);
                 }
             }
-            var allowedIndex = allowedTypes.Count > 0 ? _random.Next(allowedTypes.Count) : throw new InvalidOperationException();
-            return allowedTypes[allowedIndex];
+            var allowedIndex = allowedColors.Count > 0 ? _random.Next(allowedColors.Count) : throw new InvalidOperationException();
+            return Piece.Normal(allowedColors[allowedIndex]);
         }
     }
 }
