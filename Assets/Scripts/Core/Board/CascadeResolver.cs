@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Core.Matching;
 
-namespace Core.Board
+namespace Core.Matching
 {
     public static class CascadeResolver
     {

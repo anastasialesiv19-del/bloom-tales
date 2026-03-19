@@ -3,27 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Matching;
 
-namespace Core.Board
+namespace Core.Matching
 {
     public static class BoardResolver
     {
-        private static Random _random = new Random();
-        private static readonly PieceType[] AllSpawnable =
-            Enum.GetValues(typeof(PieceType))
-                .Cast<PieceType>()
-                .Where(t => t != PieceType.Empty)
+        private static readonly Random _random = new Random();
+
+        private static readonly PieceColor[] AllSpawnable =
+            Enum.GetValues(typeof(PieceColor))
+                .Cast<PieceColor>()
                 .ToArray();
-        
-        public static int ClearMatches(BoardModel board, List<Match> matches)
+
+        public static int ClearMatches(BoardModel board, IReadOnlyList<Match> matches)
         {
             var uniqueCells = new HashSet<Pos>();
             foreach (var match in matches)
-                foreach (var cell in match.Cells)
-                    uniqueCells.Add(cell);
-            
+            foreach (var cell in match.Cells)
+                uniqueCells.Add(cell);
+
             foreach (var cell in uniqueCells)
-                board.Set(cell.Row, cell.Col, PieceType.Empty);
+                board.Set(cell.Row, cell.Col, Piece.Empty());
             return uniqueCells.Count;
+        }
+
+        public static int ClearMatchesAndSpawnSpecials(BoardModel board, IReadOnlyList<Match> matches,
+            IReadOnlyList<SpecialSpawnDecision> spawns)
+        {
+            int clearedCount = ClearMatches(board, matches);
+            foreach (var spawn in spawns)
+                board.Set(spawn.SpawnPosition.Row, spawn.SpawnPosition.Col, spawn.SpawnPiece);
+            return clearedCount;
         }
 
         public static void ApplyGravity(BoardModel board)
@@ -33,20 +42,19 @@ namespace Core.Board
                 int writeRow = board.Height - 1;
                 for (int row = board.Height - 1; row >= 0; row--)
                 {
-                    var currentType = board.Get(row, col);
-                    if (currentType != PieceType.Empty)
+                    var currentPiece = board.Get(row, col);
+                    if (!currentPiece.IsEmpty)
                     {
-                        board.Set(writeRow, col, currentType);
+                        board.Set(writeRow, col, currentPiece);
                         writeRow--;
                     }
                 }
 
                 while (writeRow >= 0)
                 {
-                    board.Set(writeRow, col, PieceType.Empty);
+                    board.Set(writeRow, col, Piece.Empty());
                     writeRow--;
                 }
-                
             }
         }
 
@@ -54,12 +62,13 @@ namespace Core.Board
         {
             foreach (var pos in board.AllPositions())
             {
-                if (board.Get(pos.Row, pos.Col) == PieceType.Empty)
-                {
-                    var allowedIndex = AllSpawnable.Length > 0 ? _random.Next(AllSpawnable.Length) : throw new InvalidOperationException();
+                if (!board.Get(pos.Row, pos.Col).IsEmpty) continue;
 
-                    board.Set(pos.Row, pos.Col, AllSpawnable[allowedIndex]);
-                }
+                var allowedIndex = AllSpawnable.Length > 0
+                    ? _random.Next(AllSpawnable.Length)
+                    : throw new InvalidOperationException();
+                var piece = Piece.Normal(AllSpawnable[allowedIndex]);
+                board.Set(pos.Row, pos.Col, piece);
             }
         }
 
@@ -67,9 +76,10 @@ namespace Core.Board
         {
             foreach (Pos pos in board.AllPositions())
             {
-                if(board.Get(pos.Row, pos.Col) == PieceType.Empty)
+                if (board.Get(pos.Row, pos.Col).IsEmpty)
                     return true;
             }
+
             return false;
         }
     }
