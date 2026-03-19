@@ -1,4 +1,4 @@
-using Core.Board;
+using Core.Matching;
 
 namespace Core.Hint
 {

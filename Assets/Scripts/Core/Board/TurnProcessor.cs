@@ -1,6 +1,6 @@
 using Core.Generation;
 
-namespace Core.Board
+namespace Core.Matching
 {
     public static class TurnProcessor
     {

@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace Core.Board
+namespace Core.Matching
 {
     public class TurnResult
     {
