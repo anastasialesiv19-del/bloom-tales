@@ -16,18 +16,25 @@ namespace Core.Matching
                     0, 0, move, FailureReason.NoMatchCreated);
 
             board.Swap(move.From, move.To);
+
+            var primaryMatches = MatchFinder.FindMatches(board);
+            var spawns = SpecialSpawnResolver.BuildDecisions(board, primaryMatches, move);
+            var primaryCleared = BoardResolver.ClearMatchesAndSpawnSpecials(board, primaryMatches, spawns);
+            BoardResolver.ApplyGravity(board);
+            BoardResolver.Refill(board);
+
             var cascadeResult = CascadeResolver.Resolve(board);
+            var totalCleared = primaryCleared + cascadeResult.TotalClearedCells;
+
             bool wasShuffled = false;
             if (!BoardShuffler.IsPlayableBoard(board))
             {
                 BoardShuffler.Shuffle(board);
                 wasShuffled = true;
             }
-                
-            
+
             return new TurnResult(true, true, wasShuffled, true, isPlayable,
-                cascadeResult.CascadeCount, cascadeResult.TotalClearedCells, 
-                move, FailureReason.None );
+                cascadeResult.CascadeCount, totalCleared, move, FailureReason.None);
         }
     }
 }
