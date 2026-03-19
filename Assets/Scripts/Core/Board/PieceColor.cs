@@ -1,8 +1,7 @@
-﻿namespace Core.Board
+﻿namespace Core.Matching
 {
-    public enum PieceType
+    public enum PieceColor
     {
-        Empty = 0,
         Red,
         Blue,
         Yellow,

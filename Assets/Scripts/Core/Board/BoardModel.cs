@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Board
+namespace Core.Matching
 {
     public class BoardModel
     {
         public int Width { get; }
         public int Height { get; }
 
-        private readonly PieceType[,] grid;
+        private readonly Piece[,] grid;
 
         public BoardModel(int height, int width)
         {
@@ -20,10 +20,10 @@ namespace Core.Board
             }
             Width = width;
             Height = height;
-            grid = new PieceType[height, width];
+            grid = new Piece[height, width];
         }
 
-        public PieceType Get(int row, int col)
+        public Piece Get(int row, int col)
         {
             if (InBounds(row, col))
             {
@@ -35,21 +35,21 @@ namespace Core.Board
             
         }
 
-        public bool TryGet(int row, int col, out PieceType pieceType)
+        public bool TryGet(int row, int col, out Piece piece)
         {
             if (InBounds(row, col))
             {
-                pieceType = grid[row, col];
+                piece = grid[row, col];
                 return true;
             }
             else
             {
-                 pieceType = PieceType.Empty;
+                 piece = Piece.Empty();
                  return false;
             }
         }
 
-        public bool TrySet(int row, int col, PieceType value)
+        public bool TrySet(int row, int col, Piece value)
         {
             if (InBounds(row, col))
             {
@@ -62,11 +62,11 @@ namespace Core.Board
             }
         }
 
-        public void Set(int row, int col, PieceType pieceType)
+        public void Set(int row, int col, Piece piece)
         {
             if (InBounds(row, col))
             {
-                grid[row, col] = pieceType;
+                grid[row, col] = piece;
             }
             else
             {
@@ -118,24 +118,50 @@ namespace Core.Board
             return str.ToString();
         }
 
-        private static char PieceTypeMapping(PieceType type)
+        private static string PieceTypeMapping(Piece piece)
         {
-            switch (type)
+            switch (piece.Kind)
             {
-                case PieceType.Empty:
-                    return '_';
-                case PieceType.Red:
-                    return 'R';
-                case PieceType.Blue:
-                    return 'B';
-                case PieceType.Yellow:
-                    return 'Y';
-                case PieceType.Green:
-                    return 'G';
+                case PieceKind.Empty:
+                    return "_";
+                case PieceKind.ColorBomb:
+                    return "CB";
+                case PieceKind.RowClear:
+                    if (piece.Color == null) throw new ArgumentException("Piece kind requires color.");
+                    var color = PieceColorMapping(piece.Color.Value);
+                    return "H" + color;
+                case PieceKind.ColumnClear:
+                    if (piece.Color == null) throw new ArgumentException("Piece kind requires color.");
+                    color = PieceColorMapping(piece.Color.Value);
+                    return "V" + color;
+                case PieceKind.AreaBomb:
+                    if (piece.Color == null) throw new ArgumentException("Piece kind requires color.");
+                    color = PieceColorMapping(piece.Color.Value);
+                    return "A" + color;
+                case PieceKind.Normal:
+                    return piece.Color == null ? throw new ArgumentException("Piece kind requires color.") : 
+                        PieceColorMapping(piece.Color.Value);
                 default:
                     throw new InvalidOperationException();
             }
             
+        }
+
+        private static string PieceColorMapping(PieceColor color)
+        {
+            switch (color)
+            {
+                case PieceColor.Blue:
+                    return "B";
+                case PieceColor.Green:
+                    return "G";
+                case PieceColor.Red:
+                    return "R";
+                case PieceColor.Yellow:
+                    return "Y";
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
     }
