@@ -1,4 +1,4 @@
-namespace Core.Board
+namespace Core.Matching
 {
     public readonly struct Move
     {

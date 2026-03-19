@@ -1,7 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace Core.Board
+namespace Core.Matching
 {
     public readonly struct Pos
     {

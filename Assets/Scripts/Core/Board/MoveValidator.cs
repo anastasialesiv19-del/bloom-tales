@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.Board
+namespace Core.Matching
 {
     public static class MoveValidator
     {
