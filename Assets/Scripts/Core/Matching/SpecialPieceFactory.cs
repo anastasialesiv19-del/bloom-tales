@@ -1,0 +1,27 @@
+using System;
+using Core.Matching;
+
+namespace Core.Matching
+{
+    public static class SpecialPieceFactory
+    {
+        public static Piece CreateFromMatchType(SpecialMatchType matchType, PieceColor color, bool preferHorizontal)
+        {
+            switch (matchType)
+            {
+                case SpecialMatchType.Line4:
+                    if (preferHorizontal)
+                        return Piece.RowClear(color);
+                    return Piece.ColumnClear(color);
+                case SpecialMatchType.Line5:
+                    return Piece.ColorBomb();
+                case SpecialMatchType.TShape:
+                    return Piece.AreaBomb(color);
+                case SpecialMatchType.LShape:
+                    return Piece.AreaBomb(color);
+                default:
+                    throw new ArgumentException("Unknown special match type");
+            }              
+        }
+    }
+}
