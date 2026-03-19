@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Core.Board;
+using Core.Matching;
 
 namespace Core.Matching
 {
@@ -11,7 +12,7 @@ namespace Core.Matching
             var matches = new List<List<Pos>>();
             for (int row = 0; row < board.Height; row++)
             {
-                PieceType? currentType = null;
+                PieceColor? currentColor = null;
                 int matchStart = 0, matchLength = 0;
                 
                 for (int col = 0; col < board.Width; col++)
@@ -19,12 +20,12 @@ namespace Core.Matching
                     var cell = board.Get(row, col);
                     if (IsMatchCandidate(cell))
                     {
-                        if(currentType == cell)
+                        if(currentColor != null && cell.Color != null && currentColor == cell.Color)
                             matchLength++;
                         else
                         {
                             FlushHoriz(matches, row, matchStart, matchLength);
-                            currentType = cell;
+                            currentColor = cell.Color;
                             matchStart = col;
                             matchLength = 1;
                         }
@@ -32,7 +33,7 @@ namespace Core.Matching
                     else
                     {
                         FlushHoriz(matches, row, matchStart, matchLength);
-                        currentType = null;
+                        currentColor = null;
                         matchLength = 0;
                     }
                 }
@@ -41,7 +42,7 @@ namespace Core.Matching
             //vertical matches
             for (int col = 0; col < board.Width; col++)
             {
-                PieceType? currentType = null;
+                PieceColor? currentColor = null;
                 int matchStart = 0, matchLength = 0;
                 
                 for (int row = 0; row < board.Height; row++)
@@ -49,12 +50,12 @@ namespace Core.Matching
                     var cell = board.Get(row, col);
                     if (IsMatchCandidate(cell))
                     {
-                        if(currentType == cell)
+                        if(currentColor != null && cell.Color != null && currentColor == cell.Color)
                             matchLength++;
                         else
                         {
                             FlushVert(matches, col, matchStart, matchLength);
-                            currentType = cell;
+                            currentColor = cell.Color;
                             matchStart = row;
                             matchLength = 1;
                         }
@@ -62,7 +63,7 @@ namespace Core.Matching
                     else
                     {
                         FlushVert(matches, col, matchStart, matchLength);
-                        currentType = null;
+                        currentColor = null;
                         matchLength = 0;
                     }
                 }
@@ -71,10 +72,11 @@ namespace Core.Matching
             return MergeOverlaps(matches);
         }
 
-        static bool IsMatchCandidate(PieceType pieceType)
+        static bool IsMatchCandidate(Piece piece)
         {
-            //коли додадуться спецфішки, треба буде перевіряти за видом і кольором
-            if (pieceType == PieceType.Empty) return false;
+            if (piece.Kind == PieceKind.Empty) return false;
+            if (piece.Kind == PieceKind.ColorBomb) return false;
+            if (piece.Color == null) throw new ArgumentException("Piece kind requires color.");
             return true;
         }
 

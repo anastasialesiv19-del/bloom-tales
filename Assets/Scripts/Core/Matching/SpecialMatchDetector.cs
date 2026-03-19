@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Core.Board;
+using Core.Matching;
 
 namespace Core.Matching
 {
@@ -18,7 +18,7 @@ namespace Core.Matching
             return result;
         }
 
-        private static SpecialMatchType ClassifyMatch(Match match)
+        public static SpecialMatchType ClassifyMatch(Match match)
         {
             int cells = match.Cells.Count;
             if (cells <= 3) return SpecialMatchType.None;
@@ -36,7 +36,7 @@ namespace Core.Matching
             }
         }
 
-        private static bool IsHorizontalLine(IReadOnlyList<Pos> cells)
+        public static bool IsHorizontalLine(IReadOnlyList<Pos> cells)
         {
             var firstRow = cells[0].Row;
             for (int index = 1; index < cells.Count; index++)
