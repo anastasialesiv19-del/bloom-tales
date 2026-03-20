@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Matching;
 
-namespace Core.Matching
+namespace Core.Board
 {
     public static class BoardResolver
     {
@@ -18,12 +18,14 @@ namespace Core.Matching
         {
             var uniqueCells = new HashSet<Pos>();
             foreach (var match in matches)
-            foreach (var cell in match.Cells)
-                uniqueCells.Add(cell);
-
-            foreach (var cell in uniqueCells)
+                foreach (var cell in match.Cells)
+                    uniqueCells.Add(cell);
+                
+            var finalCellsToClear = SpecialEffectResolver.CollectTriggeredCells(board, uniqueCells);
+            foreach (var cell in finalCellsToClear)
                 board.Set(cell.Row, cell.Col, Piece.Empty());
-            return uniqueCells.Count;
+            
+            return finalCellsToClear.Count;
         }
 
         public static int ClearMatchesAndSpawnSpecials(BoardModel board, IReadOnlyList<Match> matches,
