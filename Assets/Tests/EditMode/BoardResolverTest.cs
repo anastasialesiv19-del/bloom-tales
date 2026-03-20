@@ -1,4 +1,4 @@
-using System.Linq;
+using Core.Board;
 using Core.Matching;
 using NUnit.Framework;
 

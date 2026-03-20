@@ -1,3 +1,4 @@
+using Core.Board;
 using Core.Generation;
 
 namespace Core.Matching
