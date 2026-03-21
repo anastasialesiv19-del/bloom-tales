@@ -14,6 +14,18 @@ namespace Core.Board
                 .Cast<PieceColor>()
                 .ToArray();
 
+        public static int ClearCells(BoardModel board, IReadOnlyCollection<Pos> initialCells)
+        {
+            int clearedPiece = 0;
+            foreach (Pos pos in initialCells)
+                if (!board.Get(pos.Row, pos.Col).IsEmpty)
+                {
+                    board.Set(pos.Row, pos.Col, Piece.Empty());
+                    clearedPiece++;
+                }
+            return clearedPiece;
+        }
+        
         public static int ClearMatches(BoardModel board, IReadOnlyList<Match> matches)
         {
             var uniqueCells = new HashSet<Pos>();
