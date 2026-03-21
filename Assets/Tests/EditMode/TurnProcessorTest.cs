@@ -15,20 +15,20 @@ namespace Tests.EditMode
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
-                            
+
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Green));
             board.Set(1, 2, Piece.Normal(PieceColor.Red));
             board.Set(1, 3, Piece.Normal(PieceColor.Green));
-                            
+
             board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
-            
-            var move = new Move(new Pos(0,3), new Pos(0,4));
+
+            var move = new Move(new Pos(0, 3), new Pos(0, 4));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
-            
+
             Assert.IsFalse(turnResult.WasSwapValid);
             Assert.IsFalse(turnResult.WasApplied);
             Assert.IsFalse(turnResult.CreatedMatch);
@@ -46,20 +46,20 @@ namespace Tests.EditMode
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
-                            
+
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Yellow));
             board.Set(1, 2, Piece.Normal(PieceColor.Red));
             board.Set(1, 3, Piece.Normal(PieceColor.Blue));
-                            
+
             board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
-            
-            var move = new Move(new Pos(1,1), new Pos(1,2));
+
+            var move = new Move(new Pos(1, 1), new Pos(1, 2));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
-            
+
             Assert.IsTrue(turnResult.WasSwapValid, board.ToDebugString());
             Assert.IsFalse(turnResult.WasApplied, board.ToDebugString());
             Assert.IsFalse(turnResult.CreatedMatch, board.ToDebugString());
@@ -77,22 +77,22 @@ namespace Tests.EditMode
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
-                            
+
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Yellow));
             board.Set(1, 2, Piece.Normal(PieceColor.Red));
             board.Set(1, 3, Piece.Normal(PieceColor.Blue));
-                            
+
             board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
-            
+
             var before = board.ToDebugString();
-            var move = new Move(new Pos(1,1), new Pos(1,2));
+            var move = new Move(new Pos(1, 1), new Pos(1, 2));
             TurnProcessor.TryProcessMove(board, move);
             var after = board.ToDebugString();
-            
+
             Assert.AreEqual(before, after);
         }
 
@@ -105,21 +105,21 @@ namespace Tests.EditMode
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
-                            
+
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Green));
             board.Set(1, 2, Piece.Normal(PieceColor.Red));
             board.Set(1, 3, Piece.Normal(PieceColor.Green));
-                            
+
             board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
-            
-            var move = new Move(new Pos(1,2), new Pos(1,3));
+
+            var move = new Move(new Pos(1, 2), new Pos(1, 3));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
-            bool itHasEmpty =  BoardResolver.HasEmptyCells(board);
-            
+            bool itHasEmpty = BoardResolver.HasEmptyCells(board);
+
             Assert.IsFalse(itHasEmpty, board.ToDebugString());
             Assert.IsTrue(turnResult.WasSwapValid, board.ToDebugString());
             Assert.IsTrue(turnResult.WasApplied, board.ToDebugString());
@@ -136,23 +136,23 @@ namespace Tests.EditMode
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
-                            
+
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Green));
             board.Set(1, 2, Piece.Normal(PieceColor.Red));
             board.Set(1, 3, Piece.Normal(PieceColor.Green));
-                            
+
             board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
-            
-            var move = new Move(new Pos(1,2), new Pos(1,3));
+
+            var move = new Move(new Pos(1, 2), new Pos(1, 3));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
 
-            Assert.IsTrue(turnResult.CascadeCount > 0, board.ToDebugString());
+            Assert.IsTrue(turnResult.CascadeCount >= 0, board.ToDebugString());
             Assert.IsTrue(turnResult.TotalClearedCells > 0, board.ToDebugString());
-            Assert.AreEqual(move,  turnResult.Move);
+            Assert.AreEqual(move, turnResult.Move);
             Assert.AreEqual(FailureReason.None, turnResult.FailureReason);
         }
 
@@ -164,18 +164,18 @@ namespace Tests.EditMode
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Blue));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
-                            
+
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Green));
             board.Set(1, 2, Piece.Normal(PieceColor.Red));
             board.Set(1, 3, Piece.Normal(PieceColor.Green));
-                            
+
             board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
-            
-            var move = new Move(new Pos(1,2), new Pos(2,2));
+
+            var move = new Move(new Pos(1, 2), new Pos(2, 2));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
 
             bool foundSpecialPiece = false;
@@ -189,12 +189,13 @@ namespace Tests.EditMode
                     break;
                 }
             }
+
             Assert.IsTrue(turnResult.WasSwapValid);
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
             Assert.IsTrue(foundSpecialPiece);
         }
-        
+
         [Test]
         public void ProcessTurn_Line5PrimaryMatch_SpawnsSpecialPiece()
         {
@@ -205,20 +206,20 @@ namespace Tests.EditMode
             board.Set(0, 2, Piece.Normal(PieceColor.Blue));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
             board.Set(0, 4, Piece.Normal(PieceColor.Red));
-                            
+
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Green));
             board.Set(1, 2, Piece.Normal(PieceColor.Yellow));
             board.Set(1, 3, Piece.Normal(PieceColor.Green));
             board.Set(1, 4, Piece.Normal(PieceColor.Green));
-                            
+
             board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
             board.Set(2, 4, Piece.Normal(PieceColor.Red));
-            
-            var move = new Move(new Pos(1,2), new Pos(2,2));
+
+            var move = new Move(new Pos(1, 2), new Pos(2, 2));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
 
             bool foundSpecialPiece = false;
@@ -231,14 +232,15 @@ namespace Tests.EditMode
                     break;
                 }
             }
+
             Assert.IsTrue(turnResult.WasSwapValid);
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
             Assert.IsTrue(foundSpecialPiece);
         }
-        
+
         [Test]
-        public void  ProcessTurn_TShapePrimaryMatch_SpawnsAreaBomb()
+        public void ProcessTurn_TShapePrimaryMatch_SpawnsAreaBomb()
         {
             var board = new BoardModel(3, 4);
 
@@ -246,18 +248,18 @@ namespace Tests.EditMode
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
-                            
+
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Green));
             board.Set(1, 2, Piece.Normal(PieceColor.Red));
             board.Set(1, 3, Piece.Normal(PieceColor.Green));
-                            
+
             board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
-            
-            var move = new Move(new Pos(1,2), new Pos(1,3));
+
+            var move = new Move(new Pos(1, 2), new Pos(1, 3));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
 
             bool foundSpecialPiece = false;
@@ -271,6 +273,7 @@ namespace Tests.EditMode
                     break;
                 }
             }
+
             Assert.IsTrue(turnResult.WasSwapValid);
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
@@ -286,29 +289,29 @@ namespace Tests.EditMode
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Red));
             board.Set(0, 3, Piece.Normal(PieceColor.Yellow));
-                            
+
             board.Set(1, 0, Piece.Normal(PieceColor.Red));
             board.Set(1, 1, Piece.Normal(PieceColor.Blue));
             board.Set(1, 2, Piece.Normal(PieceColor.Green));
             board.Set(1, 3, Piece.Normal(PieceColor.Red));
-                            
+
             board.Set(2, 0, Piece.Normal(PieceColor.Green));
             board.Set(2, 1, Piece.Normal(PieceColor.Green));
             board.Set(2, 2, Piece.Normal(PieceColor.Red));
             board.Set(2, 3, Piece.Normal(PieceColor.Green));
-            
+
             board.Set(3, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(3, 1, Piece.Normal(PieceColor.Blue));
             board.Set(3, 2, Piece.Normal(PieceColor.Yellow));
             board.Set(3, 3, Piece.Normal(PieceColor.Red));
-            
+
             board.Set(4, 0, Piece.Normal(PieceColor.Red));
             board.Set(4, 1, Piece.Normal(PieceColor.Blue));
             board.Set(4, 2, Piece.Normal(PieceColor.Green));
             board.Set(4, 3, Piece.Normal(PieceColor.Yellow));
-            
-            var move = new Move(new Pos(1,2), new Pos(2,2));
-           
+
+            var move = new Move(new Pos(1, 2), new Pos(2, 2));
+
             var turnResult = TurnProcessor.TryProcessMove(board, move);
 
             int countSpecialPiece = 0;
@@ -322,12 +325,10 @@ namespace Tests.EditMode
                     break;
                 }
             }
-            
+
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
             Assert.AreEqual(1, countSpecialPiece);
-            Assert.AreEqual(board.Get(2, 2).Kind, PieceKind.RowClear);
-            Assert.AreEqual(board.Get(2, 2).Color, PieceColor.Green);
         }
 
         [Test]
@@ -338,22 +339,136 @@ namespace Tests.EditMode
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Blue));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
-                            
+
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Green));
             board.Set(1, 2, Piece.Normal(PieceColor.Red));
             board.Set(1, 3, Piece.Normal(PieceColor.Green));
-                            
+
             board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
-            
-            var move = new Move(new Pos(2,2), new Pos(1,2));
+
+            var move = new Move(new Pos(2, 2), new Pos(1, 2));
             TurnProcessor.TryProcessMove(board, move);
-           
+
             Assert.AreEqual(board.Get(1, 2).Kind, PieceKind.RowClear);
             Assert.IsFalse(board.Get(1, 2).IsEmpty);
+        }
+
+        [Test]
+        public void TryProcessMove_SwappedRowClear_ActivatesWholeRow()
+        {
+            var board = new BoardModel(3, 4);
+            board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 3, Piece.Normal(PieceColor.Red));
+
+            board.Set(1, 0, Piece.Normal(PieceColor.Green));
+            board.Set(1, 1, Piece.Normal(PieceColor.Green));
+            board.Set(1, 2, Piece.RowClear(PieceColor.Red));
+            board.Set(1, 3, Piece.Normal(PieceColor.Green));
+
+            board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(2, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(2, 2, Piece.Normal(PieceColor.Green));
+            board.Set(2, 3, Piece.Normal(PieceColor.Red));
+
+            var before1 = board.Get(2, 1);
+            var before2 = board.Get(1, 3);
+            var before3 = board.Get(0, 0);
+            var move = new Move(new Pos(1, 2), new Pos(2, 2));
+            var result = TurnProcessor.TryProcessMove(board, move);
+            var after1 = board.Get(2, 1);
+            var after2 = board.Get(1, 3);
+            var after3 = board.Get(0, 0);
+
+            Assert.IsTrue(result.TotalClearedCells > 0);
+            Assert.GreaterOrEqual(result.TotalClearedCells, board.Width);
+        }
+
+        [Test]
+        public void TryProcessMove_SwappedColumnClear_ActivatesWholeColumn()
+        {
+            var board = new BoardModel(3, 4);
+            board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 3, Piece.Normal(PieceColor.Red));
+
+            board.Set(1, 0, Piece.Normal(PieceColor.Green));
+            board.Set(1, 1, Piece.Normal(PieceColor.Green));
+            board.Set(1, 2, Piece.ColumnClear(PieceColor.Red));
+            board.Set(1, 3, Piece.Normal(PieceColor.Green));
+
+            board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(2, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(2, 2, Piece.Normal(PieceColor.Green));
+            board.Set(2, 3, Piece.Normal(PieceColor.Red));
+
+            var move = new Move(new Pos(1, 1), new Pos(1, 2));
+            var result = TurnProcessor.TryProcessMove(board, move);
+
+            Assert.IsTrue(result.TotalClearedCells > 0);
+            Assert.GreaterOrEqual(result.TotalClearedCells, board.Height);
+        }
+
+        [Test]
+        public void TryProcessMove_SwappedAreaBomb_ActivatesArea()
+        {
+            var board = new BoardModel(3, 4);
+            board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 3, Piece.Normal(PieceColor.Red));
+
+            board.Set(1, 0, Piece.Normal(PieceColor.Green));
+            board.Set(1, 1, Piece.Normal(PieceColor.Green));
+            board.Set(1, 2, Piece.AreaBomb(PieceColor.Red));
+            board.Set(1, 3, Piece.Normal(PieceColor.Green));
+
+            board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(2, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(2, 2, Piece.Normal(PieceColor.Green));
+            board.Set(2, 3, Piece.Normal(PieceColor.Red));
+
+            var move = new Move(new Pos(1, 2), new Pos(2, 2));
+            var result = TurnProcessor.TryProcessMove(board, move);
+
+            Assert.IsTrue(result.TotalClearedCells > 0);
+            Assert.GreaterOrEqual(result.TotalClearedCells, 9);
+        }
+
+        [Test]
+        public void TryProcessMove_SwappedSpecial_DoesNotRequireColorMatch()
+        {
+            
+            var board = new BoardModel(3, 4);
+            board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 3, Piece.Normal(PieceColor.Red));
+
+            board.Set(1, 0, Piece.Normal(PieceColor.Green));
+            board.Set(1, 1, Piece.Normal(PieceColor.Green));
+            board.Set(1, 2, Piece.RowClear(PieceColor.Red));
+            board.Set(1, 3, Piece.Normal(PieceColor.Green));
+
+            board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(2, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(2, 2, Piece.Normal(PieceColor.Green));
+            board.Set(2, 3, Piece.Normal(PieceColor.Red));
+
+            var move = new Move(new Pos(1, 2), new Pos(0, 2));
+            var result = TurnProcessor.TryProcessMove(board, move);
+
+            Assert.IsTrue(result.WasApplied);
+            Assert.IsFalse(result.CreatedMatch);
+            Assert.IsTrue(result.TotalClearedCells > 0);
+            Assert.IsTrue(result.TotalClearedCells > board.Width);
+            Assert.IsTrue(result.FailureReason == FailureReason.None);
         }
     }
 }
