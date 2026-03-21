@@ -70,13 +70,16 @@ namespace Core.Matching
                 otherCell = move.From;
             }
 
+            if (board.Get(specialCell.Row, specialCell.Col).Kind == PieceKind.ColorBomb && (
+                board.Get(otherCell.Row, otherCell.Col).IsSpecial || 
+                board.Get(otherCell.Row, otherCell.Col).IsEmpty)) return false;
+            
             finalCellsToClear.Add(specialCell);
             finalCellsToClear.Add(otherCell);
             var effectCells = SpecialEffectResolver.CollectTriggeredCells(board, finalCellsToClear);
             finalCellsToClear.UnionWith(effectCells);
             clearedCount = BoardResolver.ClearCells(board, finalCellsToClear);
             return true;   
-
         }
 
         private static bool IsDirectlyActivatableSpecial(PieceKind kind)
@@ -86,6 +89,7 @@ namespace Core.Matching
                 case PieceKind.RowClear:
                 case PieceKind.ColumnClear:
                 case PieceKind.AreaBomb:
+                case PieceKind.ColorBomb:
                     return true;
                 default:
                     return false;
