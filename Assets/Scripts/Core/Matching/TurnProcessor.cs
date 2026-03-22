@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -91,8 +92,12 @@ namespace Core.Matching
                 
                 return ClearDirectActivation(board, specialCell, otherCell, out clearedCount);
             }
+
+            if (aIsLineOrArea && bIsLineOrArea)
+            {
+                return ClearDirectSpecialCombo(board, move, out clearedCount);
+            }
             
-            if (aIsLineOrArea && bIsLineOrArea) return false;
             Pos lineOrAreaCell, otherLineOrAreaCell;
             Piece otherLineOrAreaPiece;
 
@@ -135,6 +140,56 @@ namespace Core.Matching
             var finalCells = SpecialEffectResolver.CollectTriggeredCells(board, initialCells);
             clearedCount = BoardResolver.ClearCells(board, finalCells);
             return true;
+        }
+
+        private static bool ClearDirectSpecialCombo(BoardModel board, Move move, out int clearedCount)
+        {
+            clearedCount = 0;
+            var pieceA = board.Get(move.From.Row, move.From.Col);
+            var pieceB = board.Get(move.To.Row, move.To.Col);
+            var cellsToClear = new HashSet<Pos>{move.From,  move.To};
+            
+            var cellsEffectA = GetDirectSpecialEffectCells(board, move.From, pieceA.Kind);
+            var cellsEffectB = GetDirectSpecialEffectCells(board, move.To, pieceB.Kind);
+            
+            cellsToClear.UnionWith(cellsEffectA);
+            cellsToClear.UnionWith(cellsEffectB);
+            
+            clearedCount = BoardResolver.ClearCells(board, cellsToClear);
+            return true;
+        }
+
+        private static IEnumerable<Pos> GetDirectSpecialEffectCells(BoardModel board, Pos cell, PieceKind kind)
+        {
+            if (kind == PieceKind.RowClear)
+            {
+                for (int col = 0; col < board.Width; col++)
+                    yield return new Pos(cell.Row, col);
+                yield break;
+            }
+            if (kind == PieceKind.ColumnClear)
+            {
+                for(int row = 0;  row < board.Height; row++)
+                    yield return new Pos(row, cell.Col);
+                yield break;
+            }
+            if (kind == PieceKind.AreaBomb)
+            {
+                for (int row = cell.Row - 1; row <= cell.Row + 1; row++)
+                {
+                    for (int col = cell.Col - 1; col <= cell.Col + 1; col++)
+                    {
+                        if (board.InBounds(row, col))
+                        {
+                            yield return new Pos(row, col);
+                        }
+                    }
+                }
+                yield break;
+            }
+            throw new InvalidOperationException("Direct special effect is not supported for this piece kind.");
+                    
+            
         }
        
     }
