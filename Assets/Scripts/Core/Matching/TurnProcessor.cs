@@ -49,7 +49,7 @@ namespace Core.Matching
         }
 
         private static bool TryResolveDirectSpecialActivation(BoardModel board, Move move, out int clearedCount)
-        { // написать хелпер, шоб винести дубльовану логіку
+        { 
             clearedCount = 0;
             var pieceA = board.Get(move.From.Row, move.From.Col);
             var pieceB = board.Get(move.To.Row, move.To.Col);
@@ -64,7 +64,12 @@ namespace Core.Matching
             
             if (aIsColorBomb || bIsColorBomb)
             {
-                if (aIsColorBomb && bIsColorBomb) return false;
+                if (aIsColorBomb && bIsColorBomb)
+                {
+                    var allNonEmptyCells = board.AllPositions().Where(pos => !board.Get(pos.Row, pos.Col).IsEmpty).ToArray();
+                    clearedCount = BoardResolver.ClearCells(board, allNonEmptyCells);
+                    return true;
+                }
                 
                 Pos specialCell, otherCell;
                 Piece otherPiece;
