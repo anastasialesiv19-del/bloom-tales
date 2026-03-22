@@ -29,9 +29,8 @@ namespace Core.Matching
                 var primaryMatches = MatchFinder.FindMatches(board);
                 var spawns = SpecialSpawnResolver.BuildDecisions(board, primaryMatches, move);
                 totalCleared += BoardResolver.ClearMatchesAndSpawnSpecials(board, primaryMatches, spawns);
-                
             }
-            
+
             BoardResolver.ApplyGravity(board);
             BoardResolver.Refill(board);
 
@@ -50,50 +49,88 @@ namespace Core.Matching
         }
 
         private static bool TryResolveDirectSpecialActivation(BoardModel board, Move move, out int clearedCount)
-        {
+        { // написать хелпер, шоб винести дубльовану логіку
             clearedCount = 0;
-            var finalCellsToClear = new HashSet<Pos>();
             var pieceA = board.Get(move.From.Row, move.From.Col);
             var pieceB = board.Get(move.To.Row, move.To.Col);
-            var aSupported = IsDirectlyActivatableSpecial(pieceA.Kind);
-            var bSupported = IsDirectlyActivatableSpecial(pieceB.Kind);
-            if ((aSupported && bSupported) || (!aSupported && !bSupported)) return false;
-            Pos specialCell, otherCell;
-            if (aSupported)
+
+            var aIsLineOrArea = IsDirectLineOrArea(pieceA.Kind);
+            var bIsLineOrArea = IsDirectLineOrArea(pieceB.Kind);
+            var aIsColorBomb = IsDirectColorBomb(pieceA.Kind);
+            var bIsColorBomb = IsDirectColorBomb(pieceB.Kind);
+
+            var hasAnySupportedDirectSpecial = aIsLineOrArea || bIsLineOrArea || aIsColorBomb || bIsColorBomb;
+            if (!hasAnySupportedDirectSpecial) return false;
+            
+            if (aIsColorBomb || bIsColorBomb)
             {
-                specialCell = move.From;
-                otherCell = move.To;
+                if (aIsColorBomb && bIsColorBomb) return false;
+                
+                Pos specialCell, otherCell;
+                Piece otherPiece;
+                if (aIsColorBomb)
+                {
+                    specialCell = move.From;
+                    otherCell = move.To; 
+                    otherPiece = pieceB;
+                }
+                else
+                {
+                    specialCell = move.To;
+                    otherCell = move.From;
+                    otherPiece = pieceA;
+                }
+
+                if (otherPiece.IsEmpty) return false;
+                if (otherPiece.Color == null) return false;
+                
+                return ClearDirectActivation(board, specialCell, otherCell, out clearedCount);
+            }
+            
+            if (aIsLineOrArea && bIsLineOrArea) return false;
+            Pos lineOrAreaCell, otherLineOrAreaCell;
+            Piece otherLineOrAreaPiece;
+
+            if (aIsLineOrArea)
+            {
+                lineOrAreaCell = move.From;
+                otherLineOrAreaCell = move.To;
+                otherLineOrAreaPiece = pieceB;
             }
             else
             {
-                specialCell = move.To;
-                otherCell = move.From;
+                lineOrAreaCell = move.To;
+                otherLineOrAreaCell = move.From;
+                otherLineOrAreaPiece = pieceA;
             }
 
-            if (board.Get(specialCell.Row, specialCell.Col).Kind == PieceKind.ColorBomb && (
-                board.Get(otherCell.Row, otherCell.Col).IsSpecial || 
-                board.Get(otherCell.Row, otherCell.Col).IsEmpty)) return false;
-            
-            finalCellsToClear.Add(specialCell);
-            finalCellsToClear.Add(otherCell);
-            var effectCells = SpecialEffectResolver.CollectTriggeredCells(board, finalCellsToClear);
-            finalCellsToClear.UnionWith(effectCells);
-            clearedCount = BoardResolver.ClearCells(board, finalCellsToClear);
-            return true;   
+            if (otherLineOrAreaPiece.IsSpecial)
+                return false;
+            return ClearDirectActivation(board, lineOrAreaCell, otherLineOrAreaCell, out clearedCount);
         }
 
-        private static bool IsDirectlyActivatableSpecial(PieceKind kind)
+        private static bool IsDirectColorBomb(PieceKind kind)
         {
-            switch (kind)
-            {
-                case PieceKind.RowClear:
-                case PieceKind.ColumnClear:
-                case PieceKind.AreaBomb:
-                case PieceKind.ColorBomb:
-                    return true;
-                default:
-                    return false;
-            }
+            return kind == PieceKind.ColorBomb;
         }
+
+        private static bool IsDirectLineOrArea(PieceKind kind)
+        {
+            return kind switch
+            {
+                PieceKind.RowClear or PieceKind.ColumnClear or PieceKind.AreaBomb => true,
+                _ => false
+            };
+        }
+
+        private static bool ClearDirectActivation(BoardModel board, Pos specialCell, Pos otherCell,
+            out int clearedCount)
+        {
+            var initialCells = new HashSet<Pos> { specialCell, otherCell };
+            var finalCells = SpecialEffectResolver.CollectTriggeredCells(board, initialCells);
+            clearedCount = BoardResolver.ClearCells(board, finalCells);
+            return true;
+        }
+       
     }
 }
