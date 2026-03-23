@@ -12,42 +12,78 @@ namespace Core.Turns
     {
         public static TurnResult TryProcessMove(BoardModel board, Move move)
         {
+            var tracePhases = new List<TurnPhaseTrace>();
             bool isPlayable = BoardShuffler.IsPlayableBoard(board);
             if (!MoveValidator.IsValidSwap(board, move.From, move.To))
-                return new TurnResult(false, false, false, false, isPlayable,
-                    0, 0, move, FailureReason.InvalidSwap);
+            {
+                tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.InvalidSwap));
+                return CreateFailureResult(tracePhases, move, isPlayable, FailureReason.InvalidSwap, false);
+            }
+               
 
             var specialApplied = TryResolveDirectSpecialActivation(board, move, out var totalCleared);
+            if (specialApplied)
+            {
+                tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.DirectSpecialActivation, totalCleared));
+            }
             bool createdMatch = false;
             if (!specialApplied)
             {
                 if (!MoveFinder.CreatesMatch(board, move.From, move.To))
-                    return new TurnResult(true, false, false, false, isPlayable,
-                        0, 0, move, FailureReason.NoMatchCreated);
-
+                {
+                    tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.NoMatchCreated));
+                    return  CreateFailureResult(tracePhases, move, isPlayable, FailureReason.NoMatchCreated, false);
+                }
+                
                 createdMatch = true;
                 board.Swap(move.From, move.To);
+                tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.SwapApplied));
+
 
                 var primaryMatches = MatchFinder.FindMatches(board);
                 var spawns = SpecialSpawnResolver.BuildDecisions(board, primaryMatches, move);
-                totalCleared += BoardResolver.ClearMatchesAndSpawnSpecials(board, primaryMatches, spawns);
+                var primaryCleared = BoardResolver.ClearMatchesAndSpawnSpecials(board, primaryMatches, spawns);
+                totalCleared += primaryCleared;
+                tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.PrimaryMatchResolved, primaryCleared, spawns.Count));
+
             }
 
             BoardResolver.ApplyGravity(board);
+            tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.GravityApplied));
+
             BoardResolver.Refill(board);
+            tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.RefillApplied));
+
 
             var cascadeResult = CascadeResolver.Resolve(board);
             totalCleared += cascadeResult.TotalClearedCells;
+            AppendCascadePhases(tracePhases, cascadeResult);
 
             bool wasShuffled = false;
             if (!BoardShuffler.IsPlayableBoard(board))
             {
                 BoardShuffler.Shuffle(board);
                 wasShuffled = true;
+                tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.ShuffleApplied, boardShuffled: true));
             }
+            
+            tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.TurnCompleted));
+                        return new TurnResult(true, true, wasShuffled, createdMatch, isPlayable,
+                cascadeResult.CascadeCount, totalCleared, move, FailureReason.None, new TurnTrace(tracePhases));
+        }
 
-            return new TurnResult(true, true, wasShuffled, createdMatch, isPlayable,
-                cascadeResult.CascadeCount, totalCleared, move, FailureReason.None);
+        private static TurnResult CreateFailureResult(List<TurnPhaseTrace> tracePhases, Move move, bool boardWasPlayableBeforeMove, FailureReason failureReason, bool wasApplied)
+        {
+            return new TurnResult(wasApplied, false, false, false, boardWasPlayableBeforeMove,
+                0, 0, move, failureReason, new TurnTrace(tracePhases));
+        }
+
+        private static void AppendCascadePhases(List<TurnPhaseTrace> tracePhases, CascadeResult cascadeResult)
+        {
+            for (int i = 0; i < cascadeResult.CascadeCount; i++)
+            {
+                tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.CascadeWaveResolved, cascadeResult.ClearedPerWave[i], cascadeIndex: i + 1));
+            }
         }
 
         private static bool TryResolveDirectSpecialActivation(BoardModel board, Move move, out int clearedCount)

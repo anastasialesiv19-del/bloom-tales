@@ -13,9 +13,11 @@ namespace Core.Turns
         public int TotalClearedCells { get; }
         public Move Move { get; }
         public FailureReason FailureReason { get; }
+        
+        public TurnTrace Trace { get; }
 
         public TurnResult(bool wasSwapValid, bool wasApplied, bool wasShuffled, bool createdMatch,bool boardWasPlayableBeforeMove, int cascadeCount,
-            int totalClearedCells, Move move,  FailureReason failureReason)
+            int totalClearedCells, Move move,  FailureReason failureReason, TurnTrace trace)
         {
             WasSwapValid = wasSwapValid;
             WasApplied = wasApplied;
@@ -26,6 +28,7 @@ namespace Core.Turns
             TotalClearedCells = totalClearedCells;
             Move = move;
             FailureReason = failureReason;
+            Trace = trace;
         }
     }
 
