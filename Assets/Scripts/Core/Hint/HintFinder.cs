@@ -8,7 +8,7 @@ namespace Core.Hint
     {
         public static HintResult FindBestHint(BoardModel board)
         {
-            var possibleMoves = MoveFinder.FindAllPossibleMoves(board);
+            var possibleMoves = HintMoveCollector.Collect(board);
             if (possibleMoves.Count == 0) return new HintResult(null);
 
             var bestMove = possibleMoves[0];
@@ -41,53 +41,13 @@ namespace Core.Hint
         private static HintExplanation BuildExplanation(BoardModel board, Move move, int bestScore)
         {
             var reasons = new List<HintReasonType>();
-            if(IsDirectSpecialActivation(board, move))
+            if(HintMoveEvaluator.IsDirectSpecialActivation(board, move))
                 reasons.Add(HintReasonType.ActivatesSpecialDirectly);
             if (MoveFinder.CreatesMatch(board, move.From, move.To))
                 reasons.Add(HintReasonType.CreatesMatch);
             if(CreatesSpecial(board, move))
                 reasons.Add(HintReasonType.CreatesSpecial);
             return new HintExplanation(reasons, bestScore);
-        }
-
-        private static bool IsDirectSpecialActivation(BoardModel board, Move move)
-        {
-            var pieceA =  board.Get(move.From.Row, move.From.Col);
-            var pieceB =  board.Get(move.To.Row, move.To.Col);
-
-
-            
-            var aIsLineOrArea = IsDirectLineOrArea(pieceA.Kind);
-            var bIsLineOrArea = IsDirectLineOrArea(pieceB.Kind);
-            var aIsColorBomb = IsDirectColorBomb(pieceA.Kind);
-            var bIsColorBomb = IsDirectColorBomb(pieceB.Kind);
-
-            if (aIsColorBomb || bIsColorBomb)
-            {
-                if (aIsColorBomb && bIsColorBomb)
-                    return true;
-                return pieceA.Color != null && pieceB.Color != null;
-            }
-            if (aIsLineOrArea && bIsLineOrArea)
-                return true;
-            if (aIsLineOrArea && !pieceB.IsSpecial)
-                return true;
-            if (bIsLineOrArea && !pieceA.IsSpecial)
-                return true;
-            return false;
-        }
-        private static bool IsDirectColorBomb(PieceKind kind)
-        {
-            return kind == PieceKind.ColorBomb;
-        }
-        
-        private static bool IsDirectLineOrArea(PieceKind kind)
-        {
-            return kind switch
-            {
-                PieceKind.RowClear or PieceKind.ColumnClear or PieceKind.AreaBomb => true,
-                _ => false
-            };
         }
 
         private static bool CreatesSpecial(BoardModel board, Move move)
