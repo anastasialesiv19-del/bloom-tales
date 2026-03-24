@@ -17,7 +17,7 @@ namespace Core.Turns
             if (!MoveValidator.IsValidSwap(board, move.From, move.To))
             {
                 tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.InvalidSwap));
-                return CreateFailureResult(tracePhases, move, isPlayable, FailureReason.InvalidSwap, false);
+                return CreateFailureResult(tracePhases, move, isPlayable, FailureReason.InvalidSwap, false,false);
             }
                
 
@@ -32,7 +32,7 @@ namespace Core.Turns
                 if (!MoveFinder.CreatesMatch(board, move.From, move.To))
                 {
                     tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.NoMatchCreated));
-                    return  CreateFailureResult(tracePhases, move, isPlayable, FailureReason.NoMatchCreated, false);
+                    return  CreateFailureResult(tracePhases, move, isPlayable, FailureReason.NoMatchCreated, true,false);
                 }
                 
                 createdMatch = true;
@@ -72,9 +72,9 @@ namespace Core.Turns
                 cascadeResult.CascadeCount, totalCleared, move, FailureReason.None, new TurnTrace(tracePhases));
         }
 
-        private static TurnResult CreateFailureResult(List<TurnPhaseTrace> tracePhases, Move move, bool boardWasPlayableBeforeMove, FailureReason failureReason, bool wasApplied)
+        private static TurnResult CreateFailureResult(List<TurnPhaseTrace> tracePhases, Move move, bool boardWasPlayableBeforeMove, FailureReason failureReason, bool wasSwapValid, bool wasApplied)
         {
-            return new TurnResult(wasApplied, false, false, false, boardWasPlayableBeforeMove,
+            return new TurnResult(wasSwapValid, wasApplied, false, false, boardWasPlayableBeforeMove,
                 0, 0, move, failureReason, new TurnTrace(tracePhases));
         }
 
