@@ -251,7 +251,6 @@ namespace Tests.EditMode.Hint
         }
         
         [Test]
-        [Ignore("HintFinder currently evaluates only match-creating moves, not direct special activation swaps")]
         public void FindBestHint_DirectSpecialMove_ExplanationContainsActivatesSpecialDirectly()
         {
             var board = new BoardModel(3, 4);
@@ -260,18 +259,17 @@ namespace Tests.EditMode.Hint
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
                             
-            board.Set(1, 0, Piece.Normal(PieceColor.Green));
+            board.Set(1, 0, Piece.Normal(PieceColor.Red));
             board.Set(1, 1, Piece.ColorBomb());
-            board.Set(1, 2, Piece.Normal(PieceColor.Red));
-            board.Set(1, 3, Piece.Normal(PieceColor.Green));
+            board.Set(1, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(1, 3, Piece.Normal(PieceColor.Blue));
                             
-            board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
-            board.Set(2, 1, Piece.Normal(PieceColor.Blue));
-            board.Set(2, 2, Piece.Normal(PieceColor.Green));
-            board.Set(2, 3, Piece.Normal(PieceColor.Red));
+            board.Set(2, 0, Piece.Normal(PieceColor.Green));
+            board.Set(2, 1, Piece.Normal(PieceColor.Red));
+            board.Set(2, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(2, 3, Piece.Normal(PieceColor.Green));
 
-            var context = new HintContext(9, 0);
-            var result = HintFinder.FindAdaptiveHint(board, context);
+            var result = HintFinder.FindBestHint(board);
             
             Assert.IsNotNull(result.Explanation);
             Assert.IsTrue(result.Explanation.Reasons.Contains(HintReasonType.ActivatesSpecialDirectly));
@@ -307,6 +305,88 @@ namespace Tests.EditMode.Hint
 
             Assert.IsNotNull(result.Explanation);
             Assert.AreEqual(expectedScore, result.Explanation.Score);
+        }
+
+        [Test]
+        public void FindBestHint_DirectSpecialMove_CanBeReturnedWithoutMatchCreation()
+        {
+            var board = new BoardModel(3, 4);
+            board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Green));
+            board.Set(0, 3, Piece.Normal(PieceColor.Red));
+                            
+            board.Set(1, 0, Piece.Normal(PieceColor.Red));
+            board.Set(1, 1, Piece.ColorBomb());
+            board.Set(1, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(1, 3, Piece.Normal(PieceColor.Blue));
+                            
+            board.Set(2, 0, Piece.Normal(PieceColor.Green));
+            board.Set(2, 1, Piece.Normal(PieceColor.Red));
+            board.Set(2, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(2, 3, Piece.Normal(PieceColor.Green));
+
+            var result = HintFinder.FindBestHint(board);
+            var createsMatch = result.Move != null && MoveFinder.CreatesMatch(board, result.Move.Value.From, result.Move.Value.To);
+            var isDirect = result.Move != null && HintMoveEvaluator.IsDirectSpecialActivation(board, result.Move.Value);
+            
+            Assert.IsNotNull(result.Move);
+            Assert.IsFalse(createsMatch);
+            Assert.IsTrue(isDirect);
+            Assert.IsNotNull(result.Explanation);
+            Assert.IsTrue(result.Explanation.Reasons.Contains(HintReasonType.ActivatesSpecialDirectly));
+        }
+        
+        [Test]
+        public void FindBestHint_WhenDirectSpecialAndNormalMatchExist_SelectsHigherScoreMove()
+        {
+            var board = new BoardModel(3, 4);
+            board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Green));
+            board.Set(0, 3, Piece.Normal(PieceColor.Yellow));
+                            
+            board.Set(1, 0, Piece.Normal(PieceColor.Red));
+            board.Set(1, 1, Piece.ColorBomb());
+            board.Set(1, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(1, 3, Piece.Normal(PieceColor.Blue));
+                            
+            board.Set(2, 0, Piece.Normal(PieceColor.Green));
+            board.Set(2, 1, Piece.Normal(PieceColor.Red));
+            board.Set(2, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(2, 3, Piece.Normal(PieceColor.Green));
+
+            var result = HintFinder.FindBestHint(board);
+            var directMove = new Move(new Pos(0, 1), new Pos(1, 1));
+            var normalMove = new Move(new Pos(0, 2), new Pos(0, 3));
+            var directScore = HintScorer.ScoreMove(board, directMove);
+            var normalScore = HintScorer.ScoreMove(board, normalMove);
+            
+            Assert.Greater(directScore, normalScore);
+            if (result.Move != null) Assert.AreEqual(directMove, result.Move.Value);
+        }
+        
+        [Test]
+        public void Collect_DoesNotDuplicateMoves_WhenMoveMatchesMultipleRules()
+        {
+            var board = new BoardModel(3, 4);
+            board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Green));
+            board.Set(0, 3, Piece.Normal(PieceColor.Yellow));
+                            
+            board.Set(1, 0, Piece.Normal(PieceColor.Red));
+            board.Set(1, 1, Piece.ColorBomb());
+            board.Set(1, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(1, 3, Piece.Normal(PieceColor.Blue));
+                            
+            board.Set(2, 0, Piece.Normal(PieceColor.Green));
+            board.Set(2, 1, Piece.Normal(PieceColor.Red));
+            board.Set(2, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(2, 3, Piece.Normal(PieceColor.Green));
+
+            var moves = HintMoveCollector.Collect(board);
+            Assert.AreEqual(moves.Count, moves.Distinct().Count());
         }
     }
 }
