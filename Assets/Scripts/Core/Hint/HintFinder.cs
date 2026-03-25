@@ -32,10 +32,14 @@ namespace Core.Hint
 
         public static HintResult FindAdaptiveHint(BoardModel board, HintContext context)
         {
-            var strength = HintPolicy.GetStrength(context);
+            var bestHint = FindBestHint(board);
+            if (bestHint.Move == null) return new HintResult(null);
+            
+            var bestScore = bestHint.Explanation.Score;
+            var strength = HintPolicy.GetStrength(context, bestScore);
             if(strength ==  HintStrength.None) return new HintResult(null);
-            var result = FindBestHint(board);
-            return result.Move == null ? new HintResult(null) : new HintResult(result.Move, strength, result.Explanation);
+            
+            return new HintResult(bestHint.Move, strength, bestHint.Explanation);
         }
 
         private static HintExplanation BuildExplanation(BoardModel board, Move move, int bestScore)

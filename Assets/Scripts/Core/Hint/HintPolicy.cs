@@ -4,17 +4,24 @@ namespace Core.Hint
 {
     public static class HintPolicy
     {
-        public static HintStrength GetStrength(HintContext context)
+        public static HintStrength GetStrength(HintContext context, int bestMoveScore)
         {
-            if (context.ConsecutiveHintsShown >= 2)
-                return HintStrength.Strong;
-            if (context.IdleSeconds < 3) 
+            HintStrength baseStrength;
+            if (context.IdleSeconds < 3)
+                baseStrength = HintStrength.None;
+            else if (context.IdleSeconds < 7)
+                baseStrength = HintStrength.Soft;
+            else
+                baseStrength = HintStrength.Strong;
+
+            if (context.ConsecutiveHintsShown >= 2 && baseStrength != HintStrength.None)
+                baseStrength = HintStrength.Strong;
+
+            if (baseStrength == HintStrength.None)
                 return HintStrength.None;
-            if (context.IdleSeconds is >= 3 and < 7) 
-                return HintStrength.Soft;
-            if (context.IdleSeconds >= 7)
+            if (baseStrength == HintStrength.Soft && bestMoveScore >= 5)
                 return HintStrength.Strong;
-            throw new InvalidOperationException("Invalid hint strength");
+            return baseStrength;
         }
     }
 }
