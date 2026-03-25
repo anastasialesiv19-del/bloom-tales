@@ -139,22 +139,17 @@ namespace Tests.EditMode.Hint
         [Test]
         public void FindAdaptiveHint_ReturnsSoftHint_WhenBoardHasMoveAndIdleIsMedium()
         {
-            var board = new BoardModel(3, 4);
+            var board = new BoardModel(2, 4);
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
-            board.Set(0, 2, Piece.Normal(PieceColor.Green));
+            board.Set(0, 2, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
                             
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Green));
             board.Set(1, 2, Piece.Normal(PieceColor.Red));
             board.Set(1, 3, Piece.Normal(PieceColor.Green));
-                            
-            board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
-            board.Set(2, 1, Piece.Normal(PieceColor.Blue));
-            board.Set(2, 2, Piece.Normal(PieceColor.Green));
-            board.Set(2, 3, Piece.Normal(PieceColor.Red));
-
+            
             var context = new HintContext(5, 0);
             var result = HintFinder.FindAdaptiveHint(board, context);
             
@@ -387,6 +382,52 @@ namespace Tests.EditMode.Hint
 
             var moves = HintMoveCollector.Collect(board);
             Assert.AreEqual(moves.Count, moves.Distinct().Count());
+        }
+
+        [Test]
+        public void FindAdaptiveHint_WhenBestMoveScoreIsHigh_UpgradesSoftToStrong()
+        {
+            var board = new BoardModel(2, 4);
+            board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(0, 1, Piece.RowClear(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Green));
+            board.Set(0, 3, Piece.Normal(PieceColor.Red));
+                            
+            board.Set(1, 0, Piece.Normal(PieceColor.Red));
+            board.Set(1, 1, Piece.ColorBomb());
+            board.Set(1, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(1, 3, Piece.Normal(PieceColor.Blue));
+                            
+            var context = new HintContext(5f, 0);
+            var result = HintFinder.FindAdaptiveHint(board, context);
+            
+            Assert.IsNotNull(result.Move);
+            Assert.IsNotNull(result.Explanation);
+            Assert.GreaterOrEqual(result.Explanation.Score, 5);
+            Assert.AreEqual(HintStrength.Strong, result.Strength);
+        }
+        
+        [Test]
+        public void FindAdaptiveHint_WhenBestMoveScoreIsLow_KeepsSoft()
+        {
+            var board = new BoardModel(2, 4);
+            board.Set(0, 0, Piece.Normal(PieceColor.Green));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Green));
+            board.Set(0, 3, Piece.Normal(PieceColor.Red));
+                            
+            board.Set(1, 0, Piece.Normal(PieceColor.Red));
+            board.Set(1, 1, Piece.Normal(PieceColor.Green));
+            board.Set(1, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(1, 3, Piece.Normal(PieceColor.Blue));
+                            
+            var context = new HintContext(5f, 0);
+            var result = HintFinder.FindAdaptiveHint(board, context);
+            
+            Assert.IsNotNull(result.Move);
+            Assert.IsNotNull(result.Explanation);
+            Assert.Less(result.Explanation.Score, 5);
+            Assert.AreEqual(HintStrength.Soft, result.Strength);
         }
     }
 }
