@@ -27,7 +27,7 @@ namespace Core.Hint
             }
             
             var explanation = BuildExplanation(board, bestMove, bestScore);
-            return new HintResult(bestMove, HintStrength.Strong, explanation);
+            return new HintResult(bestMove, HintStrength.None, explanation);
         }
 
         public static HintResult FindAdaptiveHint(BoardModel board, HintContext context)
