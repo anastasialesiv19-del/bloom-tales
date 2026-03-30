@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Core.Board;
 using Core.Matching;
 using Core.Specials;
 
@@ -59,12 +60,12 @@ namespace Core.Hint
             if (!MoveFinder.CreatesMatch(board, move.From, move.To))
                 return false;
             
-            board.Swap(move.From, move.To);
-            var matches = MatchFinder.FindMatches(board);
-            var spawns = SpecialSpawnResolver.BuildDecisions(board, matches, move);
-            board.Swap(move.From, move.To);
-            
-            return spawns.Count > 0;
+            return BoardSimulation.WithTemporarySwap(board, move, () =>
+            {
+                var matches = MatchFinder.FindMatches(board);
+                var spawns = SpecialSpawnResolver.BuildDecisions(board, matches, move);
+                return spawns.Count > 0;
+            });
         }
     }
 }

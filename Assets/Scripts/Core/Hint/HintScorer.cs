@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Board;
 using Core.Matching;
 using Core.Specials;
 
@@ -22,14 +23,15 @@ namespace Core.Hint
 
         private static int ScoreMatchCreatingMove(BoardModel board, Move move)
         {
-            board.Swap(move.From, move.To);
-            var matches = MatchFinder.FindMatches(board);
-            int baseMatchScore = 0;
-            foreach (var match in matches)
-                baseMatchScore += match.Cells.Count;
-            var spawnBonus = GetSpawnBonus(board, matches, move);
-            board.Swap(move.From, move.To);
-            return baseMatchScore + spawnBonus;
+            return BoardSimulation.WithTemporarySwap(board, move, () => {
+
+                var matches = MatchFinder.FindMatches(board);
+                var baseMatchScore = 0;
+                foreach (var match in matches)
+                    baseMatchScore += match.Cells.Count;
+                var spawnBonus = GetSpawnBonus(board, matches, move);
+                return baseMatchScore + spawnBonus;
+            });
         }
 
         private static int GetSpawnBonus(BoardModel board, List<Match> matches, Move move)
