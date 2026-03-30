@@ -46,7 +46,8 @@ namespace Core.Generation
         {
             bool noMatches = MatchFinder.FindMatches(board).Count == 0;
             bool hasAnyPossibleMove = MoveFinder.HasAnyPossibleMove(board);
-            return noMatches && hasAnyPossibleMove;
+            bool hasAnyEmptyPiece = BoardResolver.HasEmptyCells(board);
+            return noMatches && hasAnyPossibleMove && !hasAnyEmptyPiece;
         }
     }
 }
