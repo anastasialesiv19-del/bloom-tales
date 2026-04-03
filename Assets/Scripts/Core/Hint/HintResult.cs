@@ -1,3 +1,4 @@
+using System;
 using Core.Matching;
 using JetBrains.Annotations;
 
@@ -20,6 +21,7 @@ namespace Core.Hint
         {
             Move = move;
             Strength = move == null ? HintStrength.None : strength;
+            if(move != null && explanation == null) throw new ArgumentNullException(nameof(explanation));
             Explanation = move == null ? null : explanation;
         }
     }
