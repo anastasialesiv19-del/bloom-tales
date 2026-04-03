@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Core.Turns
@@ -8,7 +9,7 @@ namespace Core.Turns
 
         public TurnTrace(IReadOnlyList<TurnPhaseTrace> phases)
         {
-            Phases = phases;
+            Phases = phases ?? throw new ArgumentNullException(nameof(phases));
         }
     }
 }
