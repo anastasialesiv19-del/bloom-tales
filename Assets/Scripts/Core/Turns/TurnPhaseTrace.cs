@@ -1,4 +1,5 @@
 using System;
+using Core.Contracts;
 
 namespace Core.Turns
 {
@@ -9,10 +10,14 @@ namespace Core.Turns
         public int SpawnedSpecials { get; }
         public int CascadeIndex { get; }
         public bool BoardShuffled { get; }
+        
+        public BoardSnapshot BoardAfterPhase { get; }
 
         public TurnPhaseTrace(TurnPhaseType type, int clearedCells = 0, 
-            int spawnedSpecials = 0, int cascadeIndex = 0, bool boardShuffled = false)
+            int spawnedSpecials = 0, int cascadeIndex = 0, bool boardShuffled = false, BoardSnapshot boardAfterPhase = null) : this()
         {
+            if (RequiresBoardSnapshot(type) && boardAfterPhase == null)
+                throw new ArgumentException("Mutating phase must has a snapshot.");
             if(clearedCells < 0)
                 throw new ArgumentException("Cleared cells cannot have negative values.");
             if(spawnedSpecials < 0)
@@ -30,6 +35,25 @@ namespace Core.Turns
             SpawnedSpecials = spawnedSpecials;
             CascadeIndex = cascadeIndex;
             BoardShuffled = boardShuffled;
+            BoardAfterPhase = boardAfterPhase;
+        }
+
+        private static bool RequiresBoardSnapshot(TurnPhaseType type)
+        {
+            switch (type)
+            {
+                case TurnPhaseType.SwapApplied:
+                case TurnPhaseType.DirectSpecialActivation:
+                case TurnPhaseType.PrimaryMatchResolved:
+                case TurnPhaseType.GravityApplied:
+                case TurnPhaseType.RefillApplied:
+                case TurnPhaseType.CascadeWaveResolved:
+                case TurnPhaseType.ShuffleApplied: return true;
+                case TurnPhaseType.InvalidSwap:
+                case TurnPhaseType.NoMatchCreated:
+                case TurnPhaseType.TurnCompleted:
+                default: return false;
+            }
         }
     }
 }
