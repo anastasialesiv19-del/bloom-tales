@@ -1,4 +1,5 @@
 using System;
+using Core.Contracts;
 using Core.Matching;
 
 namespace Core.Turns
@@ -14,12 +15,13 @@ namespace Core.Turns
         public int TotalClearedCells { get; }
         public Move Move { get; }
         public FailureReason FailureReason { get; }
-
         public TurnTrace Trace { get; }
+        public BoardSnapshot InitialBoardSnapshot { get; }
+        public BoardSnapshot FinalBoardSnapshot { get; }
 
         public TurnResult(bool wasSwapValid, bool wasApplied, bool wasShuffled, bool createdMatch,
             bool boardWasPlayableBeforeMove, int cascadeCount,
-            int totalClearedCells, Move move, FailureReason failureReason, TurnTrace trace)
+            int totalClearedCells, Move move, FailureReason failureReason, TurnTrace trace, BoardSnapshot initialBoardSnapshot, BoardSnapshot finalBoardSnapshot)
         {
             if (failureReason != FailureReason.None)
             {
@@ -36,6 +38,11 @@ namespace Core.Turns
             if (createdMatch && !wasApplied)
                 throw new ArgumentException("Turn with created match must be applied.");
             
+            if(initialBoardSnapshot == null)
+                throw new ArgumentNullException(nameof(initialBoardSnapshot));
+            if(finalBoardSnapshot == null)
+                throw new ArgumentNullException(nameof(finalBoardSnapshot));
+            
             WasSwapValid = wasSwapValid;
             WasApplied = wasApplied;
             WasShuffled = wasShuffled;
@@ -46,6 +53,8 @@ namespace Core.Turns
             Move = move;
             FailureReason = failureReason;
             Trace = trace;
+            InitialBoardSnapshot = initialBoardSnapshot;
+            FinalBoardSnapshot = finalBoardSnapshot;
         }
     }
 
