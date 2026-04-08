@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Core.Board;
+using Core.Contracts;
 using Core.Matching;
 using Core.Specials;
 
@@ -9,8 +10,9 @@ namespace Core.Hint
     {
         public static HintResult FindBestHint(BoardModel board)
         {
+            var snapshot = BoardSnapshotFactory.Capture(board);
             var possibleMoves = HintMoveCollector.Collect(board);
-            if (possibleMoves.Count == 0) return new HintResult(null);
+            if (possibleMoves.Count == 0) return new HintResult(null, snapshot);
 
             var bestMove = possibleMoves[0];
             int bestScore = HintScorer.ScoreMove(board, bestMove);
@@ -28,19 +30,19 @@ namespace Core.Hint
             }
             
             var explanation = BuildExplanation(board, bestMove, bestScore);
-            return new HintResult(bestMove, HintStrength.None, explanation);
+            return new HintResult(bestMove, HintStrength.None, explanation, snapshot);
         }
 
         public static HintResult FindAdaptiveHint(BoardModel board, HintContext context)
         {
             var bestHint = FindBestHint(board);
-            if (bestHint.Move == null) return new HintResult(null);
+            if (bestHint.Move == null) return new HintResult(null, bestHint.BoardSnapshot);
             
             var bestScore = bestHint.Explanation.Score;
             var strength = HintPolicy.GetStrength(context, bestScore);
-            if(strength ==  HintStrength.None) return new HintResult(null);
+            if(strength ==  HintStrength.None) return new HintResult(null, bestHint.BoardSnapshot);
             
-            return new HintResult(bestHint.Move, strength, bestHint.Explanation);
+            return new HintResult(bestHint.Move, strength, bestHint.Explanation, bestHint.BoardSnapshot);
         }
 
         private static HintExplanation BuildExplanation(BoardModel board, Move move, int bestScore)
