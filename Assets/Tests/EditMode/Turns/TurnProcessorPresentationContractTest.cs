@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using Core.Contracts;
+using Core.Generation;
 using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
+using Tests.EditMode.TestDoubles;
 
 namespace Tests.EditMode.Turns
 {
@@ -125,9 +127,30 @@ namespace Tests.EditMode.Turns
             Assert.IsTrue(AssertBoardEqualsSnapshot(board, finalSnapshot), $"{board.ToDebugString()}/n {turnResult.FinalBoardSnapshot.ToDebugString()}");
         }
 
-        [Test][Ignore("сценарій WasShuffled == true потребує контрольованого refill з поточним random цей тест крихкий.")]
+        [Test]
         public void TryProcessMove_WhenShuffleOccurs_CapturesShuffleSnapshot()
         {
+            var board = new BoardModel(3, 3);
+
+            board.Set(0, 0, Piece.ColorBomb());
+            board.Set(0, 1, Piece.ColorBomb());
+            board.Set(0, 2, Piece.Normal(PieceColor.Red));
+
+            board.Set(1, 0, Piece.Normal(PieceColor.Green));
+            board.Set(1, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(1, 2, Piece.Normal(PieceColor.Yellow));
+
+            board.Set(2, 0, Piece.Normal(PieceColor.Red));
+            board.Set(2, 1, Piece.Normal(PieceColor.Green));
+            board.Set(2, 2, Piece.Normal(PieceColor.Blue));
+            
+            var move = new Move(new Pos(0, 0), new Pos(0, 1));
+            var provider = new SequenceRandomProvider(new[] { 0, 0, 1, 0, 0, 1, 1, 3, 3, 0, 0, 0, 0, 0, 0, 0, 1 });
+            var turnResult = TurnProcessor.TryProcessMove(board, move, provider);
+
+            Assert.IsNotNull(turnResult.Trace.Phases.First(p => p.Type == TurnPhaseType.ShuffleApplied).BoardAfterPhase);
+            Assert.AreEqual(turnResult.Trace.Phases.First(p => p.Type == TurnPhaseType.ShuffleApplied).BoardAfterPhase.ToDebugString(), turnResult.FinalBoardSnapshot.ToDebugString());
+            Assert.AreEqual(turnResult.FinalBoardSnapshot.ToDebugString(), board.ToDebugString());
         }
 
         [Test]
