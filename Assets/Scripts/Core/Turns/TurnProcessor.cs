@@ -5,6 +5,7 @@ using Core.Board;
 using Core.Contracts;
 using Core.Generation;
 using Core.Matching;
+using Core.Randomness;
 using Core.Specials;
 
 namespace Core.Turns
@@ -12,6 +13,11 @@ namespace Core.Turns
     public static class TurnProcessor
     {
         public static TurnResult TryProcessMove(BoardModel board, Move move)
+        {
+            return TryProcessMove(board, move, null);
+        }
+
+        public static TurnResult TryProcessMove(BoardModel board, Move move, IRandomProvider provider)
         {
             var initialBoardSnapshot = BoardSnapshotFactory.Capture(board);
             
@@ -56,12 +62,12 @@ namespace Core.Turns
             var gravitySnapshot = BoardSnapshotFactory.Capture(board);
             tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.GravityApplied, boardAfterPhase: gravitySnapshot));
             
-            BoardResolver.Refill(board);
+            BoardResolver.Refill(board, provider);
             var refillSnapshot = BoardSnapshotFactory.Capture(board);
             tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.RefillApplied, boardAfterPhase: refillSnapshot));
             
             var cascadeResult = CascadeResolver.Resolve(
-                board,
+                board, provider,
                 (cascadeIndex, clearedCells, waveSnapshot) =>
                 {
                     tracePhases.Add(
@@ -76,7 +82,7 @@ namespace Core.Turns
             bool wasShuffled = false;
             if (!BoardShuffler.IsPlayableBoard(board))
             {
-                BoardShuffler.Shuffle(board);
+                BoardShuffler.Shuffle(board, provider);
                 var shuffleSnapshot = BoardSnapshotFactory.Capture(board);
                 wasShuffled = true;
                 tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.ShuffleApplied, boardShuffled: true, boardAfterPhase: shuffleSnapshot));
@@ -86,8 +92,9 @@ namespace Core.Turns
             tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.TurnCompleted));
                         return new TurnResult(true, true, wasShuffled, createdMatch, isPlayable,
                 cascadeResult.CascadeCount, totalCleared, move, FailureReason.None, new TurnTrace(tracePhases), initialBoardSnapshot, finalBoardSnapshot);
-        }
 
+        }
+        
         private static TurnResult CreateFailureResult(List<TurnPhaseTrace> tracePhases, Move move, bool boardWasPlayableBeforeMove, FailureReason failureReason, bool wasSwapValid, bool wasApplied, BoardSnapshot initialBoardSnapshot, BoardSnapshot finalBoardSnapshot)
         {
             return new TurnResult(wasSwapValid, wasApplied, false, false, boardWasPlayableBeforeMove,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Core.Board;
 using Core.Contracts;
 using Core.Matching;
+using Core.Randomness;
 
 namespace Core.Matching
 {
@@ -10,10 +11,16 @@ namespace Core.Matching
     {
         public static CascadeResult Resolve(BoardModel board)
         {
-            return Resolve(board, null);
+            return Resolve(board, null, null);
         }
 
         public static CascadeResult Resolve(BoardModel board, Action<int, int, BoardSnapshot> onWaveResolved)
+        {
+            return Resolve(board, null, onWaveResolved);
+        }
+
+        public static CascadeResult Resolve(BoardModel board, IRandomProvider provider,
+            Action<int, int, BoardSnapshot> onWaveResolved = null)
         {
             int cascadeCount = 0;
             int totalClearedCells = 0;
@@ -30,7 +37,7 @@ namespace Core.Matching
                 hadAnyMatches = true;
                 var cleared = BoardResolver.ClearMatches(board, matches);
                 BoardResolver.ApplyGravity(board);
-                BoardResolver.Refill(board);
+                BoardResolver.Refill(board,  provider);
 
                 cascadeCount++;
                 totalClearedCells += cleared;
