@@ -1,7 +1,9 @@
 using System.Linq;
+using Core.Generation;
 using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
+using Tests.EditMode.TestDoubles;
 
 namespace Tests.EditMode.Turns
 {
@@ -19,7 +21,7 @@ namespace Tests.EditMode.Turns
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Green));
             board.Set(1, 2, Piece.Normal(PieceColor.Red));
-            
+
             board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
@@ -63,7 +65,7 @@ namespace Tests.EditMode.Turns
 
             var move = new Move(new Pos(1, 1), new Pos(1, 2));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
-            
+
             Assert.IsFalse(turnResult.WasApplied);
             Assert.AreEqual(FailureReason.NoMatchCreated, turnResult.FailureReason);
             Assert.AreEqual(1, turnResult.Trace.Phases.Count);
@@ -99,7 +101,7 @@ namespace Tests.EditMode.Turns
 
             var move = new Move(new Pos(1, 2), new Pos(1, 3));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
-            
+
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
             Assert.IsTrue(turnResult.Trace.Phases.Any(p => p.Type == TurnPhaseType.SwapApplied));
@@ -131,10 +133,10 @@ namespace Tests.EditMode.Turns
 
             var move = new Move(new Pos(2, 2), new Pos(1, 2));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
-            
+
             var primaryPhase = turnResult.Trace.Phases
                 .Single(p => p.Type == TurnPhaseType.PrimaryMatchResolved);
-            
+
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
             Assert.IsTrue(turnResult.Trace.Phases.Any(p => p.Type == TurnPhaseType.PrimaryMatchResolved));
@@ -166,7 +168,7 @@ namespace Tests.EditMode.Turns
 
             var move = new Move(new Pos(2, 2), new Pos(1, 2));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
-            
+
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsFalse(turnResult.CreatedMatch);
             Assert.IsFalse(turnResult.Trace.Phases.Any(p => p.Type == TurnPhaseType.SwapApplied));
@@ -198,18 +200,18 @@ namespace Tests.EditMode.Turns
 
             var move = new Move(new Pos(1, 1), new Pos(2, 1));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
-            
+
             var cascadePhases = turnResult.Trace.Phases
                 .Where(p => p.Type == TurnPhaseType.CascadeWaveResolved)
                 .ToList();
-            
+
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
             Assert.IsTrue(turnResult.CascadeCount > 0);
             Assert.IsTrue(turnResult.Trace.Phases.Any(p => p.Type == TurnPhaseType.GravityApplied));
             Assert.IsTrue(turnResult.Trace.Phases.Any(p => p.Type == TurnPhaseType.CascadeWaveResolved));
             Assert.AreEqual(turnResult.CascadeCount, cascadePhases.Count);
-            
+
             for (int i = 0; i < cascadePhases.Count; i++)
             {
                 Assert.AreEqual(i + 1, cascadePhases[i].CascadeIndex);
@@ -218,10 +220,29 @@ namespace Tests.EditMode.Turns
         }
 
         [Test]
-        [Ignore("сценарій WasShuffled == true потребує контрольованого refill з поточним random цей тест крихкий.")]
         public void TryProcessMove_ShuffleAfterResolution_TraceContainsShuffleApplied()
         {
-            
+            var board = new BoardModel(3, 3);
+
+            board.Set(0, 0, Piece.ColorBomb());
+            board.Set(0, 1, Piece.ColorBomb());
+            board.Set(0, 2, Piece.Normal(PieceColor.Red));
+
+            board.Set(1, 0, Piece.Normal(PieceColor.Green));
+            board.Set(1, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(1, 2, Piece.Normal(PieceColor.Yellow));
+
+            board.Set(2, 0, Piece.Normal(PieceColor.Red));
+            board.Set(2, 1, Piece.Normal(PieceColor.Green));
+            board.Set(2, 2, Piece.Normal(PieceColor.Blue));
+
+            var move = new Move(new Pos(0, 0), new Pos(0, 1));
+            var provider = new SequenceRandomProvider(new[] { 0, 0, 1, 0, 0, 1, 1, 3, 3, 0, 0, 0, 0, 0, 0, 0, 1 });
+            var turnResult = TurnProcessor.TryProcessMove(board, move, provider);
+
+            Assert.AreEqual(turnResult.Trace.Phases.Count(p => p.Type == TurnPhaseType.ShuffleApplied), 1);
+            Assert.IsNotNull(turnResult.Trace.Phases.First(p => p.Type == TurnPhaseType.ShuffleApplied)
+                .BoardAfterPhase);
         }
     }
 }
