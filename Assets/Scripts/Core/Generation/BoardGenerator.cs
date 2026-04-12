@@ -2,26 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Matching;
+using Core.Randomness;
 
 
 namespace Core.Generation
 {
     public static class BoardGenerator
     {
-        static Random _random = new Random();
         private static readonly PieceColor[] AllSpawnable =
             Enum.GetValues(typeof(PieceColor))
                 .Cast<PieceColor>()
                 .ToArray();
         
-        public static BoardModel Generate(int height, int width)
+        public static BoardModel Generate(int height, int width, IRandomProvider provider = null)
         {
-            for (int attempt = 0; attempt < 20; attempt++)
+            var rng = provider ?? new SystemRandomProvider();
+            for (var attempt = 0; attempt < 20; attempt++)
             {
                 var board = new BoardModel(height,width);
                 foreach (var piecePos in board.AllPositions())
                 {
-                    var piece = PieceForCell(piecePos.Row, piecePos.Col, board);
+                    var piece = PieceForCell(piecePos.Row, piecePos.Col, board, rng);
                     board.Set(piecePos.Row, piecePos.Col, piece);
                 }
                 
@@ -30,9 +31,8 @@ namespace Core.Generation
             throw new InvalidOperationException("Board generation failed");
         }
 
-        private static Piece PieceForCell(int row, int col, BoardModel board)
+        private static Piece PieceForCell(int row, int col, BoardModel board, IRandomProvider rng)
         {
-            List<PieceColor> allowedColors = new List<PieceColor>();
             List<PieceColor> forbiddenColors = new List<PieceColor>();
             
             if (row >= 2)
@@ -66,15 +66,9 @@ namespace Core.Generation
                     }
                 }
             }
-            
-            foreach (PieceColor color in AllSpawnable)
-            {
-                if (!forbiddenColors.Contains(color))
-                { 
-                    allowedColors.Add(color);
-                }
-            }
-            var allowedIndex = allowedColors.Count > 0 ? _random.Next(allowedColors.Count) : throw new InvalidOperationException();
+
+            var allowedColors = AllSpawnable.Where(color => !forbiddenColors.Contains(color)).ToList();
+            var allowedIndex = allowedColors.Count > 0 ? rng.Next(allowedColors.Count) : throw new InvalidOperationException();
             return Piece.Normal(allowedColors[allowedIndex]);
         }
     }

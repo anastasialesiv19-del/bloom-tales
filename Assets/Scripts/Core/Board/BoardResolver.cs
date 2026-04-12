@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Matching;
+using Core.Randomness;
 using Core.Specials;
 
 namespace Core.Board
 {
     public static class BoardResolver
     {
-        private static readonly Random _random = new Random();
-
         private static readonly PieceColor[] AllSpawnable =
             Enum.GetValues(typeof(PieceColor))
                 .Cast<PieceColor>()
@@ -73,14 +72,16 @@ namespace Core.Board
             }
         }
 
-        public static void Refill(BoardModel board)
+        public static void Refill(BoardModel board, IRandomProvider provider = null)
         {
+            var rng = provider ?? new SystemRandomProvider();
+            
             foreach (var pos in board.AllPositions())
             {
                 if (!board.Get(pos.Row, pos.Col).IsEmpty) continue;
 
                 var allowedIndex = AllSpawnable.Length > 0
-                    ? _random.Next(AllSpawnable.Length)
+                    ? rng.Next(AllSpawnable.Length)
                     : throw new InvalidOperationException();
                 var piece = Piece.Normal(AllSpawnable[allowedIndex]);
                 board.Set(pos.Row, pos.Col, piece);
@@ -89,13 +90,7 @@ namespace Core.Board
 
         public static bool HasEmptyCells(BoardModel board)
         {
-            foreach (Pos pos in board.AllPositions())
-            {
-                if (board.Get(pos.Row, pos.Col).IsEmpty)
-                    return true;
-            }
-
-            return false;
+            return board.AllPositions().Any(pos => board.Get(pos.Row, pos.Col).IsEmpty);
         }
     }
 }
