@@ -34,7 +34,8 @@ namespace Core.Presentation
                 shuffleBoard = phase.BoardAfterPhase ?? throw new InvalidOperationException("ShuffleBoard is null");
             
             var cascadePhases = TurnTraceQueries.GetCascadePhases(turnResult.Trace);
-            var cascadeBoards = cascadePhases.Select(phaseTrace => phaseTrace.BoardAfterPhase ?? throw new ArgumentNullException("turnResult", "Cascade is null")).ToList();
+            var cascadeBoards = cascadePhases.Select(phaseTrace => phaseTrace.BoardAfterPhase ?? 
+                                                                   throw new InvalidOperationException("Cascade snapshots are null")).ToList();
             return new TurnPresentationModel(turnResult.InitialBoardSnapshot, turnResult.FinalBoardSnapshot, turnResult.WasApplied,
                 turnResult.WasShuffled, turnResult.CreatedMatch, turnResult.TotalClearedCells, swapBoard, directActivationBoard, 
                 primaryResolveBoard, gravityBoard, refillBoard, shuffleBoard, cascadeBoards);
