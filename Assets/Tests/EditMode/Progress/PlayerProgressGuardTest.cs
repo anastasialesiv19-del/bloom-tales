@@ -9,13 +9,13 @@ namespace Tests.EditMode.Progress
         [Test]
         public void Ctor_WhenAdaptiveHintsIsNull_Throws()
         {
-            Assert.Throws<ArgumentException>(() => new PlayerProgress(null, 0));
+            Assert.Throws<ArgumentNullException>(() => new PlayerProgress(null, 0));
         }
 
         [Test]
         public void Ctor_WhenCountersAreNegative_Throws()
         {
-            Assert.Throws<InvalidOperationException>(() => new PlayerProgress(new AdaptiveHintState(0, 0), -1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new PlayerProgress(new AdaptiveHintState(0, 0), -1));
         }
     }
 }

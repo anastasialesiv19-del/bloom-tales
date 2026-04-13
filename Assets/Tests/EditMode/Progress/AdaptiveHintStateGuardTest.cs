@@ -9,7 +9,8 @@ namespace Tests.EditMode.Progress
         [Test]
         public void Ctor_WhenValuesAreNegative_Throws()
         {
-            Assert.Throws<InvalidOperationException>(() => new AdaptiveHintState(0, -1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new AdaptiveHintState(0, -1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new AdaptiveHintState(-1, 0));
         }
     }
 }

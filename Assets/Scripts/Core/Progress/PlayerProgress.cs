@@ -10,7 +10,8 @@ namespace Core.Progress
         public PlayerProgress(AdaptiveHintState adaptiveHints, int turnsPlayed)
         {
             AdaptiveHints = adaptiveHints ?? throw new ArgumentNullException(nameof(adaptiveHints), "Adaptive Hints cannot be null.");
-            TurnsPlayed = turnsPlayed >= 0 ? turnsPlayed : throw new ArgumentOutOfRangeException(nameof(turnsPlayed), "Invalid Turns Played hint shown.");
+            TurnsPlayed = turnsPlayed >= 0 ? turnsPlayed : 
+                throw new ArgumentOutOfRangeException(nameof(turnsPlayed), "Invalid Turns Played hint shown.");
         }
     }
 }
