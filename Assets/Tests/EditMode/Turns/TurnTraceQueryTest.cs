@@ -201,6 +201,20 @@ namespace Tests.EditMode.Turns
             Assert.IsFalse(result);
             Assert.IsNull(snapshot);
         }
+
+        [Test]
+        public void GetLatestBoardSnapshot_WhenNoSnapshotExists_Throws()
+        {
+            var phases = new List<TurnPhaseTrace>
+            {
+                new(TurnPhaseType.InvalidSwap),
+                new(TurnPhaseType.NoMatchCreated),
+                new(TurnPhaseType.TurnCompleted)
+            };
+            
+            var trace = new TurnTrace(phases);
+            Assert.Throws<InvalidOperationException>(() => TurnTraceQueries.GetLatestBoardSnapshot(trace));
+        }
         
         private bool AssertSnapshotsEqual(BoardSnapshot expectedSnapshot, BoardSnapshot actualSnapshot)
         {

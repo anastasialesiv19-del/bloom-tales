@@ -56,7 +56,8 @@ namespace Core.Turns
         
         public static BoardSnapshot GetLatestBoardSnapshot(TurnTrace trace)
         {
-            return TryGetLatestBoardSnapshot(trace, out var boardSnapshot) ? boardSnapshot : null;
+            return TryGetLatestBoardSnapshot(trace, out var boardSnapshot) ? boardSnapshot : 
+                throw new InvalidOperationException("No board snapshot found.");
         }
     }
 }
