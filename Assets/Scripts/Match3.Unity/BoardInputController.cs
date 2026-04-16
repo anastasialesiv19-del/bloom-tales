@@ -10,9 +10,13 @@ namespace Match3.Unity
 
         public event Action<Move> MoveSubmitted;
         public event Action<Pos?> SelectionChanged;
+        public Func<bool> CanAcceptInput { get; set; }
 
         public void OnCellClicked(int row, int col)
         {
+            if (CanAcceptInput != null && !CanAcceptInput())
+                return;
+            
             var clicked = new Pos(row, col);
             if (!selectedCell.HasValue)
             {
@@ -32,7 +36,6 @@ namespace Match3.Unity
             selectedCell = null;
             SelectionChanged?.Invoke(null);
             MoveSubmitted?.Invoke(move);
-            Debug.Log($"InputController got click [{row},{col}]");
         }
     }
 }
