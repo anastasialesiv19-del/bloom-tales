@@ -31,4 +31,5 @@ UserSettings/
 .DS_Store
 Thumbs.db
 
-
+# Unity generated settings
+ProjectSettings/SceneTemplateSettings.json
