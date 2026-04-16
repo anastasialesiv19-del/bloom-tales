@@ -7,11 +7,11 @@ namespace Match3.Unity
     public class GameBootstrap : MonoBehaviour
     {
         [SerializeField] private BoardRenderer boardRenderer;
+        [SerializeField] private TurnPlaybackController turnPlaybackController;
         [SerializeField] private int startHeight = 8;
         [SerializeField] private int startWidth = 8;
         private GameSession session;
         private BoardInputController inputController;
-        
 
         public void Start()
         {
@@ -20,6 +20,7 @@ namespace Match3.Unity
             boardRenderer.Render(initialSnapshot);
 
             inputController = new BoardInputController();
+            inputController.CanAcceptInput = () => !turnPlaybackController.IsPlaying;
             boardRenderer.CellClicked += inputController.OnCellClicked;
             inputController.MoveSubmitted += ApplyMove;
             inputController.SelectionChanged += boardRenderer.SetSelection;
@@ -28,7 +29,7 @@ namespace Match3.Unity
         private void ApplyMove(Move move)
         {
             var presentation = session.TryApplyMove(move);
-            boardRenderer.Render(presentation.FinalBoard);
+            turnPlaybackController.Play(presentation);
         }
     }
 }
