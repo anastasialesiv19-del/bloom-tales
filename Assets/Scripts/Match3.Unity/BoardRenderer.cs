@@ -1,4 +1,6 @@
+using System;
 using Core.Contracts;
+using Core.Matching;
 using UnityEngine;
 
 namespace Match3.Unity
@@ -10,6 +12,7 @@ namespace Match3.Unity
         private BoardCellView[,] cells;
         private int _height;
         private int _width;
+        public event Action<int, int> CellClicked;
 
         public void BuildGrid(int height, int width)
         {
@@ -23,6 +26,7 @@ namespace Match3.Unity
                 var cell = Instantiate(cellPrefab, gridRoot);
                 cell.Initialize(row, col);
                 cells[row, col] = cell;
+                cell.Clicked += HandleCellClicked;
             }
         }
         
@@ -35,6 +39,25 @@ namespace Match3.Unity
             for (var col = 0; col < _width; col++)
                 cells[row, col].SetPiece(snapshot.Get(row, col));
             
+        }
+
+        public void SetSelection(Pos? selected)
+        {
+            for (var row = 0; row < cells.GetLength(0); row++)
+            for (var col = 0; col < cells.GetLength(1); col++)
+            {
+                if (selected.HasValue && selected.Value.Row == row && selected.Value.Col == col)
+                    cells[row, col].SetSelected(true);
+                else
+                    cells[row, col].SetSelected(false);
+            }
+            
+        }
+        
+        private void HandleCellClicked(int row, int col)
+        {
+            Debug.Log($"Renderer got click [{row},{col}]");
+            CellClicked?.Invoke(row, col);
         }
     }
 }
