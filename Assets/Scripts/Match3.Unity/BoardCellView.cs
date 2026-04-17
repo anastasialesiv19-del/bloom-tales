@@ -12,6 +12,7 @@ namespace Match3.Unity
         [SerializeField] private TMP_Text pieceText;
         [SerializeField] private Image pieceImage; //or SpriteRenderer
         [SerializeField] private Image selectionHighlight;
+        [SerializeField] private Image hintHighlight;
         private PieceSpriteLibrary spriteLibrary;
         
         public int Row { get; private set; }
@@ -25,6 +26,7 @@ namespace Match3.Unity
             Col = col;
             this.spriteLibrary = spriteLibrary;
             selectionHighlight.enabled = false;
+            hintHighlight.enabled = false;
         }
 
         public void SetPiece(Piece piece)
@@ -62,6 +64,11 @@ namespace Match3.Unity
         public void SetSelected(bool isSelected)
         {
             selectionHighlight.enabled = isSelected;
+        }
+
+        public void SetHint(bool isHinted)
+        {
+            hintHighlight.enabled = isHinted;
         }
     }
 }

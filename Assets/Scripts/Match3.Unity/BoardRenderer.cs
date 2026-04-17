@@ -41,11 +41,16 @@ namespace Match3.Unity
                 cells[row, col].SetPiece(snapshot.Get(row, col));
             
         }
+        
+        private void HandleCellClicked(int row, int col)
+        {
+            CellClicked?.Invoke(row, col);
+        }
 
         public void SetSelection(Pos? selected)
         {
-            for (var row = 0; row < cells.GetLength(0); row++)
-            for (var col = 0; col < cells.GetLength(1); col++)
+            for (var row = 0; row < _height; row++)
+            for (var col = 0; col < _width; col++)
             {
                 if (selected.HasValue && selected.Value.Row == row && selected.Value.Col == col)
                     cells[row, col].SetSelected(true);
@@ -54,10 +59,26 @@ namespace Match3.Unity
             }
             
         }
-        
-        private void HandleCellClicked(int row, int col)
+
+        public void SetHint(Move? move)
         {
-            CellClicked?.Invoke(row, col);
+            ClearHintInternal();
+
+            if (!move.HasValue) return;
+            
+            var from = move.Value.From;
+            var to = move.Value.To;
+            cells[from.Row, from.Col].SetHint(true);
+            cells[to.Row, to.Col].SetHint(true);
+        }
+
+        private void ClearHintInternal()
+        {
+            for (var row = 0; row < _height; row++)
+            for (var col = 0; col < _width; col++)
+            {
+                cells[row, col].SetHint(false);
+            }
         }
     }
 }
