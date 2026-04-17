@@ -1,7 +1,9 @@
 using Core.Contracts;
 using Core.Generation;
+using Core.Hint;
 using Core.Matching;
 using Core.Presentation;
+using Core.Progress;
 using Core.Turns;
 
 namespace Match3.Unity
@@ -29,31 +31,33 @@ namespace Match3.Unity
            LastPresentation = presentation;
            return presentation;
         }
-        
-        public BoardSnapshot StartDebugGame()
+
+        public HintResult GetBestHint()
         {
-            var board = new BoardModel(3, 4);
-
-            board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
-            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
-            board.Set(0, 2, Piece.Normal(PieceColor.Yellow));
-            board.Set(0, 3, Piece.Normal(PieceColor.Red));
-
-            board.Set(1, 0, Piece.Normal(PieceColor.Green));
-            board.Set(1, 1, Piece.Normal(PieceColor.Green));
-            board.Set(1, 2, Piece.Normal(PieceColor.Blue));
-            board.Set(1, 3, Piece.Normal(PieceColor.Green));
-
-            board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
-            board.Set(2, 1, Piece.Normal(PieceColor.Blue));
-            board.Set(2, 2, Piece.Normal(PieceColor.Yellow));
-            board.Set(2, 3, Piece.Normal(PieceColor.Red));
-
-            CurrentBoard = board;
-            LastTurnResult = null;
-            LastPresentation = null;
-
-            return BoardSnapshotFactory.Capture(CurrentBoard);
+            return HintFinder.FindBestHint(CurrentBoard);
         }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     }
 }
