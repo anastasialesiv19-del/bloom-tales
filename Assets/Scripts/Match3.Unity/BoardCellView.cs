@@ -10,39 +10,57 @@ namespace Match3.Unity
     public class BoardCellView : MonoBehaviour, IPointerClickHandler
     {
         [SerializeField] private TMP_Text pieceText;
-        [SerializeField] private Image background; //or SpriteRenderer
+        [SerializeField] private Image pieceImage; //or SpriteRenderer
         [SerializeField] private Image selectionHighlight;
+        private PieceSpriteLibrary spriteLibrary;
         
         public int Row { get; private set; }
         public int Col { get; private set; }
         
         public event Action<int, int> Clicked;
 
-        public void Initialize(int row, int col)
+        public void Initialize(int row, int col, PieceSpriteLibrary spriteLibrary)
         {
             Row = row;
             Col = col;
+            this.spriteLibrary = spriteLibrary;
             selectionHighlight.enabled = false;
         }
 
         public void SetPiece(Piece piece)
         {
-            var viewData = PieceViewMapper.Map(piece);
-            
-            pieceText.text = viewData.Symbol;
-            pieceText.color = Color.black;
-            background.color = viewData.Color;
+            var viewData = PieceViewMapper.Map(piece, spriteLibrary);
+
+            if (viewData.Sprite != null)
+            {
+                pieceImage.enabled = true;
+                pieceImage.sprite = viewData.Sprite;
+            }
+            else
+            {
+                pieceImage.enabled = false;
+                pieceImage.sprite = null;
+            }
+
+            if (string.IsNullOrEmpty(viewData.Symbol))
+            {
+                pieceText.text = "";
+                pieceText.enabled = false;
+            }
+            else
+            {
+                pieceText.text = viewData.Symbol;
+                pieceText.enabled = true;
+            }
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log($"Clicked cell [{Row},{Col}]");
             Clicked?.Invoke(Row, Col);
         }
 
         public void SetSelected(bool isSelected)
         {
-            Debug.Log($"Cell [{Row},{Col}] selected = {isSelected}");
             selectionHighlight.enabled = isSelected;
         }
     }

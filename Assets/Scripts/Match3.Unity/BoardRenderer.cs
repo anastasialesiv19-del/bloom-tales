@@ -9,6 +9,7 @@ namespace Match3.Unity
     {
         [SerializeField] private BoardCellView cellPrefab;
         [SerializeField] private Transform gridRoot;
+        [SerializeField] private PieceSpriteLibrary pieceSpriteLibrary;
         private BoardCellView[,] cells;
         private int _height;
         private int _width;
@@ -24,7 +25,7 @@ namespace Match3.Unity
             for (var col = 0; col < width; col++)
             {
                 var cell = Instantiate(cellPrefab, gridRoot);
-                cell.Initialize(row, col);
+                cell.Initialize(row, col, pieceSpriteLibrary);
                 cells[row, col] = cell;
                 cell.Clicked += HandleCellClicked;
             }
@@ -56,7 +57,6 @@ namespace Match3.Unity
         
         private void HandleCellClicked(int row, int col)
         {
-            Debug.Log($"Renderer got click [{row},{col}]");
             CellClicked?.Invoke(row, col);
         }
     }
