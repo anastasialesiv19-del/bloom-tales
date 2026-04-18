@@ -1,6 +1,7 @@
 using System.Collections;
 using Core.Matching;
 using Core.Progress;
+using Match3.Unity.Save;
 using UnityEngine;
 
 namespace Match3.Unity
@@ -12,16 +13,28 @@ namespace Match3.Unity
         [SerializeField] private int startHeight = 8;
         [SerializeField] private int startWidth = 8;
         [SerializeField] private float idleHintDelaySeconds = 6f;
+       
         private GameSession session;
         private BoardInputController inputController;
+        
         private HintController hintController;
         private IdleTracker idleTracker;
         private int consecutiveHintsShown;
         private int totalHintsShown;
         private bool hintShownForCurrentIdle;
 
+        private IProgressStore progressStore;
+        private int turnsPlayed;
+        
+
         public void Start()
         {
+            progressStore = new JsonProgressStore();
+            var progress = progressStore.Load(); 
+            consecutiveHintsShown = 0;
+            totalHintsShown = progress.AdaptiveHints.TotalHintsShown;
+            turnsPlayed = progress.TurnsPlayed;
+            
             session = new GameSession();
             idleTracker = new IdleTracker();
             
@@ -39,6 +52,23 @@ namespace Match3.Unity
             inputController.SelectionChanged += boardRenderer.SetSelection;
         }
 
+        private void ApplyMove(Move move)
+        {
+            hintController.ClearHint();
+            idleTracker.ResetIdle();
+            hintShownForCurrentIdle = false;
+            consecutiveHintsShown = 0;
+            
+            var presentation = session.TryApplyMove(move);
+            if (presentation.WasApplied)
+            {
+                turnsPlayed++;
+                consecutiveHintsShown = 0;
+                SaveProgress();
+            }
+            turnPlaybackController.Play(presentation);
+        }
+        
         private void Update()
         {
             if (turnPlaybackController.IsPlaying)
@@ -53,17 +83,6 @@ namespace Match3.Unity
             if (idleTracker.IdleSeconds < idleHintDelaySeconds) return;
             ShowAdaptiveHintInternal(idleTracker.IdleSeconds);
             hintShownForCurrentIdle = true;
-        }
-
-        private void ApplyMove(Move move)
-        {
-            hintController.ClearHint();
-            idleTracker.ResetIdle();
-            hintShownForCurrentIdle = false;
-            consecutiveHintsShown = 0;
-            
-            var presentation = session.TryApplyMove(move);
-            turnPlaybackController.Play(presentation);
         }
         
         private void HandleBoardCellClicked(int row, int col)
@@ -93,11 +112,16 @@ namespace Match3.Unity
             {
                 consecutiveHintsShown++;
                 totalHintsShown++;
+                SaveProgress();
             }
             else
-            {
                 consecutiveHintsShown = 0;
-            }
+        }
+
+        private void SaveProgress()
+        {
+            var progress = new PlayerProgress(new AdaptiveHintState(0, totalHintsShown), turnsPlayed);
+            progressStore.Save(progress); 
         }
     }
 }
