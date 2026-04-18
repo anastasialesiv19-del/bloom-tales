@@ -1,7 +1,9 @@
 using System.Collections;
 using Core.Matching;
 using Core.Progress;
+using Match3.Unity.GameMode;
 using Match3.Unity.Save;
+using TMPro;
 using UnityEngine;
 
 namespace Match3.Unity
@@ -13,6 +15,8 @@ namespace Match3.Unity
         [SerializeField] private int startHeight = 8;
         [SerializeField] private int startWidth = 8;
         [SerializeField] private float idleHintDelaySeconds = 6f;
+        [SerializeField] private TMP_Text timerText;
+        [SerializeField] private float totalGameSeconds = 120f;
        
         private GameSession session;
         private BoardInputController inputController;
@@ -26,6 +30,8 @@ namespace Match3.Unity
         private IProgressStore progressStore;
         private int turnsPlayed;
         
+        private TimerController timerController;
+        
 
         public void Start()
         {
@@ -36,14 +42,18 @@ namespace Match3.Unity
             turnsPlayed = progress.TurnsPlayed;
             
             session = new GameSession();
-            idleTracker = new IdleTracker();
-            
             var initialSnapshot = session.StartNewGame(startHeight, startWidth);
             boardRenderer.Render(initialSnapshot);
-
-            inputController = new BoardInputController();
-            inputController.CanAcceptInput = () => !turnPlaybackController.IsPlaying;
             
+            timerController = new TimerController();
+            timerController.StartTimer(totalGameSeconds);
+            UpdateTimerText();
+            
+            inputController = new BoardInputController();
+            inputController.CanAcceptInput = () => 
+                !turnPlaybackController.IsPlaying && !timerController.IsExpired;
+            
+            idleTracker = new IdleTracker();
             hintController = new HintController(session, boardRenderer);
             
             boardRenderer.CellClicked += HandleBoardCellClicked;
@@ -71,14 +81,31 @@ namespace Match3.Unity
         
         private void Update()
         {
-            if (turnPlaybackController.IsPlaying)
-                return;
+            if (!timerController.IsExpired)
+            {
+                timerController.Tick(Time.deltaTime);
+                UpdateTimerText();
+            }
+
+            if (timerController.IsExpired) return;
+            
+            if (turnPlaybackController.IsPlaying) return;
+            
             idleTracker.Tick(Time.deltaTime);
             TryShowIdleHint();
         }
 
+        private void UpdateTimerText()
+        {
+            var totalSeconds = Mathf.CeilToInt(timerController.RemainingSeconds);
+            var minutes = totalSeconds / 60;
+            var seconds = totalSeconds % 60;
+            timerText.text = $"{minutes:00}:{seconds:00}";
+        }
+
         private void TryShowIdleHint()
         {
+            if(timerController.IsExpired) return;
             if (hintShownForCurrentIdle) return;
             if (idleTracker.IdleSeconds < idleHintDelaySeconds) return;
             ShowAdaptiveHintInternal(idleTracker.IdleSeconds);
@@ -94,6 +121,7 @@ namespace Match3.Unity
 
         public void OnHintButtonClick()
         {
+            if(timerController.IsExpired) return;
             if (turnPlaybackController.IsPlaying) return;
             var effectiveIdleSeconds = Mathf.Max(idleTracker.IdleSeconds, idleHintDelaySeconds);
             ShowAdaptiveHintInternal(effectiveIdleSeconds);
@@ -102,6 +130,7 @@ namespace Match3.Unity
 
         private void ShowAdaptiveHintInternal(float idleSeconds)
         {
+            if(timerController.IsExpired) return;
             hintController.ClearHint();
             
             var state = new AdaptiveHintState(consecutiveHintsShown, totalHintsShown);
