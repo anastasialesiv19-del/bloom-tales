@@ -32,32 +32,10 @@ namespace Match3.Unity
            return presentation;
         }
 
-        public HintResult GetBestHint()
+        public HintResult GetAdaptiveHint(float idleSeconds, AdaptiveHintState state)
         {
-            return HintFinder.FindBestHint(CurrentBoard);
+            var context = HintContextFactory.Create(idleSeconds, state);
+            return HintFinder.FindAdaptiveHint(CurrentBoard, context);
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     }
 }
