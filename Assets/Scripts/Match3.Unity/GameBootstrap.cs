@@ -17,6 +17,7 @@ namespace Match3.Unity
         [SerializeField] private float idleHintDelaySeconds = 6f;
         [SerializeField] private TMP_Text timerText;
         [SerializeField] private float totalGameSeconds = 120f;
+        [SerializeField] private GameOverPanel gameOverPanel;
        
         private GameSession session;
         private BoardInputController inputController;
@@ -31,6 +32,8 @@ namespace Match3.Unity
         private int turnsPlayed;
         
         private TimerController timerController;
+
+        private bool gameOverShown;
         
 
         public void Start()
@@ -60,6 +63,9 @@ namespace Match3.Unity
             boardRenderer.CellClicked += inputController.OnCellClicked;
             inputController.MoveSubmitted += ApplyMove;
             inputController.SelectionChanged += boardRenderer.SetSelection;
+            
+            gameOverPanel.Hide();
+            gameOverShown = false;
         }
 
         private void ApplyMove(Move move)
@@ -87,7 +93,17 @@ namespace Match3.Unity
                 UpdateTimerText();
             }
 
-            if (timerController.IsExpired) return;
+            if (timerController.IsExpired)
+            {
+                if (!gameOverShown)
+                {
+                    hintController.ClearHint();
+                    inputController.ClearSelection();
+                    gameOverPanel.Show();
+                    gameOverShown = true;
+                }
+                return;
+            }
             
             if (turnPlaybackController.IsPlaying) return;
             
@@ -152,5 +168,30 @@ namespace Match3.Unity
             var progress = new PlayerProgress(new AdaptiveHintState(0, totalHintsShown), turnsPlayed);
             progressStore.Save(progress); 
         }
+        
+        public void OnRestartButtonClick()
+        {
+            StartNewGameFlow();
+        }
+
+        private void StartNewGameFlow()
+        {
+            hintController.ClearHint();
+            inputController.ClearSelection();
+            idleTracker.ResetIdle();
+            hintShownForCurrentIdle = false;
+            consecutiveHintsShown = 0;
+            
+            var snapshot = session.StartNewGame(startHeight, startWidth);
+            boardRenderer.Render(snapshot);
+            
+            timerController.StartTimer(totalGameSeconds);
+            UpdateTimerText();
+            
+            gameOverPanel.Hide();
+            gameOverShown = false;
+        }
+
+        
     }
 }

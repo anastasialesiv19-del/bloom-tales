@@ -37,5 +37,11 @@ namespace Match3.Unity
             SelectionChanged?.Invoke(null);
             MoveSubmitted?.Invoke(move);
         }
+        
+        public void ClearSelection()
+        {
+            selectedCell = null;
+            SelectionChanged?.Invoke(null);
+        }
     }
 }
