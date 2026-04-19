@@ -8,16 +8,18 @@ namespace Match3.Unity.GameMode
         [SerializeField] private GameObject root;
         [SerializeField] private TMP_Text messageText;
         
-        public void Show()
+        public void Show(string message)
         {
             if (messageText != null)
-                messageText.text = "Time is up";
-            root.SetActive(true);
+                messageText.text = message;
+            if(root != null)
+                root.SetActive(true);
         }
 
         public void Hide()
         {
-            root.SetActive(false);
+            if(root != null)
+                root.SetActive(false);
         }
     }
 }
