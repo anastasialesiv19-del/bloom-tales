@@ -99,7 +99,7 @@ namespace Match3.Unity
                 {
                     hintController.ClearHint();
                     inputController.ClearSelection();
-                    gameOverPanel.Show();
+                    gameOverPanel.Show("Time is up.");
                     gameOverShown = true;
                 }
                 return;
@@ -173,7 +173,7 @@ namespace Match3.Unity
         {
             StartNewGameFlow();
         }
-
+        
         private void StartNewGameFlow()
         {
             hintController.ClearHint();
