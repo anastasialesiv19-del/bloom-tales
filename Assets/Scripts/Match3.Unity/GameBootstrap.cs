@@ -15,8 +15,10 @@ namespace Match3.Unity
         [SerializeField] private int startHeight = 8;
         [SerializeField] private int startWidth = 8;
         [SerializeField] private float idleHintDelaySeconds = 6f;
+        [SerializeField] private GameModeType gameMode = GameModeType.Timer;
         [SerializeField] private TMP_Text timerText;
         [SerializeField] private float totalGameSeconds = 120f;
+        [SerializeField] private int totalMoves = 20;
         [SerializeField] private GameOverPanel gameOverPanel;
        
         private GameSession session;
@@ -32,6 +34,7 @@ namespace Match3.Unity
         private int turnsPlayed;
         
         private TimerController timerController;
+        private MoveLimitController moveLimitController;
 
         private bool gameOverShown;
         
@@ -49,12 +52,18 @@ namespace Match3.Unity
             boardRenderer.Render(initialSnapshot);
             
             timerController = new TimerController();
-            timerController.StartTimer(totalGameSeconds);
-            UpdateTimerText();
+            moveLimitController = new MoveLimitController();
+            
+            if (gameMode == GameModeType.Timer)
+                timerController.StartTimer(totalGameSeconds);
+            else
+                moveLimitController.StartMoves(totalMoves);
+            
+            RefreshResourceText();
             
             inputController = new BoardInputController();
             inputController.CanAcceptInput = () => 
-                !turnPlaybackController.IsPlaying && !timerController.IsExpired;
+                !turnPlaybackController.IsPlaying && !IsCurrentModeExpired();
             
             idleTracker = new IdleTracker();
             hintController = new HintController(session, boardRenderer);
@@ -80,48 +89,67 @@ namespace Match3.Unity
             {
                 turnsPlayed++;
                 consecutiveHintsShown = 0;
+                
+                if (gameMode == GameModeType.Moves)
+                {
+                    moveLimitController.ConsumeMove();
+                    RefreshResourceText();
+                }
+                
                 SaveProgress();
             }
+
             turnPlaybackController.Play(presentation);
         }
         
         private void Update()
         {
-            if (!timerController.IsExpired)
+            if (gameMode == GameModeType.Timer && !timerController.IsExpired)
             {
                 timerController.Tick(Time.deltaTime);
-                UpdateTimerText();
+                RefreshResourceText();
             }
-
-            if (timerController.IsExpired)
+            if (turnPlaybackController.IsPlaying) return;
+            if (IsCurrentModeExpired())
             {
                 if (!gameOverShown)
                 {
                     hintController.ClearHint();
                     inputController.ClearSelection();
-                    gameOverPanel.Show("Time is up.");
+                    gameOverPanel.Show(GetGameOverMessage());
                     gameOverShown = true;
                 }
                 return;
             }
             
-            if (turnPlaybackController.IsPlaying) return;
-            
             idleTracker.Tick(Time.deltaTime);
             TryShowIdleHint();
         }
 
-        private void UpdateTimerText()
+        private void RefreshResourceText()
         {
-            var totalSeconds = Mathf.CeilToInt(timerController.RemainingSeconds);
-            var minutes = totalSeconds / 60;
-            var seconds = totalSeconds % 60;
-            timerText.text = $"{minutes:00}:{seconds:00}";
+
+            if (gameMode == GameModeType.Timer)
+            {
+                var totalSeconds = Mathf.CeilToInt(timerController.RemainingSeconds);
+                var minutes = totalSeconds / 60;
+                var seconds = totalSeconds % 60;
+                timerText.text = $"{minutes:00}:{seconds:00}";
+            }
+            else
+            {
+                timerText.text = $"Moves: {moveLimitController.RemainingMoves}";
+            }
+        }
+
+        private bool IsCurrentModeExpired()
+        {
+            return gameMode == GameModeType.Timer ? timerController.IsExpired : moveLimitController.IsExpired;
         }
 
         private void TryShowIdleHint()
         {
-            if(timerController.IsExpired) return;
+            if(IsCurrentModeExpired()) return;
             if (hintShownForCurrentIdle) return;
             if (idleTracker.IdleSeconds < idleHintDelaySeconds) return;
             ShowAdaptiveHintInternal(idleTracker.IdleSeconds);
@@ -137,7 +165,7 @@ namespace Match3.Unity
 
         public void OnHintButtonClick()
         {
-            if(timerController.IsExpired) return;
+            if(IsCurrentModeExpired()) return;
             if (turnPlaybackController.IsPlaying) return;
             var effectiveIdleSeconds = Mathf.Max(idleTracker.IdleSeconds, idleHintDelaySeconds);
             ShowAdaptiveHintInternal(effectiveIdleSeconds);
@@ -146,7 +174,7 @@ namespace Match3.Unity
 
         private void ShowAdaptiveHintInternal(float idleSeconds)
         {
-            if(timerController.IsExpired) return;
+            if(IsCurrentModeExpired()) return;
             hintController.ClearHint();
             
             var state = new AdaptiveHintState(consecutiveHintsShown, totalHintsShown);
@@ -185,13 +213,24 @@ namespace Match3.Unity
             var snapshot = session.StartNewGame(startHeight, startWidth);
             boardRenderer.Render(snapshot);
             
-            timerController.StartTimer(totalGameSeconds);
-            UpdateTimerText();
+            if (gameMode == GameModeType.Timer)
+            {
+                timerController.StartTimer(totalGameSeconds);
+            }
+            else
+            {
+                moveLimitController.ResetMoves(totalMoves);
+            }
+
+            RefreshResourceText();
             
             gameOverPanel.Hide();
             gameOverShown = false;
         }
 
-        
+        private string GetGameOverMessage()
+        {
+            return gameMode == GameModeType.Timer ? "Time is up" : "No moves left";
+        }
     }
 }
