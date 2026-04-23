@@ -6,9 +6,12 @@ namespace Match3.Unity
     public class PieceSpriteLibrary : MonoBehaviour
     {
         [SerializeField] private Sprite redSprite;
-        [SerializeField] private Sprite blueSprite;
-        [SerializeField] private Sprite greenSprite;
         [SerializeField] private Sprite yellowSprite;
+        [SerializeField] private Sprite greenSprite;
+        [SerializeField] private Sprite cyanSprite;
+        [SerializeField] private Sprite blueSprite;
+        [SerializeField] private Sprite purpleSprite;
+        
         [SerializeField] private Sprite colorBomb;
 
         public Sprite GetSprite(Piece piece)
@@ -19,9 +22,11 @@ namespace Match3.Unity
             return piece.Color.Value switch
             {
                 PieceColor.Red => redSprite,
-                PieceColor.Blue => blueSprite,
-                PieceColor.Green => greenSprite,
                 PieceColor.Yellow => yellowSprite,
+                PieceColor.Green => greenSprite,
+                PieceColor.Cyan => cyanSprite,
+                PieceColor.Blue => blueSprite,
+                PieceColor.Purple => purpleSprite,
                 _ => null
             };
         }
