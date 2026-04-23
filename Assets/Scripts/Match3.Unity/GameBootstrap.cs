@@ -1,4 +1,5 @@
 using System.Collections;
+using Core.Contracts;
 using Core.Matching;
 using Core.Progress;
 using Match3.Unity.GameMode;
@@ -211,7 +212,7 @@ namespace Match3.Unity
             consecutiveHintsShown = 0;
             
             var snapshot = session.StartNewGame(startHeight, startWidth);
-            boardRenderer.Render(snapshot);
+            boardRenderer.RebuildAndRender(snapshot);
             
             if (gameMode == GameModeType.Timer)
             {
@@ -227,7 +228,7 @@ namespace Match3.Unity
             gameOverPanel.Hide();
             gameOverShown = false;
         }
-
+        
         private string GetGameOverMessage()
         {
             return gameMode == GameModeType.Timer ? "Time is up" : "No moves left";
