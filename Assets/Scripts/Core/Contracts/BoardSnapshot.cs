@@ -84,14 +84,18 @@ namespace Core.Contracts
         {
             switch (color)
             {
-                case PieceColor.Blue:
-                    return "B";
-                case PieceColor.Green:
-                    return "G";
                 case PieceColor.Red:
                     return "R";
                 case PieceColor.Yellow:
                     return "Y";
+                case PieceColor.Green:
+                    return "G";
+                case PieceColor.Cyan:
+                    return "C";
+                case PieceColor.Blue:
+                    return "B";
+                case PieceColor.Purple:
+                    return "P";
                 default:
                     throw new InvalidOperationException();
             }

@@ -3,9 +3,10 @@
     public enum PieceColor
     {
         Red,
-        Blue,
         Yellow,
-        Green
-        
+        Green,
+        Cyan,
+        Blue,
+        Purple
     }
 }
