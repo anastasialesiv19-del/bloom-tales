@@ -1,7 +1,11 @@
 using System;
 using Core.Contracts;
 using Core.Matching;
+using Match3.Unity.Board;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
+
 
 namespace Match3.Unity
 {
@@ -9,6 +13,8 @@ namespace Match3.Unity
     {
         [SerializeField] private BoardCellView cellPrefab;
         [SerializeField] private Transform gridRoot;
+        [SerializeField] private CellBackgroundLibrary cellBackgroundLibrary;
+        [SerializeField, Range(0f, 1f)] private float variantChance = 0.1f;
         [SerializeField] private PieceSpriteLibrary pieceSpriteLibrary;
         private BoardCellView[,] cells;
         private int _height;
@@ -26,6 +32,9 @@ namespace Match3.Unity
             {
                 var cell = Instantiate(cellPrefab, gridRoot);
                 cell.Initialize(row, col, pieceSpriteLibrary);
+                var useVariant = Random.value < variantChance;
+                var backgroundSprite = cellBackgroundLibrary.GetFor(useVariant);
+                cell.SetBackground(backgroundSprite);
                 cells[row, col] = cell;
                 cell.Clicked += HandleCellClicked;
             }
@@ -40,6 +49,26 @@ namespace Match3.Unity
             for (var col = 0; col < _width; col++)
                 cells[row, col].SetPiece(snapshot.Get(row, col));
             
+        }
+        
+        public void RebuildAndRender(BoardSnapshot snapshot)
+        {
+            ClearGrid();
+            cells = null;
+            _height = 0;
+            _width = 0;
+            Render(snapshot);
+        }
+
+        private void ClearGrid()
+        {
+            if (gridRoot == null)
+                return;
+
+            for (int i = gridRoot.childCount - 1; i >= 0; i--)
+            {
+                Destroy(gridRoot.GetChild(i).gameObject);
+            }
         }
         
         private void HandleCellClicked(int row, int col)
