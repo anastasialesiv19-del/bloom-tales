@@ -628,6 +628,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -709,6 +710,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a160d838ff8b4b4693ac20007e008c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AssetsPPU: 512
+  m_RefResolutionX: 1980
+  m_RefResolutionY: 1080
+  m_UpscaleRT: 1
+  m_PixelSnapping: 1
+  m_CropFrameX: 0
+  m_CropFrameY: 0
+  m_StretchFill: 0
 --- !u!1 &1006774644
 GameObject:
   m_ObjectHideFlags: 0
@@ -772,6 +793,52 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1031516619
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1031516621}
+  - component: {fileID: 1031516620}
+  m_Layer: 0
+  m_Name: BackgroundLibraryHost
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1031516620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031516619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83eaf23482564a62941422bce8faad7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultTileSprite: {fileID: 21300000, guid: 0e9cd415d18cbfd4c8188f3b6cdf26b7, type: 3}
+  variantTileSprite: {fileID: 21300000, guid: 195c27a38029adf4aa0a1c713973cc54, type: 3}
+--- !u!4 &1031516621
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031516619}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 961.09937, y: 539.2259, z: -2.4484696}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1036,7 +1103,7 @@ GameObject:
   - component: {fileID: 1398170286}
   - component: {fileID: 1398170285}
   m_Layer: 0
-  m_Name: PieceSpriteLibrary
+  m_Name: PieceSpriteLibraryHost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1054,10 +1121,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b60a67b8c3d8478e83b34752f996839e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  redSprite: {fileID: 21300000, guid: b7481a4c424715542a70ac1efc7468db, type: 3}
-  blueSprite: {fileID: 21300000, guid: 23c39604c54f9f944ac7791b186f3dce, type: 3}
-  greenSprite: {fileID: 21300000, guid: 50dd2e8acaa7426438d693e39eb73026, type: 3}
-  yellowSprite: {fileID: 21300000, guid: a292bddf8693e00428dace4a7f770aa6, type: 3}
+  redSprite: {fileID: 21300000, guid: ca90695232567b5489b7ec8773a536ee, type: 3}
+  blueSprite: {fileID: 21300000, guid: c8dcc94edc2726649b10cd148f2f8f53, type: 3}
+  greenSprite: {fileID: 21300000, guid: b4534ae15a52a7047b0e876dbc3d364b, type: 3}
+  yellowSprite: {fileID: 21300000, guid: fe8ecd1d6eed414469d1693909b7863f, type: 3}
   colorBomb: {fileID: 21300000, guid: c1d5a6c1ade19d340922e895b71ec629, type: 3}
 --- !u!4 &1398170286
 Transform:
@@ -1506,6 +1573,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 8709514336825696139, guid: 3cff35b9a3e3c68429607a423e723389, type: 3}
   gridRoot: {fileID: 1151835656}
+  cellBackgroundLibrary: {fileID: 1031516620}
+  variantChance: 0.3
   pieceSpriteLibrary: {fileID: 1398170285}
 --- !u!4 &1736815588
 Transform:
@@ -1818,3 +1887,4 @@ SceneRoots:
   - {fileID: 1006774647}
   - {fileID: 1826962651}
   - {fileID: 1398170286}
+  - {fileID: 1031516621}
