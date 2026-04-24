@@ -3,6 +3,7 @@ using Core.Contracts;
 using Core.Matching;
 using Core.Progress;
 using Match3.Unity.GameMode;
+using Match3.Unity.Menu;
 using Match3.Unity.Save;
 using TMPro;
 using UnityEngine;
@@ -42,6 +43,7 @@ namespace Match3.Unity
 
         public void Start()
         {
+            ApplySelectedLevelConfigIfPresent();
             progressStore = new JsonProgressStore();
             var progress = progressStore.Load(); 
             consecutiveHintsShown = 0;
@@ -232,6 +234,18 @@ namespace Match3.Unity
         private string GetGameOverMessage()
         {
             return gameMode == GameModeType.Timer ? "Time is up" : "No moves left";
+        }
+
+        private void ApplySelectedLevelConfigIfPresent()
+        {
+            var config = SelectedLevelState.Current;
+            if (config == null) return;
+            
+            gameMode = config.GameMode;
+            totalMoves = config.TotalMoves;
+            totalGameSeconds = config.TotalGameSeconds;
+
+            SelectedLevelState.Current = null;
         }
     }
 }
