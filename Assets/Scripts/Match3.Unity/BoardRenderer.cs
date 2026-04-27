@@ -13,8 +13,6 @@ namespace Match3.Unity
     {
         [SerializeField] private BoardCellView cellPrefab;
         [SerializeField] private Transform gridRoot;
-        [SerializeField] private CellBackgroundLibrary cellBackgroundLibrary;
-        [SerializeField, Range(0f, 1f)] private float variantChance = 0.1f;
         [SerializeField] private PieceSpriteLibrary pieceSpriteLibrary;
         private BoardCellView[,] cells;
         private int _height;
@@ -32,9 +30,6 @@ namespace Match3.Unity
             {
                 var cell = Instantiate(cellPrefab, gridRoot);
                 cell.Initialize(row, col, pieceSpriteLibrary);
-                var useVariant = Random.value < variantChance;
-                var backgroundSprite = cellBackgroundLibrary.GetFor(useVariant);
-                cell.SetBackground(backgroundSprite);
                 cells[row, col] = cell;
                 cell.Clicked += HandleCellClicked;
             }

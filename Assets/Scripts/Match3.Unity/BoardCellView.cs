@@ -9,7 +9,6 @@ namespace Match3.Unity
 {
     public class BoardCellView : MonoBehaviour, IPointerClickHandler
     {
-        [SerializeField] private Image backgroundImage;
         [SerializeField] private TMP_Text pieceText;
         [SerializeField] private Image pieceImage; //or SpriteRenderer
         [SerializeField] private Image selectionHighlight;
@@ -27,14 +26,6 @@ namespace Match3.Unity
             this.spriteLibrary = spriteLibrary;
             selectionHighlight.enabled = false;
             hintHighlight.enabled = false;
-        }
-
-        public void SetBackground(Sprite sprite)
-        {
-            if (backgroundImage == null)
-                return;
-            backgroundImage.sprite = sprite;
-            backgroundImage.enabled = sprite != null;
         }
 
         public void SetPiece(Piece piece)
