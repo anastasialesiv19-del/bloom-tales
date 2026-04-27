@@ -7,6 +7,7 @@ using Match3.Unity.Menu;
 using Match3.Unity.Save;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Match3.Unity
 {
@@ -21,6 +22,7 @@ namespace Match3.Unity
         [SerializeField] private TMP_Text timerText;
         [SerializeField] private float totalGameSeconds = 120f;
         [SerializeField] private int totalMoves = 20;
+        [SerializeField] private PausePanel pausePanel;
         [SerializeField] private GameOverPanel gameOverPanel;
        
         private GameSession session;
@@ -38,6 +40,7 @@ namespace Match3.Unity
         private TimerController timerController;
         private MoveLimitController moveLimitController;
 
+        private bool isPaused;
         private bool gameOverShown;
         
 
@@ -66,7 +69,7 @@ namespace Match3.Unity
             
             inputController = new BoardInputController();
             inputController.CanAcceptInput = () => 
-                !turnPlaybackController.IsPlaying && !IsCurrentModeExpired();
+                !turnPlaybackController.IsPlaying && !IsCurrentModeExpired() &&  !isPaused;
             
             idleTracker = new IdleTracker();
             hintController = new HintController(session, boardRenderer);
@@ -75,6 +78,9 @@ namespace Match3.Unity
             boardRenderer.CellClicked += inputController.OnCellClicked;
             inputController.MoveSubmitted += ApplyMove;
             inputController.SelectionChanged += boardRenderer.SetSelection;
+            
+            pausePanel.Hide();
+            isPaused = false;
             
             gameOverPanel.Hide();
             gameOverShown = false;
@@ -107,6 +113,9 @@ namespace Match3.Unity
         
         private void Update()
         {
+            if (isPaused)
+                return;
+            
             if (gameMode == GameModeType.Timer && !timerController.IsExpired)
             {
                 timerController.Tick(Time.deltaTime);
@@ -152,6 +161,8 @@ namespace Match3.Unity
 
         private void TryShowIdleHint()
         {
+            if (isPaused)
+                return;
             if(IsCurrentModeExpired()) return;
             if (hintShownForCurrentIdle) return;
             if (idleTracker.IdleSeconds < idleHintDelaySeconds) return;
@@ -168,6 +179,8 @@ namespace Match3.Unity
 
         public void OnHintButtonClick()
         {
+            if (isPaused)
+                return;
             if(IsCurrentModeExpired()) return;
             if (turnPlaybackController.IsPlaying) return;
             var effectiveIdleSeconds = Mathf.Max(idleTracker.IdleSeconds, idleHintDelaySeconds);
@@ -177,6 +190,8 @@ namespace Match3.Unity
 
         private void ShowAdaptiveHintInternal(float idleSeconds)
         {
+            if (isPaused)
+                return;
             if(IsCurrentModeExpired()) return;
             hintController.ClearHint();
             
@@ -194,6 +209,41 @@ namespace Match3.Unity
                 consecutiveHintsShown = 0;
         }
 
+        public void OnPauseButtonClick()
+        {
+            if (turnPlaybackController.IsPlaying)
+                return;
+            if (IsCurrentModeExpired())
+                return;
+            
+            hintController.ClearHint();
+            inputController.ClearSelection();
+            idleTracker.ResetIdle();
+            hintShownForCurrentIdle = false;
+            
+            pausePanel.Show();
+            isPaused = true;
+        }
+
+        public void OnResumeButtonClick()
+        {
+            pausePanel.Hide();
+            isPaused = false;
+        }
+
+        public void OnBackToMenuClicked()
+        {
+            hintController.ClearHint();
+            inputController.ClearSelection();
+            pausePanel.Hide();
+            isPaused = false;
+            idleTracker.ResetIdle();
+            hintShownForCurrentIdle = false;
+
+            SelectedLevelState.Current = null;
+            SceneManager.LoadScene("MainMenuScene");
+        }
+
         private void SaveProgress()
         {
             var progress = new PlayerProgress(new AdaptiveHintState(0, totalHintsShown), turnsPlayed);
@@ -202,6 +252,11 @@ namespace Match3.Unity
         
         public void OnRestartButtonClick()
         {
+            if (isPaused)
+            {
+                pausePanel.Hide();
+                isPaused = false;
+            }
             StartNewGameFlow();
         }
         
