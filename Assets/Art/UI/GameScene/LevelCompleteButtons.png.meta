@@ -1,0 +1,396 @@
+fileFormatVersion: 2
+guid: 0ca0681bb3f66cd45b48fab1aca04962
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: buttons_transparent_background_18
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 635
+        width: 390
+        height: 155
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f678aa5dddc3c284eb3d8c0e78fa5f6c
+      internalID: 699959551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_transparent_background_19
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 622
+        width: 424
+        height: 181
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3640e601be4adf4899cd1f83548d6d8
+      internalID: 1076549635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_transparent_background_20
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 635
+        width: 404
+        height: 155
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14ae939db28fd4e4587f1db92d953897
+      internalID: -71581059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_transparent_background_21
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 451
+        width: 390
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7aab3861118a8094e9d7700ba9498dca
+      internalID: -309150762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_transparent_background_22
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 438
+        width: 424
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 817e05985fd139b459f910a98dc6d18a
+      internalID: -1511302764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_transparent_background_23
+      rect:
+        serializedVersion: 2
+        x: 1226
+        y: 451
+        width: 403
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5912dbad8553d74487aac43958c20ac
+      internalID: 47057743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_transparent_background_24
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 265
+        width: 390
+        height: 153
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a7bdc6eeb0dace4db1c630f9a9dd04b
+      internalID: 208486635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_transparent_background_25
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 253
+        width: 424
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dad2f6e8a9c4d7f4fa00f96620c081bc
+      internalID: -1795486790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_transparent_background_26
+      rect:
+        serializedVersion: 2
+        x: 1226
+        y: 265
+        width: 403
+        height: 153
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85fbd245e69444945a1999cdfcba65b2
+      internalID: 1716572464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_transparent_background_27
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 84
+        width: 394
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f96c009ba0eea345b96e4abb58288be
+      internalID: -489173319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_transparent_background_28
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 70
+        width: 424
+        height: 178
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fe555b3f66928946a4c3a53cc83269d
+      internalID: -1397256743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buttons_transparent_background_29
+      rect:
+        serializedVersion: 2
+        x: 1225
+        y: 83
+        width: 404
+        height: 155
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 539aac6f52b56df448adc7f453f3dffb
+      internalID: 192199861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      buttons_transparent_background_0: 1445582863
+      buttons_transparent_background_1: -695427845
+      buttons_transparent_background_10: 2004828820
+      buttons_transparent_background_11: -1946492456
+      buttons_transparent_background_12: -458884888
+      buttons_transparent_background_13: 1299411904
+      buttons_transparent_background_14: 1735303248
+      buttons_transparent_background_15: 25006194
+      buttons_transparent_background_16: 706362015
+      buttons_transparent_background_17: 516559567
+      buttons_transparent_background_18: 699959551
+      buttons_transparent_background_19: 1076549635
+      buttons_transparent_background_2: -191379793
+      buttons_transparent_background_20: -71581059
+      buttons_transparent_background_21: -309150762
+      buttons_transparent_background_22: -1511302764
+      buttons_transparent_background_23: 47057743
+      buttons_transparent_background_24: 208486635
+      buttons_transparent_background_25: -1795486790
+      buttons_transparent_background_26: 1716572464
+      buttons_transparent_background_27: -489173319
+      buttons_transparent_background_28: -1397256743
+      buttons_transparent_background_29: 192199861
+      buttons_transparent_background_3: 1158518680
+      buttons_transparent_background_4: 1537016737
+      buttons_transparent_background_5: -1682281315
+      buttons_transparent_background_6: -196660497
+      buttons_transparent_background_7: -1876284248
+      buttons_transparent_background_8: -2071377158
+      buttons_transparent_background_9: -2111781400
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
