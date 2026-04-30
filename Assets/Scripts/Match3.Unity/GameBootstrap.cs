@@ -26,6 +26,7 @@ namespace Match3.Unity
         [SerializeField] private GameOverPanel gameOverPanel;
        
         private GameSession session;
+        private LevelId currentLevelId;
         private BoardInputController inputController;
         
         private HintController hintController;
@@ -294,7 +295,12 @@ namespace Match3.Unity
         private void ApplySelectedLevelConfigIfPresent()
         {
             var config = SelectedLevelState.Current;
-            if (config == null) return;
+            if (config == null)
+            {
+                currentLevelId = LevelId.Level1;
+                return;
+            }
+            currentLevelId = config.LevelId;
             
             gameMode = config.GameMode;
             totalMoves = config.TotalMoves;
