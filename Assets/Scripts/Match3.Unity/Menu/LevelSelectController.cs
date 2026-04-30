@@ -9,6 +9,7 @@ namespace Match3.Unity.Menu
         public void OnLevel1Clicked()
         {
             var config = new LevelConfig(
+                LevelId.Level1,
                 "Level 1",
                 GameModeType.Moves,
                 40,
@@ -21,6 +22,7 @@ namespace Match3.Unity.Menu
         public void OnLevel2Clicked()
         {
             var config = new LevelConfig(
+                LevelId.Level2,
                 "Level 2",
                 GameModeType.Timer,
                 0,
