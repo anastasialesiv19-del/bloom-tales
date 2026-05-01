@@ -12,7 +12,7 @@ namespace Match3.Unity.Menu
                 LevelId.Level1,
                 "Level 1",
                 GameModeType.Moves,
-                40,
+                3,
                 0f);
 
             SelectedLevelState.Current = config;
@@ -26,7 +26,7 @@ namespace Match3.Unity.Menu
                 "Level 2",
                 GameModeType.Timer,
                 0,
-                90f);
+                10f);
 
             SelectedLevelState.Current = config;
             SceneManager.LoadScene("SampleScene");   
@@ -34,7 +34,15 @@ namespace Match3.Unity.Menu
 
         public void OnLevel3Clicked()
         {
+            var config = new LevelConfig(
+                LevelId.Level3,
+                "Level 3",
+                GameModeType.Moves,
+                5,
+                0f);
             
+            SelectedLevelState.Current = config;
+            SceneManager.LoadScene("SampleScene");
         }
         
         public void OnBackClicked()
