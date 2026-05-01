@@ -2,6 +2,7 @@ using System.Collections;
 using Core.Contracts;
 using Core.Matching;
 using Core.Progress;
+using Match3.Unity.GameFlow;
 using Match3.Unity.GameMode;
 using Match3.Unity.Menu;
 using Match3.Unity.Save;
@@ -27,8 +28,8 @@ namespace Match3.Unity
         [SerializeField] private Sprite level2Background;
         [SerializeField] private UnityEngine.UI.Image backgroundImage;
         [SerializeField] private PausePanel pausePanel;
-        [SerializeField] private GameOverPanel gameOverPanel;
-        
+        [SerializeField] private GameObject victoryPanel;
+        [SerializeField] private GameObject defeatPanel;
        
         private GameSession session;
         private BoardInputController inputController;
@@ -47,6 +48,7 @@ namespace Match3.Unity
 
         private bool isPaused;
         private bool gameOverShown;
+        private GameResultType currentresult = GameResultType.None;
         
 
         public void Start()
@@ -89,8 +91,8 @@ namespace Match3.Unity
             pausePanel.Hide();
             isPaused = false;
             
-            gameOverPanel.Hide();
-            gameOverShown = false;
+            victoryPanel.SetActive(false);
+            defeatPanel.SetActive(false);
         }
 
         private void ApplyMove(Move move)
@@ -133,9 +135,11 @@ namespace Match3.Unity
             {
                 if (!gameOverShown)
                 {
-                    hintController.ClearHint();
-                    inputController.ClearSelection();
-                    gameOverPanel.Show(GetGameOverMessage());
+                    var result = GameResultResolver.Resolve(
+                        gameMode,
+                        true);
+
+                    HandleGameResult(result);
                     gameOverShown = true;
                 }
                 return;
@@ -289,7 +293,8 @@ namespace Match3.Unity
 
             RefreshResourceText();
             
-            gameOverPanel.Hide();
+            victoryPanel.SetActive(false);
+            defeatPanel.SetActive(false);
             gameOverShown = false;
         }
         
@@ -319,6 +324,29 @@ namespace Match3.Unity
         {
             if (backgroundImage != null)
                 backgroundImage.sprite = theme.background;
+        }
+
+        private void HandleGameResult(GameResultType result)
+        {
+            hintController.ClearHint();
+            inputController.ClearSelection();
+
+            if (victoryPanel != null)
+                victoryPanel.SetActive(false);
+
+            if (defeatPanel != null)
+                defeatPanel.SetActive(false);
+
+            switch (result)
+            {
+                case GameResultType.Defeat:
+                    defeatPanel.SetActive(true);
+                    break;
+
+                case GameResultType.Victory:
+                    victoryPanel.SetActive(true);
+                    break;
+            }
         }
     }
 }
