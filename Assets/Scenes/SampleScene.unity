@@ -1863,7 +1863,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 590646377}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1247898196}
+        m_TargetAssemblyTypeName: Match3.Unity.GameBootstrap, Assembly-CSharp
+        m_MethodName: OnNextLevelClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &590646377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2420,7 +2432,8 @@ MonoBehaviour:
   level2Background: {fileID: 21300000, guid: f8cc63e17a8a1344faa7b2f668a00b5e, type: 3}
   backgroundImage: {fileID: 197251373}
   pausePanel: {fileID: 2036017060}
-  gameOverPanel: {fileID: 414224868}
+  victoryPanel: {fileID: 0}
+  defeatPanel: {fileID: 0}
 --- !u!4 &1247898197
 Transform:
   m_ObjectHideFlags: 0
@@ -3103,7 +3116,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1699345119}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1247898196}
+        m_TargetAssemblyTypeName: Match3.Unity.GameBootstrap, Assembly-CSharp
+        m_MethodName: OnRestartButtonClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1699345119
 MonoBehaviour:
   m_ObjectHideFlags: 0
