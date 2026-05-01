@@ -48,7 +48,9 @@ namespace Match3.Unity
 
         private bool isPaused;
         private bool gameOverShown;
-        //private GameResultType currentResult = GameResultType.None;
+
+        private int totalScore;
+        private int targetScore;
         
 
         public void Start()
@@ -105,6 +107,7 @@ namespace Match3.Unity
             var presentation = session.TryApplyMove(move);
             if (presentation.WasApplied)
             {
+                totalScore += presentation.TotalClearedCells;
                 turnsPlayed++;
                 consecutiveHintsShown = 0;
                 
@@ -131,6 +134,14 @@ namespace Match3.Unity
                 RefreshResourceText();
             }
             if (turnPlaybackController.IsPlaying) return;
+            
+            if (!gameOverShown && totalScore >= targetScore)
+            {
+                HandleGameResult(GameResultType.Victory);
+                gameOverShown = true;
+                return;
+            }
+            
             if (IsCurrentModeExpired())
             {
                 if (!gameOverShown)
@@ -323,8 +334,11 @@ namespace Match3.Unity
             gameMode = config.GameMode;
             totalMoves = config.TotalMoves;
             totalGameSeconds = config.TotalGameSeconds;
+            targetScore = config.TargetScore;
+            totalScore = 0;
 
             SelectedLevelState.Current = null;
+            
         }
 
         private void ApplyTheme(LevelTheme theme)
