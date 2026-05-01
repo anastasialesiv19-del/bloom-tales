@@ -8,39 +8,21 @@ namespace Match3.Unity.Menu
     {
         public void OnLevel1Clicked()
         {
-            var config = new LevelConfig(
-                LevelId.Level1,
-                "Level 1",
-                GameModeType.Moves,
-                3,
-                0f);
-
+            var config = LevelConfigFactory.Create(LevelId.Level1);
             SelectedLevelState.Current = config;
             SceneManager.LoadScene("SampleScene");
         }
 
         public void OnLevel2Clicked()
         {
-            var config = new LevelConfig(
-                LevelId.Level2,
-                "Level 2",
-                GameModeType.Timer,
-                0,
-                10f);
-
+            var config = LevelConfigFactory.Create(LevelId.Level2);
             SelectedLevelState.Current = config;
             SceneManager.LoadScene("SampleScene");   
         }
 
         public void OnLevel3Clicked()
         {
-            var config = new LevelConfig(
-                LevelId.Level3,
-                "Level 3",
-                GameModeType.Moves,
-                5,
-                0f);
-            
+            var config = LevelConfigFactory.Create(LevelId.Level3);
             SelectedLevelState.Current = config;
             SceneManager.LoadScene("SampleScene");
         }
