@@ -48,7 +48,7 @@ namespace Match3.Unity
 
         private bool isPaused;
         private bool gameOverShown;
-        private GameResultType currentresult = GameResultType.None;
+        //private GameResultType currentResult = GameResultType.None;
         
 
         public void Start()
@@ -269,6 +269,11 @@ namespace Match3.Unity
                 isPaused = false;
             }
             StartNewGameFlow();
+        }
+
+        public void OnNextLevelClicked()
+        {
+            OnBackToMenuClicked();
         }
         
         private void StartNewGameFlow()
