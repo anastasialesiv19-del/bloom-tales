@@ -273,7 +273,29 @@ namespace Match3.Unity
 
         public void OnNextLevelClicked()
         {
-            OnBackToMenuClicked();
+            if (!LevelProgression.TryGetNext(currentLevelId, out var nextLevel))
+            {
+                OnBackToMenuClicked();
+                return;
+            }
+            var config = BuildConfigForLevel(nextLevel);
+            SelectedLevelState.Current = config;
+            SceneManager.LoadScene("SampleScene");
+        }
+
+        private LevelConfig BuildConfigForLevel(LevelId levelId)
+        {
+            switch (levelId)
+            {
+                case LevelId.Level1:
+                    return new LevelConfig(levelId, "Level1", GameModeType.Moves, 3, 0f);
+                case LevelId.Level2:
+                    return new LevelConfig(levelId, "Level2", GameModeType.Timer, 0, 10f);
+                case LevelId.Level3:
+                    return new LevelConfig(levelId, "Level3", GameModeType.Moves, 5, 0);
+                default:
+                    throw new System.Exception("Unknown level.");
+            }
         }
         
         private void StartNewGameFlow()
@@ -303,11 +325,6 @@ namespace Match3.Unity
             gameOverShown = false;
         }
         
-        private string GetGameOverMessage()
-        {
-            return gameMode == GameModeType.Timer ? "Time is up" : "No moves left";
-        }
-
         private void ApplySelectedLevelConfigIfPresent()
         {
             var config = SelectedLevelState.Current;
