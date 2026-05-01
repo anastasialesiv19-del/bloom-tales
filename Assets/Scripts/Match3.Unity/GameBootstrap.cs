@@ -5,6 +5,7 @@ using Core.Progress;
 using Match3.Unity.GameMode;
 using Match3.Unity.Menu;
 using Match3.Unity.Save;
+using Match3.Unity.Theme;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,13 +23,16 @@ namespace Match3.Unity
         [SerializeField] private TMP_Text timerText;
         [SerializeField] private float totalGameSeconds = 120f;
         [SerializeField] private int totalMoves = 20;
+        [SerializeField] private Sprite level1Background;
+        [SerializeField] private Sprite level2Background;
+        [SerializeField] private UnityEngine.UI.Image backgroundImage;
         [SerializeField] private PausePanel pausePanel;
         [SerializeField] private GameOverPanel gameOverPanel;
+        
        
         private GameSession session;
-        private LevelId currentLevelId;
         private BoardInputController inputController;
-        
+        private LevelId currentLevelId;
         private HintController hintController;
         private IdleTracker idleTracker;
         private int consecutiveHintsShown;
@@ -48,6 +52,8 @@ namespace Match3.Unity
         public void Start()
         {
             ApplySelectedLevelConfigIfPresent();
+            var theme = LevelThemeResolver.Resolve(currentLevelId, level1Background, level2Background);
+            ApplyTheme(theme);
             progressStore = new JsonProgressStore();
             var progress = progressStore.Load(); 
             consecutiveHintsShown = 0;
@@ -307,6 +313,12 @@ namespace Match3.Unity
             totalGameSeconds = config.TotalGameSeconds;
 
             SelectedLevelState.Current = null;
+        }
+
+        private void ApplyTheme(LevelTheme theme)
+        {
+            if (backgroundImage != null)
+                backgroundImage.sprite = theme.background;
         }
     }
 }
