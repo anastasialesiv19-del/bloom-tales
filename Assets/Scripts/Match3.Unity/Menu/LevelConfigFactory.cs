@@ -9,13 +9,13 @@ namespace Match3.Unity.Menu
             switch (levelId)
             {
                 case LevelId.Level1:
-                    return new LevelConfig(levelId, "Level 1", GameModeType.Moves, 40, 0f);
+                    return new LevelConfig(levelId, "Level 1", GameModeType.Moves, 40, 0f, 30);
 
                 case LevelId.Level2:
-                    return new LevelConfig(levelId, "Level 2", GameModeType.Timer, 0, 10f);
+                    return new LevelConfig(levelId, "Level 2", GameModeType.Timer, 0, 10f, 40);
 
                 case LevelId.Level3:
-                    return new LevelConfig(levelId, "Level 3", GameModeType.Moves, 5, 0f);
+                    return new LevelConfig(levelId, "Level 3", GameModeType.Moves, 5, 0f, 50);
 
                 default:
                     throw new System.Exception("Unknown level");
