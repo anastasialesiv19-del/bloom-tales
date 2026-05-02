@@ -4,6 +4,7 @@ using Core.Matching;
 using Core.Progress;
 using Match3.Unity.GameFlow;
 using Match3.Unity.GameMode;
+using Match3.Unity.Goals;
 using Match3.Unity.Menu;
 using Match3.Unity.Save;
 using Match3.Unity.Theme;
@@ -52,10 +53,9 @@ namespace Match3.Unity
 
         private bool isPaused;
         private bool gameOverShown;
-
-        private int totalScore;
-        private int targetScore;
-        private bool hasReachedTarget => totalScore >= targetScore;
+        
+        private GoalProgress goal;
+        //private bool hasReachedTarget => totalScore >= targetScore;
         
 
         public void Start()
@@ -102,7 +102,7 @@ namespace Match3.Unity
             defeatPanel.SetActive(false);
 
             scoreText.text = "0";
-            targetText.text = $"/  {targetScore}";
+            targetText.text = goal.Target.ToString();
             progressBar.fillAmount = 0f;
         }
 
@@ -116,9 +116,11 @@ namespace Match3.Unity
             var presentation = session.TryApplyMove(move);
             if (presentation.WasApplied)
             {
-                totalScore += presentation.TotalClearedCells;
-                scoreText.text = totalScore.ToString();
-                float progress = Mathf.Clamp01((float)totalScore / targetScore);
+                goal.Add(presentation.TotalClearedCells);
+
+                scoreText.text = goal.Current.ToString();
+
+                float progress = Mathf.Clamp01((float)goal.Current / goal.Target);
                 progressBar.fillAmount = progress;
                 progressBar.color = Color.Lerp(Color.red, Color.green, progress);
                 
@@ -148,7 +150,7 @@ namespace Match3.Unity
             }
             if (turnPlaybackController.IsPlaying) return;
             
-            if (!gameOverShown && totalScore >= targetScore)
+            if (!gameOverShown && goal.IsCompleted)
             {
                 HandleGameResult(GameResultType.Victory);
                 gameOverShown = true;
@@ -314,7 +316,6 @@ namespace Match3.Unity
             idleTracker.ResetIdle();
             hintShownForCurrentIdle = false;
             consecutiveHintsShown = 0;
-            totalScore = 0;
             
             var snapshot = session.StartNewGame(startHeight, startWidth);
             boardRenderer.RebuildAndRender(snapshot);
@@ -345,8 +346,8 @@ namespace Match3.Unity
             gameMode = config.GameMode;
             totalMoves = config.TotalMoves;
             totalGameSeconds = config.TotalGameSeconds;
-            targetScore = config.TargetScore;
-            totalScore = 0;
+            
+            goal = new GoalProgress(config.TargetScore);
 
             SelectedLevelState.Current = null;
             
