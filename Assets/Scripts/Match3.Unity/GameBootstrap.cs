@@ -10,6 +10,7 @@ using Match3.Unity.Theme;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Match3.Unity
 {
@@ -26,10 +27,13 @@ namespace Match3.Unity
         [SerializeField] private int totalMoves = 20;
         [SerializeField] private Sprite level1Background;
         [SerializeField] private Sprite level2Background;
-        [SerializeField] private UnityEngine.UI.Image backgroundImage;
+        [SerializeField] private Image backgroundImage;
         [SerializeField] private PausePanel pausePanel;
         [SerializeField] private GameObject victoryPanel;
         [SerializeField] private GameObject defeatPanel;
+        [SerializeField] private TMP_Text scoreText;
+        [SerializeField] private TMP_Text targetText;
+        [SerializeField] private Image progressBar;
        
         private GameSession session;
         private BoardInputController inputController;
@@ -51,6 +55,7 @@ namespace Match3.Unity
 
         private int totalScore;
         private int targetScore;
+        private bool hasReachedTarget => totalScore >= targetScore;
         
 
         public void Start()
@@ -80,7 +85,7 @@ namespace Match3.Unity
             
             inputController = new BoardInputController();
             inputController.CanAcceptInput = () => 
-                !turnPlaybackController.IsPlaying && !IsCurrentModeExpired() &&  !isPaused;
+                !turnPlaybackController.IsPlaying && !IsCurrentModeExpired() &&  !isPaused && !gameOverShown;
             
             idleTracker = new IdleTracker();
             hintController = new HintController(session, boardRenderer);
@@ -95,6 +100,10 @@ namespace Match3.Unity
             
             victoryPanel.SetActive(false);
             defeatPanel.SetActive(false);
+
+            scoreText.text = "0";
+            targetText.text = $"/  {targetScore}";
+            progressBar.fillAmount = 0f;
         }
 
         private void ApplyMove(Move move)
@@ -108,6 +117,11 @@ namespace Match3.Unity
             if (presentation.WasApplied)
             {
                 totalScore += presentation.TotalClearedCells;
+                scoreText.text = totalScore.ToString();
+                float progress = Mathf.Clamp01((float)totalScore / targetScore);
+                progressBar.fillAmount = progress;
+                progressBar.color = Color.Lerp(Color.red, Color.green, progress);
+                
                 turnsPlayed++;
                 consecutiveHintsShown = 0;
                 
@@ -116,7 +130,6 @@ namespace Match3.Unity
                     moveLimitController.ConsumeMove();
                     RefreshResourceText();
                 }
-                
                 SaveProgress();
             }
 
@@ -168,7 +181,7 @@ namespace Match3.Unity
                 var totalSeconds = Mathf.CeilToInt(timerController.RemainingSeconds);
                 var minutes = totalSeconds / 60;
                 var seconds = totalSeconds % 60;
-                timerText.text = $"{minutes:00}:{seconds:00}";
+                timerText.text = $"Timer: {minutes:00}:{seconds:00}";
             }
             else
             {
@@ -301,6 +314,7 @@ namespace Match3.Unity
             idleTracker.ResetIdle();
             hintShownForCurrentIdle = false;
             consecutiveHintsShown = 0;
+            totalScore = 0;
             
             var snapshot = session.StartNewGame(startHeight, startWidth);
             boardRenderer.RebuildAndRender(snapshot);
@@ -325,10 +339,7 @@ namespace Match3.Unity
         {
             var config = SelectedLevelState.Current;
             if (config == null)
-            {
-                currentLevelId = LevelId.Level1;
-                return;
-            }
+                config = LevelConfigFactory.Create(LevelId.Level1);
             currentLevelId = config.LevelId;
             
             gameMode = config.GameMode;
