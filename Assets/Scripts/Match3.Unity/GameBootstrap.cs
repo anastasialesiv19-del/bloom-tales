@@ -56,6 +56,7 @@ namespace Match3.Unity
         
         private GoalProgress goal;
         //private bool hasReachedTarget => totalScore >= targetScore;
+        private ColorGoalProgress colorGoal;
         
 
         public void Start()
@@ -102,8 +103,9 @@ namespace Match3.Unity
             defeatPanel.SetActive(false);
 
             scoreText.text = "0";
-            targetText.text = goal.Target.ToString();
+            targetText.text = colorGoal.Target.ToString();
             progressBar.fillAmount = 0f;
+            colorGoal = new ColorGoalProgress(PieceColor.Red, 20);
         }
 
         private void ApplyMove(Move move)
@@ -116,11 +118,12 @@ namespace Match3.Unity
             var presentation = session.TryApplyMove(move);
             if (presentation.WasApplied)
             {
-                goal.Add(presentation.TotalClearedCells);
+                //goal.Add(presentation.TotalClearedCells);
+                colorGoal.AddApprox(presentation.TotalClearedCells);
 
-                scoreText.text = goal.Current.ToString();
+                scoreText.text = colorGoal.Current.ToString();
 
-                float progress = Mathf.Clamp01((float)goal.Current / goal.Target);
+                float progress = Mathf.Clamp01((float)colorGoal.Current / colorGoal.Target);
                 progressBar.fillAmount = progress;
                 progressBar.color = Color.Lerp(Color.red, Color.green, progress);
                 
@@ -150,7 +153,7 @@ namespace Match3.Unity
             }
             if (turnPlaybackController.IsPlaying) return;
             
-            if (!gameOverShown && goal.IsCompleted)
+            if (!gameOverShown && colorGoal.IsCompleted)
             {
                 HandleGameResult(GameResultType.Victory);
                 gameOverShown = true;
