@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Core.Contracts;
 using Core.Matching;
 using Core.Progress;
@@ -34,7 +36,9 @@ namespace Match3.Unity
         [SerializeField] private GameObject defeatPanel;
         [SerializeField] private TMP_Text scoreText;
         [SerializeField] private TMP_Text targetText;
+        [SerializeField] private TMP_Text colorGoalText;
         [SerializeField] private Image progressBar;
+        
        
         private GameSession session;
         private BoardInputController inputController;
@@ -54,9 +58,9 @@ namespace Match3.Unity
         private bool isPaused;
         private bool gameOverShown;
         
-        private GoalProgress goal;
+        private GoalProgress scoreGoal;
         //private bool hasReachedTarget => totalScore >= targetScore;
-        private ColorGoalProgress colorGoal;
+        private List<ColorGoalProgress> colorGoals;
         
 
         public void Start()
@@ -102,10 +106,17 @@ namespace Match3.Unity
             victoryPanel.SetActive(false);
             defeatPanel.SetActive(false);
 
+            scoreGoal = new GoalProgress(50);
+            colorGoals = new List<ColorGoalProgress>
+            {
+                new(PieceColor.Red, 10),
+                new(PieceColor.Blue, 10),
+                new(PieceColor.Green, 10)
+            };
             scoreText.text = "0";
-            targetText.text = colorGoal.Target.ToString();
+            targetText.text = scoreGoal.Target.ToString();
             progressBar.fillAmount = 0f;
-            colorGoal = new ColorGoalProgress(PieceColor.Red, 20);
+            
         }
 
         private void ApplyMove(Move move)
@@ -118,12 +129,21 @@ namespace Match3.Unity
             var presentation = session.TryApplyMove(move);
             if (presentation.WasApplied)
             {
-                //goal.Add(presentation.TotalClearedCells);
-                colorGoal.AddApprox(presentation.TotalClearedCells);
+                scoreGoal.Add(presentation.TotalClearedCells);
+                
+                foreach (var g in colorGoals)
+                {
+                    g.AddApprox(presentation.TotalClearedCells);
+                }
 
-                scoreText.text = colorGoal.Current.ToString();
+                scoreText.text = scoreGoal.Current.ToString();
+                
+                colorGoalText.text =
+                    $"R: {colorGoals[0].Current}/{colorGoals[0].Target} " +
+                    $"B: {colorGoals[1].Current}/{colorGoals[1].Target} " +
+                    $"G: {colorGoals[2].Current}/{colorGoals[2].Target}";
 
-                float progress = Mathf.Clamp01((float)colorGoal.Current / colorGoal.Target);
+                float progress = Mathf.Clamp01((float)scoreGoal.Current / scoreGoal.Target);
                 progressBar.fillAmount = progress;
                 progressBar.color = Color.Lerp(Color.red, Color.green, progress);
                 
@@ -153,7 +173,7 @@ namespace Match3.Unity
             }
             if (turnPlaybackController.IsPlaying) return;
             
-            if (!gameOverShown && colorGoal.IsCompleted)
+            if (!gameOverShown && scoreGoal.IsCompleted && colorGoals.All(g => g.IsCompleted))
             {
                 HandleGameResult(GameResultType.Victory);
                 gameOverShown = true;
@@ -350,7 +370,7 @@ namespace Match3.Unity
             totalMoves = config.TotalMoves;
             totalGameSeconds = config.TotalGameSeconds;
             
-            goal = new GoalProgress(config.TargetScore);
+            scoreGoal = new GoalProgress(config.TargetScore);
 
             SelectedLevelState.Current = null;
             
