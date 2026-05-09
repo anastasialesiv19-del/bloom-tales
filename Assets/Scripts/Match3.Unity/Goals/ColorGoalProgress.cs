@@ -2,7 +2,7 @@ using Core.Matching;
 
 namespace Match3.Unity.Goals
 {
-    public class ColorGoalProgress
+    public class ColorGoalProgress : IGoal
     {
         public PieceColor Color { get; }
         public int Current { get; private set; }
@@ -21,5 +21,11 @@ namespace Match3.Unity.Goals
         }
         
         public bool IsCompleted =>  Current >= Target;
+        public GoalType Type => GoalType.Color;
+
+        public void Apply(int claredCells)
+        {
+            AddApprox(claredCells);
+        }
     }
 }

@@ -1,6 +1,6 @@
 namespace Match3.Unity.Goals
 {
-    public class GoalProgress
+    public class GoalProgress : IGoal
     {
         public int Current { get; private set; }
         public int Target { get; }
@@ -17,5 +17,11 @@ namespace Match3.Unity.Goals
         }
 
         public bool IsCompleted => Current >= Target;
+        public GoalType Type => GoalType.Score;
+
+        public void Apply(int clearedCells)
+        {
+            Add(clearedCells);
+        }
     }
 }
