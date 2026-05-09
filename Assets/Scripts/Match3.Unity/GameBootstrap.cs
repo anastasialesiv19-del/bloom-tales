@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Contracts;
 using Core.Matching;
 using Core.Progress;
 using Match3.Unity.GameFlow;
@@ -58,10 +56,8 @@ namespace Match3.Unity
         private bool isPaused;
         private bool gameOverShown;
         
-        private GoalProgress scoreGoal;
-        //private bool hasReachedTarget => totalScore >= targetScore;
-        private List<ColorGoalProgress> colorGoals;
-        
+        private List<IGoal> goals;
+         
 
         public void Start()
         {
@@ -106,17 +102,23 @@ namespace Match3.Unity
             victoryPanel.SetActive(false);
             defeatPanel.SetActive(false);
 
-            scoreGoal = new GoalProgress(50);
-            colorGoals = new List<ColorGoalProgress>
+            goals = new List<IGoal>
             {
-                new(PieceColor.Red, 10),
-                new(PieceColor.Blue, 10),
-                new(PieceColor.Green, 10)
+                new GoalProgress(50),
+                new ColorGoalProgress(PieceColor.Red, 10),
+                new ColorGoalProgress(PieceColor.Blue, 10),
+                new ColorGoalProgress(PieceColor.Green, 10)
             };
+            
+            var scoreGoal = GetScoreGoal();
             scoreText.text = "0";
             targetText.text = scoreGoal.Target.ToString();
-            progressBar.fillAmount = 0f;
-            
+
+            var colorGoals = GetColorGoals();
+            colorGoalText.text =
+                $"R: 0 / {colorGoals[0].Target} " +
+                $"B: 0 / {colorGoals[1].Target} " +
+                $"G: 0 / {colorGoals[2].Target}";
         }
 
         private void ApplyMove(Move move)
@@ -129,15 +131,16 @@ namespace Match3.Unity
             var presentation = session.TryApplyMove(move);
             if (presentation.WasApplied)
             {
-                scoreGoal.Add(presentation.TotalClearedCells);
-                
-                foreach (var g in colorGoals)
+                foreach (var goal in goals)
                 {
-                    g.AddApprox(presentation.TotalClearedCells);
+                    goal.Apply(presentation.TotalClearedCells);
                 }
 
+                var scoreGoal = GetScoreGoal();
+                var colorGoals = GetColorGoals();
+
                 scoreText.text = scoreGoal.Current.ToString();
-                
+
                 colorGoalText.text =
                     $"R: {colorGoals[0].Current}/{colorGoals[0].Target} " +
                     $"B: {colorGoals[1].Current}/{colorGoals[1].Target} " +
@@ -173,7 +176,7 @@ namespace Match3.Unity
             }
             if (turnPlaybackController.IsPlaying) return;
             
-            if (!gameOverShown && scoreGoal.IsCompleted && colorGoals.All(g => g.IsCompleted))
+            if (!gameOverShown &&  goals.All(g => g.IsCompleted))
             {
                 HandleGameResult(GameResultType.Victory);
                 gameOverShown = true;
@@ -370,7 +373,7 @@ namespace Match3.Unity
             totalMoves = config.TotalMoves;
             totalGameSeconds = config.TotalGameSeconds;
             
-            scoreGoal = new GoalProgress(config.TargetScore);
+            goals = new List<IGoal>(config.TargetScore);
 
             SelectedLevelState.Current = null;
             
@@ -403,6 +406,19 @@ namespace Match3.Unity
                     victoryPanel.SetActive(true);
                     break;
             }
+        }
+        
+        private GoalProgress GetScoreGoal()
+        {
+            return (GoalProgress)goals.First(g => g.Type == GoalType.Score);
+        }
+
+        private List<ColorGoalProgress> GetColorGoals()
+        {
+            return goals
+                .Where(g => g.Type == GoalType.Color)
+                .Cast<ColorGoalProgress>()
+                .ToList();
         }
     }
 }
