@@ -34,10 +34,13 @@ namespace Match3.Unity
         [SerializeField] private GameObject defeatPanel;
         [SerializeField] private TMP_Text scoreText;
         [SerializeField] private TMP_Text targetText;
-        [SerializeField] private TMP_Text colorGoalText;
         [SerializeField] private Image progressBar;
+        [SerializeField] private Transform goalsRoot;
+        [SerializeField] private GoalItemView goalItemPrefab;
+        [SerializeField] private Sprite redGoalIcon;
+        [SerializeField] private Sprite blueGoalIcon;
+        [SerializeField] private Sprite greenGoalIcon;
         
-       
         private GameSession session;
         private BoardInputController inputController;
         private LevelId currentLevelId;
@@ -57,6 +60,7 @@ namespace Match3.Unity
         private bool gameOverShown;
         
         private List<IGoal> goals;
+        private List<GoalItemView> goalViews = new();
          
 
         public void Start()
@@ -115,10 +119,22 @@ namespace Match3.Unity
             targetText.text = scoreGoal.Target.ToString();
 
             var colorGoals = GetColorGoals();
-            colorGoalText.text =
-                $"R: 0 / {colorGoals[0].Target} " +
-                $"B: 0 / {colorGoals[1].Target} " +
-                $"G: 0 / {colorGoals[2].Target}";
+
+            foreach (var goal in colorGoals)
+            {
+                var view = Instantiate(goalItemPrefab, goalsRoot);
+
+                Sprite icon = goal.Color switch
+                {
+                    PieceColor.Red => redGoalIcon,
+                    PieceColor.Blue => blueGoalIcon,
+                    PieceColor.Green => greenGoalIcon,
+                    _ => null
+                };
+
+                view.Bind(goal, icon);
+                goalViews.Add(view);
+            }
         }
 
         private void ApplyMove(Move move)
@@ -137,14 +153,11 @@ namespace Match3.Unity
                 }
 
                 var scoreGoal = GetScoreGoal();
-                var colorGoals = GetColorGoals();
-
                 scoreText.text = scoreGoal.Current.ToString();
 
-                colorGoalText.text =
-                    $"R: {colorGoals[0].Current}/{colorGoals[0].Target} " +
-                    $"B: {colorGoals[1].Current}/{colorGoals[1].Target} " +
-                    $"G: {colorGoals[2].Current}/{colorGoals[2].Target}";
+                var colorGoals = GetColorGoals();
+                foreach (var view in goalViews)
+                    view.Refresh();
 
                 float progress = Mathf.Clamp01((float)scoreGoal.Current / scoreGoal.Target);
                 progressBar.fillAmount = progress;
