@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Core.Matching;
 using Match3.Unity.GameMode;
 
@@ -11,8 +12,9 @@ namespace Match3.Unity.Menu
         public int TotalMoves { get;}
         public float TotalGameSeconds { get; }
         public int TargetScore { get; }
+        public IReadOnlyList<GoalDefinition> Goals { get; }
 
-        public LevelConfig(LevelId levelId, string levelName, GameModeType gameMode, int totalMoves, float totalGameSeconds, int  targetScore)
+        public LevelConfig(LevelId levelId, string levelName, GameModeType gameMode, int totalMoves, float totalGameSeconds, int  targetScore,  IReadOnlyList<GoalDefinition> goals)
         {
             LevelId = levelId;
             LevelName = levelName;
@@ -20,6 +22,7 @@ namespace Match3.Unity.Menu
             TotalMoves = totalMoves;
             TotalGameSeconds = totalGameSeconds;
             TargetScore = targetScore;
+            Goals = goals;
         }
     }
 }
