@@ -105,35 +105,36 @@ namespace Match3.Unity
             
             victoryPanel.SetActive(false);
             defeatPanel.SetActive(false);
-
-            goals = new List<IGoal>
-            {
-                new GoalProgress(50),
-                new ColorGoalProgress(PieceColor.Red, 10),
-                new ColorGoalProgress(PieceColor.Blue, 10),
-                new ColorGoalProgress(PieceColor.Green, 10)
-            };
             
             var scoreGoal = GetScoreGoal();
             scoreText.text = "0";
             targetText.text = scoreGoal.Target.ToString();
 
-            var colorGoals = GetColorGoals();
-
-            foreach (var goal in colorGoals)
+            foreach (Transform child in goalsRoot)
             {
-                var view = Instantiate(goalItemPrefab, goalsRoot);
+                Destroy(child.gameObject);
+            }
 
-                Sprite icon = goal.Color switch
+            goalViews.Clear();
+            
+            foreach (var goal in goals)
+            {
+                if (goal is ColorGoalProgress colorGoal)
                 {
-                    PieceColor.Red => redGoalIcon,
-                    PieceColor.Blue => blueGoalIcon,
-                    PieceColor.Green => greenGoalIcon,
-                    _ => null
-                };
+                    var view = Instantiate(goalItemPrefab, goalsRoot);
 
-                view.Bind(goal, icon);
-                goalViews.Add(view);
+                    Sprite icon = colorGoal.Color switch
+                    {
+                        PieceColor.Red => redGoalIcon,
+                        PieceColor.Blue => blueGoalIcon,
+                        PieceColor.Green => greenGoalIcon,
+                        _ => null
+                    };
+
+                    view.Bind(colorGoal, icon);
+                    goalViews.Add(view);
+                }
+                
             }
         }
 
@@ -154,8 +155,7 @@ namespace Match3.Unity
 
                 var scoreGoal = GetScoreGoal();
                 scoreText.text = scoreGoal.Current.ToString();
-
-                var colorGoals = GetColorGoals();
+                
                 foreach (var view in goalViews)
                     view.Refresh();
 
@@ -386,7 +386,12 @@ namespace Match3.Unity
             totalMoves = config.TotalMoves;
             totalGameSeconds = config.TotalGameSeconds;
             
-            goals = new List<IGoal>(config.TargetScore);
+            goals = new List<IGoal>();
+
+            foreach (var def in config.Goals)
+            {
+                goals.Add(GoalFactory.Create(def));
+            }
 
             SelectedLevelState.Current = null;
             
@@ -424,14 +429,6 @@ namespace Match3.Unity
         private GoalProgress GetScoreGoal()
         {
             return (GoalProgress)goals.First(g => g.Type == GoalType.Score);
-        }
-
-        private List<ColorGoalProgress> GetColorGoals()
-        {
-            return goals
-                .Where(g => g.Type == GoalType.Color)
-                .Cast<ColorGoalProgress>()
-                .ToList();
         }
     }
 }
