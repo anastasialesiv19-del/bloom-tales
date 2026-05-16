@@ -13,8 +13,14 @@ namespace Core.Generation
         {
             if(BoardResolver.HasEmptyCells(board)) throw new InvalidOperationException("Shuffle only works on a full board without empty cells.");
             
-            var allPieces = board.AllPositions().Select(pos => board.Get(pos.Row, pos.Col)).ToList();
+            var movablePositions = board.AllPositions()
+                .Where(pos => !board.HasObstacle(pos.Row, pos.Col))
+                .ToList();
 
+            var allPieces = movablePositions
+                .Select(pos => board.Get(pos.Row, pos.Col))
+                .ToList();
+            
             var rng = provider ?? new SystemRandomProvider();
             
             var maxAttempts = 100;
@@ -30,7 +36,8 @@ namespace Core.Generation
                 }
 
                 var index = 0;
-                foreach (var pos in board.AllPositions())
+
+                foreach (var pos in movablePositions)
                 {
                     board.Set(pos.Row, pos.Col, shuffledPieces[index]);
                     index++;
