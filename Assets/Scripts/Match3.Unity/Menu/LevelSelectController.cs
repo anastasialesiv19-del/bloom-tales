@@ -9,21 +9,21 @@ namespace Match3.Unity.Menu
         public void OnLevel1Clicked()
         {
             var config = LevelConfigFactory.Create(LevelId.Level1);
-            SelectedLevelState.Current = config;
+            SelectedLevelState.Set(config);
             SceneManager.LoadScene("SampleScene");
         }
 
         public void OnLevel2Clicked()
         {
             var config = LevelConfigFactory.Create(LevelId.Level2);
-            SelectedLevelState.Current = config;
+            SelectedLevelState.Set(config);
             SceneManager.LoadScene("SampleScene");   
         }
 
         public void OnLevel3Clicked()
         {
             var config = LevelConfigFactory.Create(LevelId.Level3);
-            SelectedLevelState.Current = config;
+            SelectedLevelState.Set(config);
             SceneManager.LoadScene("SampleScene");
         }
         
