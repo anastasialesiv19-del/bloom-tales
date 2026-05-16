@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Core.Matching;
 using Match3.Unity.GameMode;
 
 namespace Match3.Unity.Menu
