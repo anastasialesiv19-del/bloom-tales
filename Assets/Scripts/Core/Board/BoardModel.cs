@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Core.Board;
 
 namespace Core.Matching
 {
@@ -10,6 +11,7 @@ namespace Core.Matching
         public int Height { get; }
 
         private readonly Piece[,] grid;
+        private readonly ObstacleModel[,] obstacles;
 
         public BoardModel(int height, int width)
         {
@@ -21,6 +23,7 @@ namespace Core.Matching
             Width = width;
             Height = height;
             grid = new Piece[height, width];
+            obstacles =  new ObstacleModel[height, width];
         }
 
         public Piece Get(int row, int col)
@@ -166,6 +169,21 @@ namespace Core.Matching
                 default:
                     throw new InvalidOperationException();
             }
+        }
+
+        public ObstacleModel GetObstacle(int row , int col)
+        {
+            return obstacles[row, col];
+        }
+
+        public void SetObstacle(int row, int col, ObstacleModel obstacle)
+        {
+            obstacles[row, col] = obstacle;
+        }
+
+        public bool HasObstacle(int row, int col)
+        {
+            return !GetObstacle(row, col).IsEmpty;
         }
 
     }
