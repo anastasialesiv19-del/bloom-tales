@@ -42,7 +42,14 @@ namespace Match3.Unity
             
             for (var row = 0; row < _height; row++)
             for (var col = 0; col < _width; col++)
-                cells[row, col].SetPiece(snapshot.Get(row, col));
+            {
+                var piece = snapshot.Get(row, col);
+                var obstacle = snapshot.GetObstacle(row, col);
+
+                cells[row, col].SetPiece(piece);
+                cells[row, col].SetObstacle(obstacle);
+                
+            }
             
         }
         
