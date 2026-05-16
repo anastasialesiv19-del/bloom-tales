@@ -18,7 +18,16 @@ namespace Core.Matching
 
         public static bool IsValidSwap(BoardModel board, Pos a, Pos b)
         {
-            return AreAdjacent(a, b) &&  IsSwapInsideBoard(board, a, b);
+            if (!IsSwapInsideBoard(board, a, b))
+                return false;
+
+            if (!AreAdjacent(a, b))
+                return false;
+
+            if (board.HasObstacle(a.Row, a.Col) || board.HasObstacle(b.Row, b.Col))
+                return false;
+
+            return true;
         }
     }
 }
