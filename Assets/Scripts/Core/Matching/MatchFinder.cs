@@ -17,6 +17,14 @@ namespace Core.Matching
                 
                 for (int col = 0; col < board.Width; col++)
                 {
+                    if (board.HasObstacle(row, col))
+                    {
+                        FlushHoriz(matches, row, matchStart, matchLength);
+                        currentColor = null;
+                        matchLength = 0;
+                        continue;
+                    }
+
                     var cell = board.Get(row, col);
                     if (IsMatchCandidate(cell))
                     {
@@ -47,6 +55,14 @@ namespace Core.Matching
                 
                 for (int row = 0; row < board.Height; row++)
                 {
+                    if (board.HasObstacle(row, col))
+                    {
+                        FlushVert(matches, col, matchStart, matchLength);
+                        currentColor = null;
+                        matchLength = 0;
+                        continue;
+                    }
+
                     var cell = board.Get(row, col);
                     if (IsMatchCandidate(cell))
                     {
