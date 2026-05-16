@@ -1,4 +1,5 @@
 using System;
+using Core.Board;
 using Core.Matching;
 using TMPro;
 using UnityEngine;
@@ -13,6 +14,8 @@ namespace Match3.Unity
         [SerializeField] private Image pieceImage; //or SpriteRenderer
         [SerializeField] private Image selectionHighlight;
         [SerializeField] private Image hintHighlight;
+        [SerializeField] private Image obstacleImage;
+        [SerializeField] private Sprite boxObstacleSprite;
         private PieceSpriteLibrary spriteLibrary;
         public int Row { get; private set; }
         public int Col { get; private set; }
@@ -30,6 +33,8 @@ namespace Match3.Unity
 
         public void SetPiece(Piece piece)
         {
+            // piece rendering залишається як є
+            // obstacle окремо ставиться через SetObstacle(...)
             var viewData = PieceViewMapper.Map(piece, spriteLibrary);
 
             if (viewData.Sprite != null)
@@ -52,6 +57,38 @@ namespace Match3.Unity
             {
                 pieceText.text = viewData.Symbol;
                 pieceText.enabled = true;
+            }
+        }
+        
+        public void SetObstacle(ObstacleModel obstacle)
+        {
+            if (obstacleImage == null)
+                return;
+
+            if (obstacle.IsEmpty)
+            {
+                obstacleImage.gameObject.SetActive(false);
+                obstacleImage.sprite = null;
+                return;
+            }
+
+            obstacleImage.gameObject.SetActive(true);
+
+            pieceImage.enabled = false;
+            pieceImage.sprite = null;
+            pieceText.text = "";
+            pieceText.enabled = false;
+            
+            switch (obstacle.Kind)
+            {
+                case ObstacleKind.Box:
+                    obstacleImage.sprite = boxObstacleSprite;
+                    break;
+
+                default:
+                    obstacleImage.sprite = null;
+                    obstacleImage.gameObject.SetActive(false);
+                    break;
             }
         }
 
