@@ -316,7 +316,7 @@ namespace Match3.Unity
             idleTracker.ResetIdle();
             hintShownForCurrentIdle = false;
 
-            SelectedLevelState.Current = null;
+            SelectedLevelState.Clear();
             SceneManager.LoadScene("MainMenuScene");
         }
 
@@ -344,7 +344,7 @@ namespace Match3.Unity
                 return;
             }
             var config = LevelConfigFactory.Create(nextLevel);;
-            SelectedLevelState.Current = config;
+            SelectedLevelState.Set(config);
             SceneManager.LoadScene("SampleScene");
         }
         
@@ -393,7 +393,7 @@ namespace Match3.Unity
                 goals.Add(GoalFactory.Create(def));
             }
 
-            SelectedLevelState.Current = null;
+            SelectedLevelState.Clear();
             
         }
 
