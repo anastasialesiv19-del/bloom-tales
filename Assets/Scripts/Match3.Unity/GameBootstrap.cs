@@ -16,7 +16,7 @@ using UnityEngine.UI;
 
 namespace Match3.Unity
 {
-    public class GameBootstrap : MonoBehaviour
+    public partial class GameBootstrap : MonoBehaviour
     {
         [SerializeField] private BoardRenderer boardRenderer;
         [SerializeField] private TurnPlaybackController turnPlaybackController;
@@ -109,75 +109,9 @@ namespace Match3.Unity
             victoryPanel.SetActive(false);
             defeatPanel.SetActive(false);
             
-            var scoreGoal = GetScoreGoal();
-            scoreText.text = "0";
-            targetText.text = scoreGoal.Target.ToString();
-
-            foreach (Transform child in goalsRoot)
-            {
-                Destroy(child.gameObject);
-            }
-
-            goalViews.Clear();
-            
-            foreach (var goal in goals)
-            {
-                if (goal is ColorGoalProgress colorGoal)
-                {
-                    var view = Instantiate(goalItemPrefab, goalsRoot);
-
-                    Sprite icon = colorGoal.Color switch
-                    {
-                        PieceColor.Red => redGoalIcon,
-                        PieceColor.Blue => blueGoalIcon,
-                        PieceColor.Green => greenGoalIcon,
-                        _ => null
-                    };
-
-                    view.Bind(colorGoal, icon);
-                    goalViews.Add(view);
-                }
-                
-            }
-        }
-
-        private void ApplyMove(Move move)
-        {
-            hintController.ClearHint();
-            idleTracker.ResetIdle();
-            hintShownForCurrentIdle = false;
-            consecutiveHintsShown = 0;
-            
-            var presentation = session.TryApplyMove(move);
-            if (presentation.WasApplied)
-            {
-                foreach (var goal in goals)
-                {
-                    goal.Apply(presentation.TotalClearedCells);
-                }
-
-                var scoreGoal = GetScoreGoal();
-                scoreText.text = scoreGoal.Current.ToString();
-                
-                foreach (var view in goalViews)
-                    view.Refresh();
-
-                float progress = Mathf.Clamp01((float)scoreGoal.Current / scoreGoal.Target);
-                progressBar.fillAmount = progress;
-                progressBar.color = Color.Lerp(Color.red, Color.green, progress);
-                
-                turnsPlayed++;
-                consecutiveHintsShown = 0;
-                
-                if (gameMode == GameModeType.Moves)
-                {
-                    moveLimitController.ConsumeMove();
-                    RefreshResourceText();
-                }
-                SaveProgress();
-            }
-
-            turnPlaybackController.Play(presentation);
+            RebuildGoals();
+            RebuildGoalViews();
+            RefreshGoalHud();
         }
         
         private void Update()
@@ -216,262 +150,39 @@ namespace Match3.Unity
             idleTracker.Tick(Time.deltaTime);
             TryShowIdleHint();
         }
-
-        private void RefreshResourceText()
-        {
-
-            if (gameMode == GameModeType.Timer)
-            {
-                var totalSeconds = Mathf.CeilToInt(timerController.RemainingSeconds);
-                var minutes = totalSeconds / 60;
-                var seconds = totalSeconds % 60;
-                timerText.text = $"Timer: {minutes:00}:{seconds:00}";
-            }
-            else
-            {
-                timerText.text = $"Moves: {moveLimitController.RemainingMoves}";
-            }
-        }
-
-        private bool IsCurrentModeExpired()
-        {
-            return gameMode == GameModeType.Timer ? timerController.IsExpired : moveLimitController.IsExpired;
-        }
-
-        private void TryShowIdleHint()
-        {
-            if (isPaused)
-                return;
-            if(IsCurrentModeExpired()) return;
-            if (hintShownForCurrentIdle) return;
-            if (idleTracker.IdleSeconds < idleHintDelaySeconds) return;
-            ShowAdaptiveHintInternal(idleTracker.IdleSeconds);
-            hintShownForCurrentIdle = true;
-        }
         
-        private void HandleBoardCellClicked(int row, int col)
+        private void ApplyMove(Move move)
         {
             hintController.ClearHint();
-            idleTracker.ResetIdle();
-            hintShownForCurrentIdle = false;
-        }
-
-        public void OnHintButtonClick()
-        {
-            if (isPaused)
-                return;
-            if(IsCurrentModeExpired()) return;
-            if (turnPlaybackController.IsPlaying) return;
-            var effectiveIdleSeconds = Mathf.Max(idleTracker.IdleSeconds, idleHintDelaySeconds);
-            ShowAdaptiveHintInternal(effectiveIdleSeconds);
-            hintShownForCurrentIdle = false;
-        }
-
-        private void ShowAdaptiveHintInternal(float idleSeconds)
-        {
-            if (isPaused)
-                return;
-            if(IsCurrentModeExpired()) return;
-            hintController.ClearHint();
-            
-            var state = new AdaptiveHintState(consecutiveHintsShown, totalHintsShown);
-            var wasShown = hintController.ShowAdaptiveHint(idleSeconds, state);
-            idleTracker.ResetIdle();
-
-            if (wasShown)
-            {
-                consecutiveHintsShown++;
-                totalHintsShown++;
-                SaveProgress();
-            }
-            else
-                consecutiveHintsShown = 0;
-        }
-
-        public void OnPauseButtonClick()
-        {
-            if (turnPlaybackController.IsPlaying)
-                return;
-            if (IsCurrentModeExpired())
-                return;
-            
-            hintController.ClearHint();
-            inputController.ClearSelection();
-            idleTracker.ResetIdle();
-            hintShownForCurrentIdle = false;
-            
-            pausePanel.Show();
-            isPaused = true;
-        }
-
-        public void OnResumeButtonClick()
-        {
-            pausePanel.Hide();
-            isPaused = false;
-        }
-
-        public void OnBackToMenuClicked()
-        {
-            hintController.ClearHint();
-            inputController.ClearSelection();
-            pausePanel.Hide();
-            isPaused = false;
-            idleTracker.ResetIdle();
-            hintShownForCurrentIdle = false;
-
-            SelectedLevelState.Clear();
-            SceneManager.LoadScene("MainMenuScene");
-        }
-
-        private void SaveProgress()
-        {
-            var progress = new PlayerProgress(new AdaptiveHintState(0, totalHintsShown), turnsPlayed);
-            progressStore.Save(progress); 
-        }
-        
-        public void OnRestartButtonClick()
-        {
-            if (isPaused)
-            {
-                pausePanel.Hide();
-                isPaused = false;
-            }
-            StartNewGameFlow();
-        }
-
-        public void OnNextLevelClicked()
-        {
-            if (!LevelProgression.TryGetNext(currentLevelId, out var nextLevel))
-            {
-                OnBackToMenuClicked();
-                return;
-            }
-            var config = LevelConfigFactory.Create(nextLevel);;
-            SelectedLevelState.Set(config);
-            SceneManager.LoadScene("SampleScene");
-        }
-        
-        private void StartNewGameFlow()
-        {
-            hintController.ClearHint();
-            inputController.ClearSelection();
             idleTracker.ResetIdle();
             hintShownForCurrentIdle = false;
             consecutiveHintsShown = 0;
             
-            goals = new List<IGoal>();
-
-            foreach (var def in currentGoalDefinitions)
+            var presentation = session.TryApplyMove(move);
+            if (presentation.WasApplied)
             {
-                goals.Add(GoalFactory.Create(def));
-            }
+                foreach (var goal in goals)
+                    goal.Apply(presentation.TotalClearedCells);
 
-            var scoreGoal = GetScoreGoal();
-            scoreText.text = "0";
-            targetText.text = scoreGoal.Target.ToString();
-            progressBar.fillAmount = 0f;
-
-            foreach (var view in goalViews)
-            {
-                Destroy(view.gameObject);
-            }
-
-            goalViews.Clear();
-
-            foreach (var goal in goals)
-            {
-                if (goal is ColorGoalProgress colorGoal)
+                RefreshGoalHud();
+                
+                turnsPlayed++;
+                consecutiveHintsShown = 0;
+                
+                if (gameMode == GameModeType.Moves)
                 {
-                    var view = Instantiate(goalItemPrefab, goalsRoot);
-
-                    Sprite icon = colorGoal.Color switch
-                    {
-                        PieceColor.Red => redGoalIcon,
-                        PieceColor.Blue => blueGoalIcon,
-                        PieceColor.Green => greenGoalIcon,
-                        _ => null
-                    };
-
-                    view.Bind(colorGoal, icon);
-                    goalViews.Add(view);
+                    moveLimitController.ConsumeMove();
+                    RefreshResourceText();
                 }
+                SaveProgress();
             }
-            
-            var snapshot = session.StartNewGame(startHeight, startWidth, currentObstacles);
-            boardRenderer.RebuildAndRender(snapshot);
-            
-            if (gameMode == GameModeType.Timer)
-            {
-                timerController.StartTimer(totalGameSeconds);
-            }
-            else
-            {
-                moveLimitController.ResetMoves(totalMoves);
-            }
-
-            RefreshResourceText();
-            
-            victoryPanel.SetActive(false);
-            defeatPanel.SetActive(false);
-            gameOverShown = false;
+            turnPlaybackController.Play(presentation);
         }
         
-        private void ApplySelectedLevelConfigIfPresent()
+        private void SaveProgress()
         {
-            var config = SelectedLevelState.Current;
-            if (config == null)
-                config = LevelConfigFactory.Create(LevelId.Level1);
-            currentLevelId = config.LevelId;
-            currentObstacles = config.Obstacles;
-            currentGoalDefinitions = config.Goals;
-            
-            gameMode = config.GameMode;
-            totalMoves = config.TotalMoves;
-            totalGameSeconds = config.TotalGameSeconds;
-            
-            goals = new List<IGoal>();
-
-            foreach (var def in config.Goals)
-            {
-                goals.Add(GoalFactory.Create(def));
-            }
-
-            SelectedLevelState.Clear();
-            
-        }
-
-        private void ApplyTheme(LevelTheme theme)
-        {
-            if (backgroundImage != null)
-                backgroundImage.sprite = theme.background;
-        }
-
-        private void HandleGameResult(GameResultType result)
-        {
-            hintController.ClearHint();
-            inputController.ClearSelection();
-
-            if (victoryPanel != null)
-                victoryPanel.SetActive(false);
-
-            if (defeatPanel != null)
-                defeatPanel.SetActive(false);
-
-            switch (result)
-            {
-                case GameResultType.Defeat:
-                    defeatPanel.SetActive(true);
-                    break;
-
-                case GameResultType.Victory:
-                    victoryPanel.SetActive(true);
-                    break;
-            }
-        }
-        
-        private GoalProgress GetScoreGoal()
-        {
-            return (GoalProgress)goals.First(g => g.Type == GoalType.Score);
+            var progress = new PlayerProgress(new AdaptiveHintState(0, totalHintsShown), turnsPlayed);
+            progressStore.Save(progress); 
         }
     }
 }
