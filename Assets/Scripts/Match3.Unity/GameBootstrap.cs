@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Core.Board;
 using Core.Matching;
 using Core.Progress;
 using Match3.Unity.GameFlow;
@@ -61,6 +62,8 @@ namespace Match3.Unity
         
         private List<IGoal> goals;
         private List<GoalItemView> goalViews = new();
+        private IReadOnlyList<ObstacleDefinition> currentObstacles;
+        private IReadOnlyList<GoalDefinition> currentGoalDefinitions;
          
 
         public void Start()
@@ -75,7 +78,7 @@ namespace Match3.Unity
             turnsPlayed = progress.TurnsPlayed;
             
             session = new GameSession();
-            var initialSnapshot = session.StartNewGame(startHeight, startWidth);
+            var initialSnapshot = session.StartNewGame(startHeight, startWidth, currentObstacles);
             boardRenderer.Render(initialSnapshot);
             
             timerController = new TimerController();
@@ -356,7 +359,45 @@ namespace Match3.Unity
             hintShownForCurrentIdle = false;
             consecutiveHintsShown = 0;
             
-            var snapshot = session.StartNewGame(startHeight, startWidth);
+            goals = new List<IGoal>();
+
+            foreach (var def in currentGoalDefinitions)
+            {
+                goals.Add(GoalFactory.Create(def));
+            }
+
+            var scoreGoal = GetScoreGoal();
+            scoreText.text = "0";
+            targetText.text = scoreGoal.Target.ToString();
+            progressBar.fillAmount = 0f;
+
+            foreach (var view in goalViews)
+            {
+                Destroy(view.gameObject);
+            }
+
+            goalViews.Clear();
+
+            foreach (var goal in goals)
+            {
+                if (goal is ColorGoalProgress colorGoal)
+                {
+                    var view = Instantiate(goalItemPrefab, goalsRoot);
+
+                    Sprite icon = colorGoal.Color switch
+                    {
+                        PieceColor.Red => redGoalIcon,
+                        PieceColor.Blue => blueGoalIcon,
+                        PieceColor.Green => greenGoalIcon,
+                        _ => null
+                    };
+
+                    view.Bind(colorGoal, icon);
+                    goalViews.Add(view);
+                }
+            }
+            
+            var snapshot = session.StartNewGame(startHeight, startWidth, currentObstacles);
             boardRenderer.RebuildAndRender(snapshot);
             
             if (gameMode == GameModeType.Timer)
@@ -381,6 +422,8 @@ namespace Match3.Unity
             if (config == null)
                 config = LevelConfigFactory.Create(LevelId.Level1);
             currentLevelId = config.LevelId;
+            currentObstacles = config.Obstacles;
+            currentGoalDefinitions = config.Goals;
             
             gameMode = config.GameMode;
             totalMoves = config.TotalMoves;
