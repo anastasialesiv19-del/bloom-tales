@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Core.Board;
 using Match3.Unity.GameMode;
 
 namespace Match3.Unity.Menu
@@ -10,18 +12,22 @@ namespace Match3.Unity.Menu
         public GameModeType GameMode { get;}
         public int TotalMoves { get;}
         public float TotalGameSeconds { get; }
-        public int TargetScore { get; }
         public IReadOnlyList<GoalDefinition> Goals { get; }
+        public IReadOnlyList<ObstacleDefinition> Obstacles { get; }
 
-        public LevelConfig(LevelId levelId, string levelName, GameModeType gameMode, int totalMoves, float totalGameSeconds, int  targetScore,  IReadOnlyList<GoalDefinition> goals)
+        public LevelConfig(LevelId levelId, string levelName, 
+            GameModeType gameMode, int totalMoves, 
+            float totalGameSeconds,  
+            IReadOnlyList<GoalDefinition> goals, 
+            IReadOnlyList<ObstacleDefinition> obstacles)
         {
             LevelId = levelId;
             LevelName = levelName;
             GameMode = gameMode;
             TotalMoves = totalMoves;
             TotalGameSeconds = totalGameSeconds;
-            TargetScore = targetScore;
             Goals = goals;
+            Obstacles = obstacles ?? Array.Empty<ObstacleDefinition>();
         }
     }
 }
