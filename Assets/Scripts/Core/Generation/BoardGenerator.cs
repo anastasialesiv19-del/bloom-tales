@@ -27,27 +27,9 @@ namespace Core.Generation
                     board.Set(piecePos.Row, piecePos.Col, piece);
                 }
                 
-                AddObstacles(board);
                 if (BoardShuffler.IsPlayableBoard(board)) return board;
             }
             throw new InvalidOperationException("Board generation failed");
-        }
-
-        private static void AddObstacles(BoardModel board)
-        {
-            TryPlaceObstacle(board, 2, 2);
-            TryPlaceObstacle(board, 3, 4);
-        }
-
-        private static void TryPlaceObstacle(BoardModel board, int row, int col)
-        {
-            if (!board.InBounds(row, col)) return;
-            board.SetObstacle(row, col, new ObstacleModel
-            {
-                Kind = ObstacleKind.Box, 
-                Health = 1
-            });
-            board.Set(row, col, Piece.Empty());
         }
 
         private static Piece PieceForCell(int row, int col, BoardModel board, IRandomProvider rng)
