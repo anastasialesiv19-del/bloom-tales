@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Core.Board;
 using Core.Contracts;
 using Core.Generation;
 using Core.Hint;
@@ -14,12 +16,46 @@ namespace Match3.Unity
         public TurnResult LastTurnResult { get; private set; }
         public TurnPresentationModel LastPresentation { get; private set; }
 
-        public BoardSnapshot StartNewGame(int height, int width)
+        public BoardSnapshot StartNewGame(
+            int height,
+            int width,
+            IReadOnlyList<ObstacleDefinition> obstacles = null)
         {
             CurrentBoard = BoardGenerator.Generate(height, width);
+
+            ApplyObstacles(CurrentBoard, obstacles);
+
             LastTurnResult = null;
             LastPresentation = null;
+
             return BoardSnapshotFactory.Capture(CurrentBoard);
+        }
+        
+        private static void ApplyObstacles(
+            BoardModel board,
+            IReadOnlyList<ObstacleDefinition> obstacles)
+        {
+            if (obstacles == null)
+                return;
+
+            foreach (var obstacle in obstacles)
+            {
+                var pos = obstacle.Position;
+
+                if (!board.InBounds(pos.Row, pos.Col))
+                    continue;
+
+                board.SetObstacle(
+                    pos.Row,
+                    pos.Col,
+                    new ObstacleModel
+                    {
+                        Kind = obstacle.Kind,
+                        Health = obstacle.Health
+                    });
+
+                board.Set(pos.Row, pos.Col, Piece.Empty());
+            }
         }
 
         public TurnPresentationModel TryApplyMove(Move move)
