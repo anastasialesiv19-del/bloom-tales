@@ -17,13 +17,14 @@ namespace Match3.Unity.Menu
                         "Level 1", 
                         GameModeType.Moves, 
                         5, 
-                        0f, 
+                        0f,
                         new List<GoalDefinition>
                         {
                             new GoalDefinition(GoalType.Score, 3),
                             new GoalDefinition(GoalType.Color, 5, PieceColor.Red),
                             new GoalDefinition(GoalType.Color, 6, PieceColor.Blue),
-                            new GoalDefinition(GoalType.Color, 7, PieceColor.Green)
+                            new GoalDefinition(GoalType.Color, 7, PieceColor.Green),
+                            new GoalDefinition(GoalType.Obstacle, 2, obstacleKind: ObstacleKind.Box)
                         },
                         new List<ObstacleDefinition>
                         {
@@ -42,7 +43,8 @@ namespace Match3.Unity.Menu
                             new GoalDefinition(GoalType.Score, 3),
                             new GoalDefinition(GoalType.Color, 10, PieceColor.Red),
                             new GoalDefinition(GoalType.Color, 10, PieceColor.Blue),
-                            new GoalDefinition(GoalType.Color, 10, PieceColor.Green)
+                            new GoalDefinition(GoalType.Color, 10, PieceColor.Green),
+                            new GoalDefinition(GoalType.Obstacle, 2, obstacleKind: ObstacleKind.Box)
                         },
                         new List<ObstacleDefinition>
                         {
@@ -62,7 +64,8 @@ namespace Match3.Unity.Menu
                             new GoalDefinition(GoalType.Score, 50),
                             new GoalDefinition(GoalType.Color, 12, PieceColor.Red),
                             new GoalDefinition(GoalType.Color, 16, PieceColor.Blue),
-                            new GoalDefinition(GoalType.Color, 20, PieceColor.Green)
+                            new GoalDefinition(GoalType.Color, 20, PieceColor.Green),
+                            new GoalDefinition(GoalType.Obstacle, 3, obstacleKind: ObstacleKind.Box)
                         },
                         new List<ObstacleDefinition>
                         {
