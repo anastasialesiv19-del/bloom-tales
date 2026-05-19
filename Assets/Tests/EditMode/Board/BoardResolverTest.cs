@@ -27,7 +27,7 @@ namespace Tests.EditMode.Board
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
             
             var matches = MatchFinder.FindMatches(board);
-            int clearedCells = BoardResolver.ClearMatches(board,  matches);
+            int clearedCells = BoardResolver.ClearMatches(board,  matches).TotalClearedCells;
             
             Assert.AreEqual(5, clearedCells, board.ToDebugString());
             Assert.IsTrue(board.Get(0, 2).IsEmpty, board.ToDebugString());
