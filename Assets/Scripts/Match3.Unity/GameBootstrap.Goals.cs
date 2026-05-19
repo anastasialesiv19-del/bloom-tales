@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Core.Board;
 using Core.Matching;
 using Match3.Unity.Goals;
 using UnityEngine;
@@ -29,21 +30,35 @@ namespace Match3.Unity
 
             foreach (var goal in goals)
             {
-                if (goal is ColorGoalProgress colorGoal)
+                Sprite icon = null;
+
+                switch (goal)
                 {
-                    var view = Instantiate(goalItemPrefab, goalsRoot);
+                    case ColorGoalProgress colorGoal:
+                        icon = colorGoal.Color switch
+                        {
+                            PieceColor.Red => redGoalIcon,
+                            PieceColor.Blue => blueGoalIcon,
+                            PieceColor.Green => greenGoalIcon,
+                            _ => null
+                        };
+                        break;
 
-                    Sprite icon = colorGoal.Color switch
-                    {
-                        PieceColor.Red => redGoalIcon,
-                        PieceColor.Blue => blueGoalIcon,
-                        PieceColor.Green => greenGoalIcon,
-                        _ => null
-                    };
+                    case ObstacleGoalProgress obstacleGoal:
+                        icon = obstacleGoal.Kind switch
+                        {
+                            ObstacleKind.Box => boxGoalIcon,
+                            _ => null
+                        };
+                        break;
 
-                    view.Bind(colorGoal, icon);
-                    goalViews.Add(view);
+                    default:
+                        continue;
                 }
+
+                var view = Instantiate(goalItemPrefab, goalsRoot);
+                view.Bind(goal, icon);
+                goalViews.Add(view);
             }
         }
 
