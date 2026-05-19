@@ -31,13 +31,22 @@ namespace Core.Turns
             }
             
             var totalCleared = 0;
-            var specialApplied = TryResolveDirectSpecialActivation(board, move, out var directClearStats);
+            var specialApplied = TryResolveDirectSpecialActivation(board, move, out var directClearStats, out var directSwapSnapshot);
             
             if (specialApplied)
             {
+                if (directSwapSnapshot != null)
+                {
+                    tracePhases.Add(new TurnPhaseTrace(
+                        TurnPhaseType.SwapApplied,
+                        boardAfterPhase: directSwapSnapshot));
+                }
+
                 totalClearStats = totalClearStats.Add(directClearStats);
                 totalCleared = totalClearStats.TotalClearedCells;
+
                 var directSnapshot = BoardSnapshotFactory.Capture(board);
+
                 tracePhases.Add(new TurnPhaseTrace(
                     TurnPhaseType.DirectSpecialActivation,
                     directClearStats.TotalClearedCells,
@@ -111,8 +120,9 @@ namespace Core.Turns
                 0, 0, move, failureReason, new TurnTrace(tracePhases), initialBoardSnapshot, finalBoardSnapshot);
         }
 
-        private static bool TryResolveDirectSpecialActivation(BoardModel board, Move move, out ClearResolutionStats clearStats)
+        private static bool TryResolveDirectSpecialActivation(BoardModel board, Move move, out ClearResolutionStats clearStats, out BoardSnapshot swapSnapshot)
         { 
+            swapSnapshot = null;
             clearStats = ClearResolutionStats.Empty;
             var pieceA = board.Get(move.From.Row, move.From.Col);
             var pieceB = board.Get(move.To.Row, move.To.Col);
@@ -176,9 +186,18 @@ namespace Core.Turns
                 otherLineOrAreaPiece = pieceA;
             }
 
+            if (otherLineOrAreaPiece.IsEmpty)
+                return false;
+
             if (otherLineOrAreaPiece.IsSpecial)
                 return false;
-            return ClearDirectActivation(board, lineOrAreaCell, otherLineOrAreaCell, out clearStats);
+
+            return ClearLineOrAreaWithNormalAfterSwap(
+                board,
+                move,
+                lineOrAreaCell,
+                out clearStats,
+                out swapSnapshot);
         }
 
         private static bool IsDirectColorBomb(PieceKind kind)
@@ -200,6 +219,28 @@ namespace Core.Turns
         {
             var initialCells = new HashSet<Pos> { specialCell, otherCell };
             var finalCells = SpecialEffectResolver.CollectTriggeredCells(board, initialCells);
+            clearStats = BoardResolver.ClearCells(board, finalCells);
+            return true;
+        }
+        
+        private static bool ClearLineOrAreaWithNormalAfterSwap(
+            BoardModel board, Move move, Pos specialCellBeforeSwap,
+            out ClearResolutionStats clearStats, out BoardSnapshot swapSnapshot)
+        {
+            clearStats = ClearResolutionStats.Empty;
+
+            board.Swap(move.From, move.To);
+            swapSnapshot = BoardSnapshotFactory.Capture(board);
+
+            var specialFinalCell = specialCellBeforeSwap.Equals(move.From) ? move.To : move.From;
+
+            var specialPiece = board.Get(specialFinalCell.Row, specialFinalCell.Col);
+
+            var directEffectCells = GetDirectSpecialEffectCells(board, specialFinalCell, specialPiece.Kind);
+
+            var finalCells = SpecialEffectResolver
+                .CollectTriggeredCells(board, directEffectCells.ToHashSet());
+
             clearStats = BoardResolver.ClearCells(board, finalCells);
             return true;
         }
