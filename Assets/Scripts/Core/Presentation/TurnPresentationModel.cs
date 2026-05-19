@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Board;
 using Core.Contracts;
 using Core.Turns;
 using JetBrains.Annotations;
@@ -22,10 +23,11 @@ namespace Core.Presentation
         [CanBeNull] public BoardSnapshot RefillBoard { get; }
         [CanBeNull] public BoardSnapshot ShuffleBoard { get; }
         public IReadOnlyList<BoardSnapshot> CascadeBoards { get; }
+        public ClearResolutionStats ClearStats { get; }
 
         public TurnPresentationModel(BoardSnapshot initialBoard, BoardSnapshot finalBoard, bool wasApplied,
             bool wasShuffled,
-            bool createdMatch, int totalClearedCells, BoardSnapshot swapBoard, BoardSnapshot directActivationBoard,
+            bool createdMatch, int totalClearedCells, ClearResolutionStats clearStats, BoardSnapshot swapBoard, BoardSnapshot directActivationBoard,
             BoardSnapshot primaryResolveBoard, BoardSnapshot gravityBoard, BoardSnapshot refillBoard,
             BoardSnapshot shuffleBoard, IReadOnlyList<BoardSnapshot> cascadeBoards)
         {
@@ -35,6 +37,7 @@ namespace Core.Presentation
             WasShuffled = wasShuffled;
             CreatedMatch = createdMatch;
             TotalClearedCells = totalClearedCells;
+            ClearStats = clearStats ?? throw new ArgumentNullException(nameof(clearStats));
             SwapBoard = swapBoard;
             DirectActivationBoard = directActivationBoard;
             PrimaryResolveBoard = primaryResolveBoard;
