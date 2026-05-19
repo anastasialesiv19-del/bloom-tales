@@ -9,9 +9,9 @@ namespace Match3.Unity.Goals
         [SerializeField] private Image icon;
         [SerializeField] private TMP_Text text;
 
-        private ColorGoalProgress boundGoal;
+        private IGoal boundGoal;
 
-        public void Bind(ColorGoalProgress goal, Sprite iconSprite)
+        public void Bind(IGoal goal, Sprite iconSprite)
         {
             boundGoal = goal;
 
@@ -23,9 +23,40 @@ namespace Match3.Unity.Goals
 
         public void Refresh()
         {
-            if (boundGoal == null) return;
+            if (boundGoal == null)
+                return;
 
-            text.text = $"{boundGoal.Current}  /  {boundGoal.Target}";
+            text.text = $"{GetCurrent(boundGoal)} / {GetTarget(boundGoal)}";
         }
+        
+        private static int GetCurrent(IGoal goal)
+        {
+            switch (goal)
+            {
+                case ColorGoalProgress colorGoal:
+                    return colorGoal.Current;
+
+                case ObstacleGoalProgress obstacleGoal:
+                    return obstacleGoal.Current;
+
+                default:
+                    return 0;
+            }
+        }
+
+        private static int GetTarget(IGoal goal)
+        {
+            switch (goal)
+            {
+                case ColorGoalProgress colorGoal:
+                    return colorGoal.Target;
+
+                case ObstacleGoalProgress obstacleGoal:
+                    return obstacleGoal.Target;
+
+                default:
+                    return 0;
+            }
+        }   
     }
 }
