@@ -41,6 +41,7 @@ namespace Match3.Unity
         [SerializeField] private Sprite redGoalIcon;
         [SerializeField] private Sprite blueGoalIcon;
         [SerializeField] private Sprite greenGoalIcon;
+        [SerializeField] private Sprite boxGoalIcon;
         
         private GameSession session;
         private BoardInputController inputController;
@@ -162,7 +163,7 @@ namespace Match3.Unity
             if (presentation.WasApplied)
             {
                 foreach (var goal in goals)
-                    goal.Apply(presentation.TotalClearedCells);
+                    goal.Apply(presentation.ClearStats);
 
                 RefreshGoalHud();
                 
