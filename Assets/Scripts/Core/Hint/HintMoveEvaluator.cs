@@ -11,8 +11,11 @@ namespace Core.Hint
         
         public static DirectSpecialHintType GetDirectSpecialHintType(BoardModel board, Move move)
         {
-            var pieceA =  board.Get(move.From.Row, move.From.Col);
-            var pieceB =  board.Get(move.To.Row, move.To.Col);
+            if (!MoveValidator.IsValidSwap(board, move.From, move.To))
+                return DirectSpecialHintType.None;
+
+            var pieceA = board.Get(move.From.Row, move.From.Col);
+            var pieceB = board.Get(move.To.Row, move.To.Col);
             
             if (pieceA.IsEmpty || pieceB.IsEmpty) return DirectSpecialHintType.None;
             if(!IsSpecial(pieceA) &&  !IsSpecial(pieceB)) return DirectSpecialHintType.None;
