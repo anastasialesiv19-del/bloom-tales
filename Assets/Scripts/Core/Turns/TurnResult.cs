@@ -1,4 +1,5 @@
 using System;
+using Core.Board;
 using Core.Contracts;
 using Core.Matching;
 
@@ -18,10 +19,12 @@ namespace Core.Turns
         public TurnTrace Trace { get; }
         public BoardSnapshot InitialBoardSnapshot { get; }
         public BoardSnapshot FinalBoardSnapshot { get; }
+        public ClearResolutionStats ClearStats { get; }
 
         public TurnResult(bool wasSwapValid, bool wasApplied, bool wasShuffled, bool createdMatch,
             bool boardWasPlayableBeforeMove, int cascadeCount,
-            int totalClearedCells, Move move, FailureReason failureReason, TurnTrace trace, BoardSnapshot initialBoardSnapshot, BoardSnapshot finalBoardSnapshot)
+            int totalClearedCells, Move move, FailureReason failureReason, TurnTrace trace, BoardSnapshot initialBoardSnapshot, 
+            BoardSnapshot finalBoardSnapshot, ClearResolutionStats clearStats = null)
         {
             if (failureReason != FailureReason.None)
             {
@@ -55,6 +58,10 @@ namespace Core.Turns
             Trace = trace;
             InitialBoardSnapshot = initialBoardSnapshot;
             FinalBoardSnapshot = finalBoardSnapshot;
+            ClearStats = clearStats ?? ClearResolutionStats.Empty;
+
+            if (ClearStats.TotalClearedCells != totalClearedCells)
+                throw new ArgumentException("ClearStats total must match TotalClearedCells.");
         }
     }
 
