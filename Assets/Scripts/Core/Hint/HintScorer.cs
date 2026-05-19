@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Core.Board;
 using Core.Matching;
 using Core.Specials;
@@ -11,6 +10,8 @@ namespace Core.Hint
     {
         public static int ScoreMove(BoardModel board, Move move)
         {
+            if (!MoveValidator.IsValidSwap(board, move.From, move.To))
+                return 0;
             if (MoveFinder.CreatesMatch(board, move.From, move.To))
                 return ScoreMatchCreatingMove(board, move);
 
@@ -30,7 +31,8 @@ namespace Core.Hint
                 foreach (var match in matches)
                     baseMatchScore += match.Cells.Count;
                 var spawnBonus = GetSpawnBonus(board, matches, move);
-                return baseMatchScore + spawnBonus;
+                var obstacleBonus = GetObstacleDamageBonus(board, matches);
+                return baseMatchScore + spawnBonus + obstacleBonus;
             });
         }
 
@@ -49,6 +51,39 @@ namespace Core.Hint
             return maxBonus;
         }
 
+        private static int GetObstacleDamageBonus(BoardModel board, List<Match> matches)
+        {
+            var matchedCells = new HashSet<Pos>();
+
+            foreach (var match in matches)
+            {
+                foreach (var cell in match.Cells)
+                    matchedCells.Add(cell);
+            }
+
+            var finalCellsToClear = SpecialEffectResolver.CollectTriggeredCells(board, matchedCells);
+            var affectedObstacles = new HashSet<Pos>();
+
+            foreach (var cell in finalCellsToClear)
+            {
+                AddObstacleIfPresent(board, cell, affectedObstacles);
+                AddObstacleIfPresent(board, new Pos(cell.Row + 1, cell.Col), affectedObstacles);
+                AddObstacleIfPresent(board, new Pos(cell.Row - 1, cell.Col), affectedObstacles);
+                AddObstacleIfPresent(board, new Pos(cell.Row, cell.Col + 1), affectedObstacles);
+                AddObstacleIfPresent(board, new Pos(cell.Row, cell.Col - 1), affectedObstacles);
+            }
+
+            return affectedObstacles.Count * 4;
+        }
+
+        private static void AddObstacleIfPresent(BoardModel board, Pos pos, HashSet<Pos> affectedObstacles)
+        {
+            if (!board.InBounds(pos.Row, pos.Col))
+                return;
+
+            if (board.HasObstacle(pos.Row, pos.Col))
+                affectedObstacles.Add(pos);
+        }
         private static int GetSpawnKindBonus(PieceKind kind)
         {
             switch (kind)
