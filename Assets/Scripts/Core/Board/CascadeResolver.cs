@@ -27,6 +27,7 @@ namespace Core.Matching
             bool hadAnyMatches = false;
             var clearedPerWave = new List<int>();
 
+            var totalStats = ClearResolutionStats.Empty;
             int maxIterations = 100;
             while (maxIterations > 0)
             {
@@ -35,7 +36,9 @@ namespace Core.Matching
                     break;
 
                 hadAnyMatches = true;
-                var cleared = BoardResolver.ClearMatches(board, matches);
+                var waveStats = BoardResolver.ClearMatches(board, matches);
+                var cleared = waveStats.TotalClearedCells;
+                totalStats = totalStats.Add(waveStats);
                 BoardResolver.ApplyGravity(board);
                 BoardResolver.Refill(board,  provider);
 
@@ -46,7 +49,7 @@ namespace Core.Matching
                 onWaveResolved?.Invoke(cascadeCount, cleared, waveSnapshot);
                 maxIterations--;
             }
-            return new CascadeResult(cascadeCount, totalClearedCells, hadAnyMatches, clearedPerWave);
+            return new CascadeResult(cascadeCount, totalClearedCells, hadAnyMatches, clearedPerWave, totalStats);
         }
     }
 }
