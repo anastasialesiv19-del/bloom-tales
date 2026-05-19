@@ -1,3 +1,5 @@
+using Core.Board;
+
 namespace Match3.Unity.Goals
 {
     public class GoalProgress : IGoal
@@ -19,9 +21,9 @@ namespace Match3.Unity.Goals
         public bool IsCompleted => Current >= Target;
         public GoalType Type => GoalType.Score;
 
-        public void Apply(int clearedCells)
+        public void Apply(ClearResolutionStats stats)
         {
-            Add(clearedCells);
+            Add(stats.TotalClearedCells);
         }
     }
 }

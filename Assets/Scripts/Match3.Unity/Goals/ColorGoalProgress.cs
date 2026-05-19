@@ -1,3 +1,4 @@
+using Core.Board;
 using Core.Matching;
 
 namespace Match3.Unity.Goals
@@ -15,17 +16,12 @@ namespace Match3.Unity.Goals
             Current = 0;
         }
 
-        public void AddApprox(int clearedCells)
-        {
-            Current += clearedCells / 2;
-        }
-        
         public bool IsCompleted =>  Current >= Target;
         public GoalType Type => GoalType.Color;
 
-        public void Apply(int claredCells)
+        public void Apply(ClearResolutionStats stats)
         {
-            AddApprox(claredCells);
+            Current += stats.GetClearedCount(Color);
         }
     }
 }
