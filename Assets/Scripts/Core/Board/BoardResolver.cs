@@ -15,7 +15,7 @@ namespace Core.Board
                 .Cast<PieceColor>()
                 .ToArray();
 
-        private static void DamageObstaclesAffectedOrAdjacent(BoardModel board, IReadOnlyCollection<Pos> affectedCells)
+        private static int DamageObstaclesAffectedOrAdjacent(BoardModel board, IReadOnlyCollection<Pos> affectedCells)
         {
             var obstaclePositions = new HashSet<Pos>();
 
@@ -28,12 +28,24 @@ namespace Core.Board
                 AddIfObstacle(board, new Pos(cell.Row, cell.Col - 1), obstaclePositions);
             }
             
-            foreach(var pos in obstaclePositions)
+            int destroyed = 0;
+
+            foreach (var pos in obstaclePositions)
             {
                 var obstacle = board.GetObstacle(pos.Row, pos.Col);
                 obstacle.Health--;
-                board.SetObstacle(pos.Row, pos.Col, obstacle.Health <= 0 ? ObstacleModel.Empty : obstacle);
+
+                if (obstacle.Health <= 0)
+                {
+                    board.SetObstacle(pos.Row, pos.Col, ObstacleModel.Empty);
+                    destroyed++;
+                }
+                else
+                {
+                    board.SetObstacle(pos.Row, pos.Col, obstacle);
+                }
             }
+            return destroyed;
         }
 
         private static void AddIfObstacle(BoardModel board, Pos pos, HashSet<Pos> obstaclePositions)
@@ -44,30 +56,58 @@ namespace Core.Board
                 obstaclePositions.Add(pos);
         }
         
-        public static int ClearCells(BoardModel board, IReadOnlyCollection<Pos> initialCells)
+        private static void AddColorCount(
+            Dictionary<PieceColor, int> clearedByColor,
+            Piece piece)
+        {
+            if (piece.Color == null)
+                return;
+
+            var color = piece.Color.Value;
+
+            if (clearedByColor.ContainsKey(color))
+                clearedByColor[color]++;
+            else
+                clearedByColor[color] = 1;
+        }
+        
+        
+        public static ClearResolutionStats ClearCells(
+            BoardModel board,
+            IReadOnlyCollection<Pos> initialCells)
         {
             var affectedCells = new HashSet<Pos>(initialCells);
 
-            DamageObstaclesAffectedOrAdjacent(board, affectedCells);
+            int destroyedObstacles = DamageObstaclesAffectedOrAdjacent(board, affectedCells);
 
-            int clearedPiece = 0;
+            int clearedPieces = 0;
+            var clearedByColor = new Dictionary<PieceColor, int>();
 
             foreach (var pos in affectedCells)
             {
                 if (board.HasObstacle(pos.Row, pos.Col))
                     continue;
 
-                if (!board.Get(pos.Row, pos.Col).IsEmpty)
-                {
-                    board.Set(pos.Row, pos.Col, Piece.Empty());
-                    clearedPiece++;
-                }
+                var piece = board.Get(pos.Row, pos.Col);
+
+                if (piece.IsEmpty)
+                    continue;
+
+                AddColorCount(clearedByColor, piece);
+
+                board.Set(pos.Row, pos.Col, Piece.Empty());
+                clearedPieces++;
             }
 
-            return clearedPiece;
+            return new ClearResolutionStats(
+                clearedPieces,
+                clearedByColor,
+                destroyedObstacles);
         }
         
-        public static int ClearMatches(BoardModel board, IReadOnlyList<Match> matches)
+        public static ClearResolutionStats ClearMatches(
+            BoardModel board,
+            IReadOnlyList<Match> matches)
         {
             var uniqueCells = new HashSet<Pos>();
 
@@ -83,14 +123,23 @@ namespace Core.Board
 
             return ClearCells(board, finalCellsToClear);
         }
-
-        public static int ClearMatchesAndSpawnSpecials(BoardModel board, IReadOnlyList<Match> matches,
+        
+        public static ClearResolutionStats ClearMatchesAndSpawnSpecials(
+            BoardModel board,
+            IReadOnlyList<Match> matches,
             IReadOnlyList<SpecialSpawnDecision> spawns)
         {
-            int clearedCount = ClearMatches(board, matches);
+            var stats = ClearMatches(board, matches);
+
             foreach (var spawn in spawns)
-                board.Set(spawn.SpawnPosition.Row, spawn.SpawnPosition.Col, spawn.SpawnPiece);
-            return clearedCount;
+            {
+                board.Set(
+                    spawn.SpawnPosition.Row,
+                    spawn.SpawnPosition.Col,
+                    spawn.SpawnPiece);
+            }
+
+            return stats;
         }
 
         public static void ApplyGravity(BoardModel board)
