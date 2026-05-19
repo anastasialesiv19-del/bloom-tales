@@ -2760,6 +2760,7 @@ MonoBehaviour:
   redGoalIcon: {fileID: 21300000, guid: ca90695232567b5489b7ec8773a536ee, type: 3}
   blueGoalIcon: {fileID: 21300000, guid: 023db5ee804996141b488bd69f5236a7, type: 3}
   greenGoalIcon: {fileID: 21300000, guid: b4534ae15a52a7047b0e876dbc3d364b, type: 3}
+  boxGoalIcon: {fileID: 21300000, guid: 195c27a38029adf4aa0a1c713973cc54, type: 3}
 --- !u!4 &1247898197
 Transform:
   m_ObjectHideFlags: 0
