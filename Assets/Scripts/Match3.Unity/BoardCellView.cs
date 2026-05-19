@@ -1,7 +1,6 @@
 using System;
 using Core.Board;
 using Core.Matching;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,8 +9,7 @@ namespace Match3.Unity
 {
     public class BoardCellView : MonoBehaviour, IPointerClickHandler
     {
-        [SerializeField] private TMP_Text pieceText;
-        [SerializeField] private Image pieceImage; //or SpriteRenderer
+        [SerializeField] private Image pieceImage;
         [SerializeField] private Image selectionHighlight;
         [SerializeField] private Image hintHighlight;
         [SerializeField] private Image obstacleImage;
@@ -47,17 +45,6 @@ namespace Match3.Unity
                 pieceImage.enabled = false;
                 pieceImage.sprite = null;
             }
-
-            if (string.IsNullOrEmpty(viewData.Symbol))
-            {
-                pieceText.text = "";
-                pieceText.enabled = false;
-            }
-            else
-            {
-                pieceText.text = viewData.Symbol;
-                pieceText.enabled = true;
-            }
         }
         
         public void SetObstacle(ObstacleModel obstacle)
@@ -73,11 +60,8 @@ namespace Match3.Unity
             }
 
             obstacleImage.gameObject.SetActive(true);
-
             pieceImage.enabled = false;
             pieceImage.sprite = null;
-            pieceText.text = "";
-            pieceText.enabled = false;
             
             switch (obstacle.Kind)
             {
