@@ -4,6 +4,7 @@ using Match3.Unity.GameFlow;
 using Match3.Unity.GameMode;
 using Match3.Unity.Goals;
 using Match3.Unity.Menu;
+using Match3.Unity.Save;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -54,6 +55,7 @@ namespace Match3.Unity
             hintShownForCurrentIdle = false;
             consecutiveHintsShown = 0;
             
+            ResetRunStats();
             RebuildGoals();
             RebuildGoalViews();
             RefreshGoalHud();
@@ -79,6 +81,7 @@ namespace Match3.Unity
         
         private void HandleGameResult(GameResultType result)
         {
+            SaveLevelResult(result);
             hintController.ClearHint();
             inputController.ClearSelection();
 
@@ -103,6 +106,39 @@ namespace Match3.Unity
         private bool IsCurrentModeExpired()
         {
             return gameMode == GameModeType.Timer ? timerController.IsExpired : moveLimitController.IsExpired;
+        }
+        
+        private void ResetRunStats()
+        {
+            manualHintsShownThisRun = 0;
+            idleHintsShownThisRun = 0;
+            hintsAppliedThisRun = 0;
+
+            clearedCellsThisRun = 0;
+            destroyedObstaclesThisRun = 0;
+            turnsUsedThisRun = 0;
+
+            activeHintMove = null;
+            resultSavedForCurrentRun = false;
+        }
+        private void SaveLevelResult(GameResultType result)
+        {
+            if (resultSavedForCurrentRun) return;
+
+            resultSavedForCurrentRun = true;
+
+            levelResultStore.Append(new LevelRunResultDto
+            {
+                LevelId = currentLevelId.ToString(),
+                Result = result.ToString(),
+                TurnsUsed = turnsUsedThisRun,
+                ManualHintsShown = manualHintsShownThisRun,
+                IdleHintsShown = idleHintsShownThisRun,
+                HintsApplied = hintsAppliedThisRun,
+                TotalClearedCells = clearedCellsThisRun,
+                DestroyedObstacles = destroyedObstaclesThisRun,
+                CompletedAtUtc = System.DateTime.UtcNow.ToString("O")
+            });
         }
     }
 }

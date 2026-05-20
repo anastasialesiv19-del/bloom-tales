@@ -7,45 +7,51 @@ namespace Match3.Unity
     {
         private void TryShowIdleHint()
         {
-            if (isPaused)
-                return;
-            if(IsCurrentModeExpired()) return;
+            if (isPaused) return;
+            if (IsCurrentModeExpired()) return;
             if (hintShownForCurrentIdle) return;
             if (idleTracker.IdleSeconds < idleHintDelaySeconds) return;
-            ShowAdaptiveHintInternal(idleTracker.IdleSeconds);
+            ShowAdaptiveHintInternal(idleTracker.IdleSeconds, false);
             hintShownForCurrentIdle = true;
         }
         
         public void OnHintButtonClick()
         {
-            if (isPaused)
-                return;
+            if (isPaused) return;
             if(IsCurrentModeExpired()) return;
             if (turnPlaybackController.IsPlaying) return;
             var effectiveIdleSeconds = Mathf.Max(idleTracker.IdleSeconds, idleHintDelaySeconds);
-            ShowAdaptiveHintInternal(effectiveIdleSeconds);
+            ShowAdaptiveHintInternal(effectiveIdleSeconds, true);
             hintShownForCurrentIdle = false;
         }
 
-        private void ShowAdaptiveHintInternal(float idleSeconds)
+        private void ShowAdaptiveHintInternal(float idleSeconds, bool isManualHint)
         {
-            if (isPaused)
-                return;
+            if (isPaused) return;
             if(IsCurrentModeExpired()) return;
             hintController.ClearHint();
             
             var state = new AdaptiveHintState(consecutiveHintsShown, totalHintsShown);
-            var wasShown = hintController.ShowAdaptiveHint(idleSeconds, state);
+            var shownMove = hintController.ShowAdaptiveHint(idleSeconds, state);
             idleTracker.ResetIdle();
 
-            if (wasShown)
+            if (shownMove.HasValue)
             {
+                activeHintMove = shownMove.Value;
                 consecutiveHintsShown++;
                 totalHintsShown++;
+
+                if (isManualHint)
+                    manualHintsShownThisRun++;
+                else
+                    idleHintsShownThisRun++;
                 SaveProgress();
             }
             else
+            {
                 consecutiveHintsShown = 0;
+                activeHintMove = null;
+            }
         }
     }
 }

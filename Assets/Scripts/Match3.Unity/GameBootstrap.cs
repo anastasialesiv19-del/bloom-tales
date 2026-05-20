@@ -55,6 +55,16 @@ namespace Match3.Unity
         private IProgressStore progressStore;
         private int turnsPlayed;
         
+        private LevelResultStore levelResultStore;
+        private Move? activeHintMove;
+        private int manualHintsShownThisRun;
+        private int idleHintsShownThisRun;
+        private int hintsAppliedThisRun;
+        private int clearedCellsThisRun;
+        private int destroyedObstaclesThisRun;
+        private int turnsUsedThisRun;
+        private bool resultSavedForCurrentRun;
+        
         private TimerController timerController;
         private MoveLimitController moveLimitController;
 
@@ -74,6 +84,8 @@ namespace Match3.Unity
             ApplyTheme(theme);
             progressStore = new JsonProgressStore();
             var progress = progressStore.Load(); 
+            levelResultStore = new LevelResultStore();
+            ResetRunStats();
             consecutiveHintsShown = 0;
             totalHintsShown = progress.AdaptiveHints.TotalHintsShown;
             turnsPlayed = progress.TurnsPlayed;
@@ -89,7 +101,6 @@ namespace Match3.Unity
                 timerController.StartTimer(totalGameSeconds);
             else
                 moveLimitController.StartMoves(totalMoves);
-            
             RefreshResourceText();
             
             inputController = new BoardInputController();
@@ -117,8 +128,7 @@ namespace Match3.Unity
         
         private void Update()
         {
-            if (isPaused)
-                return;
+            if (isPaused) return;
             
             if (gameMode == GameModeType.Timer && !timerController.IsExpired)
             {
@@ -141,35 +151,46 @@ namespace Match3.Unity
                     var result = GameResultResolver.Resolve(
                         gameMode,
                         true);
-
                     HandleGameResult(result);
                     gameOverShown = true;
                 }
                 return;
             }
-            
             idleTracker.Tick(Time.deltaTime);
             TryShowIdleHint();
         }
         
         private void ApplyMove(Move move)
         {
+            var activeHintWasApplied =
+                activeHintMove.HasValue &&
+                IsSameMove(activeHintMove.Value, move);
+
+            activeHintMove = null;
             hintController.ClearHint();
             idleTracker.ResetIdle();
             hintShownForCurrentIdle = false;
             consecutiveHintsShown = 0;
-            
+
             var presentation = session.TryApplyMove(move);
             if (presentation.WasApplied)
             {
+                if (activeHintWasApplied)
+                    hintsAppliedThisRun++;
+
                 foreach (var goal in goals)
                     goal.Apply(presentation.ClearStats);
 
                 RefreshGoalHud();
-                
+
                 turnsPlayed++;
+                turnsUsedThisRun++;
+
+                clearedCellsThisRun += presentation.ClearStats.TotalClearedCells;
+                destroyedObstaclesThisRun += presentation.ClearStats.DestroyedObstacles;
+
                 consecutiveHintsShown = 0;
-                
+
                 if (gameMode == GameModeType.Moves)
                 {
                     moveLimitController.ConsumeMove();
@@ -178,6 +199,13 @@ namespace Match3.Unity
                 SaveProgress();
             }
             turnPlaybackController.Play(presentation);
+        }
+        
+        private static bool IsSameMove(Move a, Move b)
+        {
+            return
+                a.From.Equals(b.From) && a.To.Equals(b.To) ||
+                a.From.Equals(b.To) && a.To.Equals(b.From);
         }
         
         private void SaveProgress()
