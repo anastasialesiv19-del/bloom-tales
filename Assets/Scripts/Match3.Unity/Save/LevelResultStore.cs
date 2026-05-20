@@ -12,6 +12,7 @@ namespace Match3.Unity.Save
         {
             filePath = Path.Combine(Application.persistentDataPath, "level_results.json");
         }
+        public string FilePath => filePath;
 
         public void Append(LevelRunResultDto result)
         {
@@ -35,11 +36,19 @@ namespace Match3.Unity.Save
             return JsonUtility.FromJson<LevelResultCollectionDto>(json)
                    ?? new LevelResultCollectionDto();
         }
+        public void Clear()
+        {
+            var empty = new LevelResultCollectionDto();
+            var json = JsonUtility.ToJson(empty, true);
+            File.WriteAllText(filePath, json);
+        }
     }
+    
 
     [System.Serializable]
     public sealed class LevelResultCollectionDto
     {
         public List<LevelRunResultDto> Results = new();
     }
+    
 }
