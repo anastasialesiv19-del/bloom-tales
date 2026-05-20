@@ -5,6 +5,7 @@ namespace Core.Hint
         CreatesMatch,
         CreatesSpecial,
         ActivatesSpecialDirectly,
-        DamagesObstacle
+        DamagesObstacle,
+        ProgressesColorGoal
     }
 }

@@ -10,17 +10,26 @@ namespace Core.Hint
     {
         public static HintResult FindBestHint(BoardModel board)
         {
+            return FindBestHint(board, HintGoalContext.Empty);
+        }
+
+        public static HintResult FindBestHint(BoardModel board, HintGoalContext goalContext)
+        {
+            goalContext ??= HintGoalContext.Empty;
+
             var snapshot = BoardSnapshotFactory.Capture(board);
             var possibleMoves = HintMoveCollector.Collect(board);
-            if (possibleMoves.Count == 0) return new HintResult(null, snapshot);
+
+            if (possibleMoves.Count == 0)
+                return new HintResult(null, snapshot);
 
             var bestMove = possibleMoves[0];
-            int bestScore = HintScorer.ScoreMove(board, bestMove);
+            var bestScore = HintScorer.ScoreMove(board, bestMove, goalContext);
 
             for (int i = 1; i < possibleMoves.Count; i++)
             {
                 var move = possibleMoves[i];
-                int score = HintScorer.ScoreMove(board, move);
+                var score = HintScorer.ScoreMove(board, move, goalContext);
 
                 if (score <= bestScore)
                     continue;
@@ -28,14 +37,24 @@ namespace Core.Hint
                 bestScore = score;
                 bestMove = move;
             }
-            
-            var explanation = BuildExplanation(board, bestMove, bestScore);
+
+            var explanation = BuildExplanation(board, bestMove, bestScore, goalContext);
+
             return new HintResult(bestMove, HintStrength.None, explanation, snapshot);
+
         }
 
         public static HintResult FindAdaptiveHint(BoardModel board, HintContext context)
         {
-            var bestHint = FindBestHint(board);
+            
+            return FindAdaptiveHint(board, context, HintGoalContext.Empty);
+        }
+
+        public static HintResult FindAdaptiveHint(BoardModel board, HintContext context, HintGoalContext goalContext)
+        {
+            goalContext ??= HintGoalContext.Empty;
+
+            var bestHint = FindBestHint(board, goalContext);
             if (bestHint.Move == null) return new HintResult(null, bestHint.BoardSnapshot);
             
             var bestScore = bestHint.Explanation.Score;
@@ -45,7 +64,7 @@ namespace Core.Hint
             return new HintResult(bestHint.Move, strength, bestHint.Explanation, bestHint.BoardSnapshot);
         }
 
-        private static HintExplanation BuildExplanation(BoardModel board, Move move, int bestScore)
+        private static HintExplanation BuildExplanation(BoardModel board, Move move, int bestScore, HintGoalContext goalContext)
         {
             var reasons = new List<HintReasonType>();
             if(HintMoveEvaluator.IsDirectSpecialActivation(board, move))
@@ -57,6 +76,17 @@ namespace Core.Hint
 
             if (HintScorer.EstimateObstacleDamageCount(board, move) > 0)
                 reasons.Add(HintReasonType.DamagesObstacle);
+
+            var outcome = HintMoveOutcomeEstimator.Estimate(board, move);
+
+            foreach (var pair in outcome.ClearedByColor)
+            {
+                if (goalContext.GetRemainingColor(pair.Key) > 0)
+                {
+                    reasons.Add(HintReasonType.ProgressesColorGoal);
+                    break;
+                }
+            }
 
             return new HintExplanation(reasons, bestScore);
         }
