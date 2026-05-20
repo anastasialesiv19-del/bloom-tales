@@ -4,6 +4,7 @@ namespace Core.Hint
     {
         CreatesMatch,
         CreatesSpecial,
-        ActivatesSpecialDirectly
+        ActivatesSpecialDirectly,
+        DamagesObstacle
     }
 }

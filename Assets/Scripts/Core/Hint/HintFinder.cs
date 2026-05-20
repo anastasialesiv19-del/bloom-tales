@@ -52,8 +52,12 @@ namespace Core.Hint
                 reasons.Add(HintReasonType.ActivatesSpecialDirectly);
             if (MoveFinder.CreatesMatch(board, move.From, move.To))
                 reasons.Add(HintReasonType.CreatesMatch);
-            if(CreatesSpecial(board, move))
+            if (CreatesSpecial(board, move))
                 reasons.Add(HintReasonType.CreatesSpecial);
+
+            if (HintScorer.EstimateObstacleDamageCount(board, move) > 0)
+                reasons.Add(HintReasonType.DamagesObstacle);
+
             return new HintExplanation(reasons, bestScore);
         }
 
