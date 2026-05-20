@@ -2811,6 +2811,24 @@ MonoBehaviour:
   cyanSprite: {fileID: 21300000, guid: b8c2a07d47796974f95e3acc31e5d033, type: 3}
   blueSprite: {fileID: 21300000, guid: 023db5ee804996141b488bd69f5236a7, type: 3}
   purpleSprite: {fileID: 21300000, guid: c8dcc94edc2726649b10cd148f2f8f53, type: 3}
+  redRowClearSprite: {fileID: 21300000, guid: b8c2a07d47796974f95e3acc31e5d033, type: 3}
+  yellowRowClearSprite: {fileID: 0}
+  greenRowClearSprite: {fileID: 0}
+  cyanRowClearSprite: {fileID: 0}
+  blueRowClearSprite: {fileID: 0}
+  purpleRowClearSprite: {fileID: 0}
+  redColumnClearSprite: {fileID: 0}
+  yellowColumnClearSprite: {fileID: 0}
+  greenColumnClearSprite: {fileID: 0}
+  cyanColumnClearSprite: {fileID: 0}
+  blueColumnClearSprite: {fileID: 0}
+  purpleColumnClearSprite: {fileID: 0}
+  redAreaBombSprite: {fileID: 0}
+  yellowAreaBombSprite: {fileID: 0}
+  greenAreaBombSprite: {fileID: 0}
+  cyanAreaBombSprite: {fileID: 0}
+  blueAreaBombSprite: {fileID: 0}
+  purpleAreaBombSprite: {fileID: 0}
   colorBomb: {fileID: 21300000, guid: c1d5a6c1ade19d340922e895b71ec629, type: 3}
 --- !u!4 &1398170286
 Transform:
