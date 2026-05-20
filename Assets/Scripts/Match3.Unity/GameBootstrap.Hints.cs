@@ -32,7 +32,8 @@ namespace Match3.Unity
             hintController.ClearHint();
             
             var state = new AdaptiveHintState(consecutiveHintsShown, totalHintsShown);
-            var shownMove = hintController.ShowAdaptiveHint(idleSeconds, state);
+            var goalContext = BuildHintGoalContext();
+            var shownMove = hintController.ShowAdaptiveHint(idleSeconds, state, goalContext);
             idleTracker.ResetIdle();
 
             if (shownMove.HasValue)

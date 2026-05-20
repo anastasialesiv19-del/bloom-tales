@@ -1,3 +1,4 @@
+using Core.Hint;
 using Core.Matching;
 using Core.Progress;
 
@@ -14,9 +15,9 @@ namespace Match3.Unity
             this.boardRenderer = boardRenderer;
         }
 
-        public Move? ShowAdaptiveHint(float idleSeconds, AdaptiveHintState state)
+        public Move? ShowAdaptiveHint(float idleSeconds, AdaptiveHintState state, HintGoalContext goalContext)
         {
-            var hint = gameSession.GetAdaptiveHint(idleSeconds, state);
+            var hint = gameSession.GetAdaptiveHint(idleSeconds, state,  goalContext);
             if (!hint.Move.HasValue)
             {
                 boardRenderer.SetHint(null);

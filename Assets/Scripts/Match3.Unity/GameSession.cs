@@ -68,10 +68,10 @@ namespace Match3.Unity
            return presentation;
         }
 
-        public HintResult GetAdaptiveHint(float idleSeconds, AdaptiveHintState state)
+        public HintResult GetAdaptiveHint(float idleSeconds, AdaptiveHintState state, HintGoalContext goalContext = null)
         {
             var context = HintContextFactory.Create(idleSeconds, state);
-            return HintFinder.FindAdaptiveHint(CurrentBoard, context);
+            return HintFinder.FindAdaptiveHint(CurrentBoard, context, goalContext ?? HintGoalContext.Empty);
         }
     }
 }
