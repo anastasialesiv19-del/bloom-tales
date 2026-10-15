@@ -249,15 +249,17 @@ namespace Core.Turns
         {
             var pieceA = board.Get(move.From.Row, move.From.Col);
             var pieceB = board.Get(move.To.Row, move.To.Col);
-            var cellsToClear = new HashSet<Pos>{move.From,  move.To};
+            var initialCellsToClear = new HashSet<Pos>{move.From,  move.To};
             
             var cellsEffectA = GetDirectSpecialEffectCells(board, move.From, pieceA.Kind);
             var cellsEffectB = GetDirectSpecialEffectCells(board, move.To, pieceB.Kind);
             
-            cellsToClear.UnionWith(cellsEffectA);
-            cellsToClear.UnionWith(cellsEffectB);
+            initialCellsToClear.UnionWith(cellsEffectA);
+            initialCellsToClear.UnionWith(cellsEffectB);
             
-            clearStats = BoardResolver.ClearCells(board, cellsToClear);
+            var finalCellsToClear = SpecialEffectResolver.CollectTriggeredCells(board, initialCellsToClear);
+            
+            clearStats = BoardResolver.ClearCells(board, finalCellsToClear);
             return true;
         }
 
