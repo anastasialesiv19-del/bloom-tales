@@ -1,6 +1,7 @@
 using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
+using System.Linq;
 
 namespace Tests.EditMode.Turns
 {
@@ -32,6 +33,40 @@ namespace Tests.EditMode.Turns
             Assert.IsFalse(result.CreatedMatch);
             Assert.IsTrue(result.TotalClearedCells > 0);
             Assert.GreaterOrEqual(result.TotalClearedCells, 5);
+            
+            var directPhase = result.Trace.Phases.Single(
+                phase => phase.Type == TurnPhaseType.DirectSpecialActivation);
+
+            var before = result.InitialBoardSnapshot;
+            var after = directPhase.BoardAfterPhase;
+
+            Assert.IsNotNull(after);
+
+            for (int row = 0; row < board.Height; row++)
+            {
+                for (int col = 0; col < board.Width; col++)
+                {
+                    var original = before.Get(row, col);
+
+                    bool shouldBeCleared =
+                        original.Kind == PieceKind.ColorBomb ||
+                        original.Color == PieceColor.Green;
+
+                    if (shouldBeCleared)
+                    {
+                        Assert.IsTrue(
+                            after.Get(row, col).IsEmpty,
+                            $"Cell ({row}, {col}) should be cleared.");
+                    }
+                    else
+                    {
+                        Assert.AreEqual(
+                            original,
+                            after.Get(row, col),
+                            $"Cell ({row}, {col}) should remain unchanged.");
+                    }
+                }
+            }
         }
 
         [Test]
@@ -194,10 +229,11 @@ namespace Tests.EditMode.Turns
 
             var move = new Move(new Pos(1, 1), new Pos(1, 2));
             var result = TurnProcessor.TryProcessMove(board, move);
+            var directPhase = result.Trace.Phases.Single(phase => phase.Type == TurnPhaseType.DirectSpecialActivation);
 
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
-            Assert.AreEqual(allNonEmptyCells, result.TotalClearedCells);
+            Assert.AreEqual(allNonEmptyCells, directPhase.ClearedCells);
         }
        
         [Test]

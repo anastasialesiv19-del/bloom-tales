@@ -49,7 +49,7 @@ namespace Tests.EditMode.Turns
         }
 
         [Test]
-        public void TryProcessMove_DirectSpecialActivation_CapturesDirectActivationSnapshotWithoutSwapApplied()
+        public void TryProcessMove_LineOrAreaWithNormal_CapturesSwapBeforeDirectActivation()
         {
             var board = new BoardModel(3, 4);
 
@@ -78,8 +78,16 @@ namespace Tests.EditMode.Turns
             var directSpecialSnapshot = turnResult.Trace.Phases.SingleOrDefault(p => p.Type == TurnPhaseType.DirectSpecialActivation).BoardAfterPhase;
             var finalSnapshot = turnResult.FinalBoardSnapshot;
             
-            Assert.IsFalse(turnResult.Trace.Phases.Any(p => p.Type == TurnPhaseType.SwapApplied));
+            var phases = turnResult.Trace.Phases.ToList();
+            var swapPhase = phases.Single(p => p.Type == TurnPhaseType.SwapApplied);
+            var directPhase = phases.Single(p => p.Type == TurnPhaseType.DirectSpecialActivation);
+
+            Assert.Less(phases.IndexOf(swapPhase), phases.IndexOf(directPhase), "Swap must happen before direct activation.");
+            Assert.IsNotNull(swapPhase.BoardAfterPhase);
+            Assert.AreEqual(Piece.RowClear(PieceColor.Red), swapPhase.BoardAfterPhase.Get(1, 1));
+            Assert.AreEqual(Piece.Normal(PieceColor.Yellow), swapPhase.BoardAfterPhase.Get(1, 2));
             Assert.IsTrue(turnResult.Trace.Phases.Any(p => p.Type == TurnPhaseType.DirectSpecialActivation));
+            
             Assert.IsNotNull(initialSnapshot);
             Assert.IsNotNull(directSpecialSnapshot);
             Assert.IsNotNull(finalSnapshot);

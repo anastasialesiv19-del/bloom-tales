@@ -82,7 +82,7 @@ namespace Tests.EditMode.Turns
         }
 
         [Test]
-        public void Create_FromDirectSpecialActivationResult_MapsDirectActivationSnapshotWithoutSwapSnapshot()
+        public void Create_FromLineOrAreaWithNormalResult_MapsSwapAndDirectActivationSnapshot()
         {
             var board = new BoardModel(3, 3);
 
@@ -105,7 +105,16 @@ namespace Tests.EditMode.Turns
             Assert.IsTrue(presentation.WasApplied);
             Assert.IsFalse(presentation.CreatedMatch);
             
-            Assert.IsNull(presentation.SwapBoard);
+            Assert.IsNotNull(presentation.SwapBoard);
+            
+            Assert.AreEqual(
+                Piece.Normal(PieceColor.Yellow),
+                presentation.SwapBoard.Get(1, 1));
+
+            Assert.AreEqual(
+                Piece.RowClear(PieceColor.Blue),
+                presentation.SwapBoard.Get(1, 2));
+            
             Assert.IsNull(presentation.PrimaryResolveBoard);
             Assert.IsNotNull(presentation.DirectActivationBoard);
             Assert.IsNotNull(presentation.GravityBoard);
