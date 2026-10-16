@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Core.Board;
 using Core.Hint;
@@ -16,23 +17,22 @@ namespace Tests.EditMode.Hint
 
             board.Set(1, 1, Piece.RowClear(PieceColor.Red));
             board.Set(1, 2, Piece.Normal(PieceColor.Green));
-
-            board.SetObstacle(
-                0,
-                2,
-                new ObstacleModel
-                {
-                    Kind = ObstacleKind.Box,
-                    Health = 1
-                });
-
             board.Set(0, 2, Piece.Empty());
-
+            
             var move = new Move(new Pos(1, 1), new Pos(1, 2));
-
-            var score = HintScorer.ScoreMove(board, move);
-
-            Assert.Greater(score, 5);
+            var scoreWithoutObstacle = HintScorer.ScoreMove(board, move);
+            
+            board.SetObstacle(0, 2, new ObstacleModel
+            {
+                Kind = ObstacleKind.Box,
+                Health = 1
+            });
+            
+            var scoreWithObstacle = HintScorer.ScoreMove(board, move);
+            var estimate = HintMoveOutcomeEstimator.Estimate(board, move);
+            
+            Assert.AreEqual(1, estimate.EstimatedObstacleDamage);
+            Assert.AreEqual(4, scoreWithObstacle - scoreWithoutObstacle);
         }
 
         [Test]
@@ -56,6 +56,48 @@ namespace Tests.EditMode.Hint
 
             Assert.IsNotNull(hint.Explanation);
             Assert.IsTrue(hint.Explanation.Reasons.Contains(HintReasonType.DamagesObstacle));
+        }
+
+        [Test]
+        public void HintScorer_WhenObstacleGoalIsActive_CapsBonusByRemainingObstacles()
+        {
+            var board = new BoardModel(3, 4);
+            Fill(board, PieceColor.Blue);
+
+            board.Set(1, 1, Piece.RowClear(PieceColor.Red));
+            board.Set(1, 2, Piece.Normal(PieceColor.Green));
+            board.Set(0, 1, Piece.Empty());
+            board.Set(0, 2, Piece.Empty());
+            
+            var move = new Move(new Pos(1, 1), new Pos(1, 2));
+            var scoreWithoutObstacles = HintScorer.ScoreMove(board, move);
+            
+            board.SetObstacle(0, 1, new ObstacleModel
+            {
+                Kind = ObstacleKind.Box,
+                Health = 1
+            }); 
+            board.SetObstacle(0, 2, new ObstacleModel
+            {
+                Kind = ObstacleKind.Box,
+                Health = 1
+            });
+            
+            var estimate = HintMoveOutcomeEstimator.Estimate(board, move);
+            
+            Assert.AreEqual(2, estimate.EstimatedObstacleDamage);
+            
+            var scoreWithObstaclesWithoutGoal = HintScorer.ScoreMove(board, move);
+
+            var contextWithOneRemainingObstacle = new HintGoalContext(new Dictionary<PieceColor, int>(), 1);
+            var contextWithTwoRemainingObstacles = new HintGoalContext(new Dictionary<PieceColor, int>(), 2);
+            
+            var scoreWithOneRemainingObstacle = HintScorer.ScoreMove(board, move, contextWithOneRemainingObstacle);
+            var scoreWithTwoRemainingObstacles = HintScorer.ScoreMove(board, move, contextWithTwoRemainingObstacles);
+            
+            Assert.AreEqual(8, scoreWithObstaclesWithoutGoal - scoreWithoutObstacles);
+            Assert.AreEqual(8, scoreWithOneRemainingObstacle - scoreWithoutObstacles);
+            Assert.AreEqual(16, scoreWithTwoRemainingObstacles - scoreWithoutObstacles);
         }
 
         private static BoardModel BoardWithMatchNextToObstacle()
