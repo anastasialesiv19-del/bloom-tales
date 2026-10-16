@@ -7,23 +7,27 @@ namespace Core.Hint
     public sealed class HintMoveOutcome
     {
         private readonly Dictionary<PieceColor, int> clearedByColor;
-
         public IReadOnlyDictionary<PieceColor, int> ClearedByColor => clearedByColor;
         public int EstimatedObstacleDamage { get; }
+        public int EstimatedClearedPieces { get; }
 
         public static HintMoveOutcome Empty =>
-            new HintMoveOutcome(new Dictionary<PieceColor, int>(), 0);
+            new HintMoveOutcome(new Dictionary<PieceColor, int>(), 0, 0);
 
-        public HintMoveOutcome(IReadOnlyDictionary<PieceColor, int> clearedByColor, int estimatedObstacleDamage)
+        public HintMoveOutcome(IReadOnlyDictionary<PieceColor, int> clearedByColor, int estimatedObstacleDamage, int  estimatedClearedPieces)
         {
             if (clearedByColor == null)
                 throw new ArgumentNullException(nameof(clearedByColor));
 
             if (estimatedObstacleDamage < 0)
                 throw new ArgumentOutOfRangeException(nameof(estimatedObstacleDamage));
+            
+            if (estimatedClearedPieces < 0)
+                throw new ArgumentOutOfRangeException(nameof(estimatedClearedPieces));
 
             this.clearedByColor = new Dictionary<PieceColor, int>(clearedByColor);
             EstimatedObstacleDamage = estimatedObstacleDamage;
+            EstimatedClearedPieces = estimatedClearedPieces;
         }
 
         public int GetClearedCount(PieceColor color)

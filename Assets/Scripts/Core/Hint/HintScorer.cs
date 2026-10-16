@@ -14,10 +14,7 @@ namespace Core.Hint
             return ScoreMove(board, move, HintGoalContext.Empty);
         }
 
-        public static int ScoreMove(
-            BoardModel board,
-            Move move,
-            HintGoalContext goalContext)
+        public static int ScoreMove(BoardModel board, Move move, HintGoalContext goalContext)
         {
             if (!MoveValidator.IsValidSwap(board, move.From, move.To))
                 return 0;
@@ -29,8 +26,7 @@ namespace Core.Hint
             if (directType != DirectSpecialHintType.None)
             {
                 var outcome = HintMoveOutcomeEstimator.Estimate(board, move);
-                return ScoreDirectSpecialMove(directType) +
-                       ScoreGoalProgress(outcome, goalContext);
+                return ScoreDirectSpecialMove(directType) + ScoreGoalProgress(outcome, goalContext) + outcome.EstimatedClearedPieces;
             }
 
             if (MoveFinder.CreatesMatch(board, move.From, move.To))
@@ -45,12 +41,9 @@ namespace Core.Hint
             return BoardSimulation.WithTemporarySwap(board, move, () => {
 
                 var matches = MatchFinder.FindMatches(board);
-                var baseMatchScore = 0;
-                foreach (var match in matches)
-                    baseMatchScore += match.Cells.Count;
                 var spawnBonus = GetSpawnBonus(board, matches, move);
                 var goalBonus = ScoreGoalProgress(outcome, goalContext);
-                return baseMatchScore + spawnBonus + goalBonus;
+                return outcome.EstimatedClearedPieces + spawnBonus + goalBonus;
             });
         }
 
@@ -93,6 +86,7 @@ namespace Core.Hint
         {
             return HintMoveOutcomeEstimator.Estimate(board, move).EstimatedObstacleDamage;
         }
+        
         private static int GetSpawnKindBonus(PieceKind kind)
         {
             switch (kind)

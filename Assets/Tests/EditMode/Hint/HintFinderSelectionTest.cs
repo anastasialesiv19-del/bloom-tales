@@ -160,13 +160,20 @@ namespace Tests.EditMode.Hint
             board.Set(2, 3, Piece.Normal(PieceColor.Green));
 
             var result = HintFinder.FindBestHint(board);
-            var directMove = new Move(new Pos(0, 1), new Pos(1, 1));
+            var directMoveToYellow = new Move(new Pos(1, 1), new Pos(1, 2));
             var normalMove = new Move(new Pos(0, 2), new Pos(0, 3));
-            var directScore = HintScorer.ScoreMove(board, directMove);
+            var directScoreYellow = HintScorer.ScoreMove(board, directMoveToYellow);
             var normalScore = HintScorer.ScoreMove(board, normalMove);
             
-            Assert.Greater(directScore, normalScore);
-            if (result.Move != null) Assert.AreEqual(directMove, result.Move.Value);
+            var directMoveToBlue = new Move(new Pos(1, 1), new Pos(0, 1));
+            var directScoreBlue = HintScorer.ScoreMove(board, directMoveToBlue);
+            
+            
+            Assert.Greater(directScoreYellow, normalScore);
+            Assert.Greater(directScoreYellow, directScoreBlue);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Move.HasValue);
+            Assert.AreEqual(directMoveToYellow, result.Move.Value);
         }
 
         [Test]

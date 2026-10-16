@@ -288,5 +288,113 @@ namespace Tests.EditMode.Hint
             Assert.IsNotNull(result.Move);
             Assert.AreEqual(higherMove, result.Move.Value);
         }
+
+        [Test]
+        public void ScoreMove_ColorBombWithNormal_PrefersLargerPrimaryClear()
+        {
+            var board = new BoardModel(4, 4);
+            board.Set(0, 0, Piece.Normal(PieceColor.Green));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(0, 3, Piece.Normal(PieceColor.Green));
+                            
+            board.Set(1, 0, Piece.Normal(PieceColor.Red));
+            board.Set(1, 1, Piece.ColorBomb());
+            board.Set(1, 2, Piece.Normal(PieceColor.Blue));
+            board.Set(1, 3, Piece.Normal(PieceColor.Yellow));
+                            
+            board.Set(2, 0, Piece.Normal(PieceColor.Blue));
+            board.Set(2, 1, Piece.Normal(PieceColor.Green));
+            board.Set(2, 2, Piece.Normal(PieceColor.Yellow));
+            board.Set(2, 3, Piece.Normal(PieceColor.Blue));
+            
+            board.Set(3, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(3, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(3, 2, Piece.Normal(PieceColor.Green));
+            board.Set(3, 3, Piece.Normal(PieceColor.Red));
+            
+            var lowerMove = new Move(new Pos(1,1), new Pos(1,0));
+            var higherMove = new Move(new Pos(1,1), new Pos(1,2));
+            
+            var lowerOutcome = HintMoveOutcomeEstimator.Estimate(board, lowerMove);
+            var higherOutcome = HintMoveOutcomeEstimator.Estimate(board, higherMove);
+            
+            Assert.AreEqual(2, lowerOutcome.ClearedByColor[PieceColor.Red]);
+            Assert.AreEqual(5, higherOutcome.ClearedByColor[PieceColor.Blue]);
+            
+            Assert.AreEqual(3, lowerOutcome.EstimatedClearedPieces);
+            Assert.AreEqual(6, higherOutcome.EstimatedClearedPieces);
+            
+            var lowScore = HintScorer.ScoreMove(board, lowerMove);
+            var highScore = HintScorer.ScoreMove(board, higherMove);
+            
+            Assert.Greater(highScore, lowScore);
+        }
+
+        [Test]
+        public void ScoreMove_MatchTriggeringSpecial_ScoresHigherThanSameMatchWithoutSpecial()
+        {
+            var board1 = new BoardModel(4, 4);
+            board1.Set(0, 0, Piece.Normal(PieceColor.Blue));
+            board1.Set(0, 1, Piece.Normal(PieceColor.Green));
+            board1.Set(0, 2, Piece.Normal(PieceColor.Yellow));
+            board1.Set(0, 3, Piece.Normal(PieceColor.Blue));
+                            
+            board1.Set(1, 0, Piece.Normal(PieceColor.Red));
+            board1.Set(1, 1, Piece.Normal(PieceColor.Red));
+            board1.Set(1, 2, Piece.Normal(PieceColor.Blue));
+            board1.Set(1, 3, Piece.Normal(PieceColor.Green));
+                            
+            board1.Set(2, 0, Piece.Normal(PieceColor.Green));
+            board1.Set(2, 1, Piece.Normal(PieceColor.Yellow));
+            board1.Set(2, 2, Piece.Normal(PieceColor.Red));
+            board1.Set(2, 3, Piece.Normal(PieceColor.Yellow));
+            
+            board1.Set(3, 0, Piece.Normal(PieceColor.Yellow));
+            board1.Set(3, 1, Piece.Normal(PieceColor.Blue));
+            board1.Set(3, 2, Piece.Normal(PieceColor.Green));
+            board1.Set(3, 3, Piece.Normal(PieceColor.Red));
+            
+            var board2 = new BoardModel(4, 4);
+            board2.Set(0, 0, Piece.Normal(PieceColor.Blue));
+            board2.Set(0, 1, Piece.Normal(PieceColor.Green));
+            board2.Set(0, 2, Piece.Normal(PieceColor.Yellow));
+            board2.Set(0, 3, Piece.Normal(PieceColor.Blue));
+                            
+            board2.Set(1, 0, Piece.ColumnClear(PieceColor.Red));
+            board2.Set(1, 1, Piece.Normal(PieceColor.Red));
+            board2.Set(1, 2, Piece.Normal(PieceColor.Blue));
+            board2.Set(1, 3, Piece.Normal(PieceColor.Green));
+                            
+            board2.Set(2, 0, Piece.Normal(PieceColor.Green));
+            board2.Set(2, 1, Piece.Normal(PieceColor.Yellow));
+            board2.Set(2, 2, Piece.Normal(PieceColor.Red));
+            board2.Set(2, 3, Piece.Normal(PieceColor.Yellow));
+            
+            board2.Set(3, 0, Piece.Normal(PieceColor.Yellow));
+            board2.Set(3, 1, Piece.Normal(PieceColor.Blue));
+            board2.Set(3, 2, Piece.Normal(PieceColor.Green));
+            board2.Set(3, 3, Piece.Normal(PieceColor.Red));
+            
+            var move =  new Move(new Pos(1,2), new Pos(2,2));
+            
+            var board1Evaluation = HintMoveEvaluator.IsDirectSpecialActivation(board1, move);
+            var board2Evaluation = HintMoveEvaluator.IsDirectSpecialActivation(board2, move);
+            
+            Assert.IsFalse(board1Evaluation);
+            Assert.IsFalse(board2Evaluation);
+            
+            var board1Outcome = HintMoveOutcomeEstimator.Estimate(board1, move);
+            var board2Outcome = HintMoveOutcomeEstimator.Estimate(board2, move);
+            
+            Assert.AreEqual(3, board1Outcome.EstimatedClearedPieces);
+            Assert.AreEqual(6, board2Outcome.EstimatedClearedPieces);
+            
+            var board1Score = HintScorer.ScoreMove(board1, move);
+            var board2Score = HintScorer.ScoreMove(board2, move);
+            
+            Assert.Greater(board2Score, board1Score);
+        }
+        
     }
 }

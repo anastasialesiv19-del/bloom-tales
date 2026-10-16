@@ -108,6 +108,7 @@ namespace Core.Hint
         private static HintMoveOutcome BuildOutcome(BoardModel board, IReadOnlyCollection<Pos> clearedCells)
         {
             var clearedByColor = new Dictionary<PieceColor, int>();
+            var clearedPieceCount = 0;
 
             foreach (var cell in clearedCells)
             {
@@ -119,9 +120,14 @@ namespace Core.Hint
 
                 var piece = board.Get(cell.Row, cell.Col);
 
-                if (piece.IsEmpty || piece.Color == null)
+                if (piece.IsEmpty)
                     continue;
+    
+                clearedPieceCount++;
 
+                if (piece.Color == null)
+                    continue;
+                
                 var color = piece.Color.Value;
 
                 if (clearedByColor.ContainsKey(color))
@@ -130,14 +136,10 @@ namespace Core.Hint
                     clearedByColor[color] = 1;
             }
 
-            return new HintMoveOutcome(
-                clearedByColor,
-                CountAffectedObstacles(board, clearedCells));
+            return new HintMoveOutcome(clearedByColor, CountAffectedObstacles(board, clearedCells), clearedPieceCount);
         }
 
-        private static int CountAffectedObstacles(
-            BoardModel board,
-            IReadOnlyCollection<Pos> clearedCells)
+        private static int CountAffectedObstacles(BoardModel board, IReadOnlyCollection<Pos> clearedCells)
         {
             var affectedObstacles = new HashSet<Pos>();
             foreach (var cell in clearedCells)
@@ -191,9 +193,7 @@ namespace Core.Hint
 
         private static bool IsLineOrArea(PieceKind kind)
         {
-            return kind == PieceKind.RowClear ||
-                   kind == PieceKind.ColumnClear ||
-                   kind == PieceKind.AreaBomb;
+            return kind == PieceKind.RowClear || kind == PieceKind.ColumnClear || kind == PieceKind.AreaBomb;
         }
     }
 }
