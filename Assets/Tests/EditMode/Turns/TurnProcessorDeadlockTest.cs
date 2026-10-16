@@ -40,7 +40,7 @@ namespace Tests.EditMode.Turns
             var board = new BoardModel(3, 4);
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
-            board.Set(0, 2, Piece.Normal(PieceColor.Green));
+            board.Set(0, 2, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
 
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
@@ -52,15 +52,18 @@ namespace Tests.EditMode.Turns
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
+            
+            var provider = new SequenceRandomProvider(new[] { 4, 1, 0, 2, 4, 1 });
 
             var move = new Move(new Pos(1, 2), new Pos(1, 3));
-            var turnResult = TurnProcessor.TryProcessMove(board, move);
+            var turnResult = TurnProcessor.TryProcessMove(board, move,  provider);
 
             Assert.IsTrue(BoardShuffler.IsPlayableBoard(board));
             Assert.IsTrue(turnResult.WasSwapValid);
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsFalse(turnResult.WasShuffled);
             Assert.IsTrue(turnResult.CreatedMatch);
+            Assert.AreEqual(0, turnResult.CascadeCount);
             Assert.AreEqual(FailureReason.None, turnResult.FailureReason);
         }
     }

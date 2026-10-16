@@ -8,12 +8,18 @@ namespace Tests.EditMode.Matching
     public class MatchFinderTest
     {
            [Test]
-        public void MatchFinder_FindsHorizontalMatch()
+        public void MatchFinder_FindsVerticalMatch()
         {
-            var board = BoardGenerator.Generate(3, 2);
+            var board = new BoardModel(3, 2);
             board.Set(0, 0, Piece.Normal(PieceColor.Green));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
+            board.Set(1, 1, Piece.Normal(PieceColor.Yellow));
+            
             board.Set(2, 0, Piece.Normal(PieceColor.Green));
+            board.Set(2, 1, Piece.Normal(PieceColor.Blue));
+
             var matches = MatchFinder.FindMatches(board);
             Assert.AreEqual(1, matches.Count, board.ToDebugString());
             var cells = matches[0].Cells;
@@ -24,12 +30,17 @@ namespace Tests.EditMode.Matching
         }
 
         [Test]
-        public void MatchFinder_FindsVerticalMatch()
+        public void MatchFinder_FindsHorizontalMatch()
         {
-            var board = BoardGenerator.Generate(2, 3);
+            var board = new BoardModel(2, 3);
+            board.Set(0, 0, Piece.Normal(PieceColor.Red));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Blue));
+
             board.Set(1, 0, Piece.Normal(PieceColor.Green));
             board.Set(1, 1, Piece.Normal(PieceColor.Green));
             board.Set(1, 2, Piece.Normal(PieceColor.Green));
+       
             var matches = MatchFinder.FindMatches(board);
             Assert.AreEqual(1, matches.Count, board.ToDebugString());
             var cells = matches[0].Cells;

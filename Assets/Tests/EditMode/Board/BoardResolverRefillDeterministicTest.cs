@@ -20,7 +20,7 @@ namespace Tests.EditMode.Board
             board.Set(1, 1, Piece.Empty());
             board.Set(1, 2, Piece.Normal(PieceColor.Green));
 
-            var provider = new SequenceRandomProvider(new[] {2, 0, 3});
+            var provider = new SequenceRandomProvider(new[] {1, 0, 2});
             BoardResolver.Refill(board, provider);
             
             Assert.AreEqual(PieceColor.Yellow, board.Get(0, 0).Color);
