@@ -69,11 +69,13 @@ namespace Core.Hint
             var reasons = new List<HintReasonType>();
             if(HintMoveEvaluator.IsDirectSpecialActivation(board, move))
                 reasons.Add(HintReasonType.ActivatesSpecialDirectly);
-            if (MoveFinder.CreatesMatch(board, move.From, move.To))
+            else if (MoveFinder.CreatesMatch(board, move.From, move.To))
+            {
                 reasons.Add(HintReasonType.CreatesMatch);
-            if (CreatesSpecial(board, move))
-                reasons.Add(HintReasonType.CreatesSpecial);
-
+                if (CreatesSpecial(board, move))
+                    reasons.Add(HintReasonType.CreatesSpecial);
+            }
+            
             if (HintScorer.EstimateObstacleDamageCount(board, move) > 0)
                 reasons.Add(HintReasonType.DamagesObstacle);
 

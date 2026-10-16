@@ -14,9 +14,7 @@ namespace Core.Hint
         public static HintGoalContext Empty =>
             new HintGoalContext(new Dictionary<PieceColor, int>(), 0);
 
-        public HintGoalContext(
-            IReadOnlyDictionary<PieceColor, int> remainingByColor,
-            int remainingObstacles)
+        public HintGoalContext(IReadOnlyDictionary<PieceColor, int> remainingByColor, int remainingObstacles)
         {
             if (remainingByColor == null)
                 throw new ArgumentNullException(nameof(remainingByColor));
