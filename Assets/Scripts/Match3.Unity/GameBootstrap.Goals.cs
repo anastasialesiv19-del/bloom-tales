@@ -82,6 +82,7 @@ namespace Match3.Unity
         {
             var remainingByColor = new Dictionary<PieceColor, int>();
             var remainingObstacles = 0;
+            var remainingScore = 0;
             foreach (var goal in goals)
             {
                 switch (goal)
@@ -95,9 +96,12 @@ namespace Match3.Unity
                     case ObstacleGoalProgress obstacleGoal:
                         remainingObstacles += Mathf.Max(0, obstacleGoal.Target - obstacleGoal.Current);
                         break;
+                    case GoalProgress scoreGoal:
+                        remainingScore = Mathf.Max(0, scoreGoal.Target - scoreGoal.Current);
+                        break;
                 }
             }
-            return new HintGoalContext(remainingByColor, remainingObstacles);
+            return new HintGoalContext(remainingByColor, remainingObstacles, remainingScore);
         }
     }
 }
