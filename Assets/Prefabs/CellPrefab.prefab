@@ -133,7 +133,7 @@ MonoBehaviour:
   selectionHighlight: {fileID: 6587158758912503356}
   hintHighlight: {fileID: 1613624338871540423}
   obstacleImage: {fileID: 6692631717264269184}
-  boxObstacleSprite: {fileID: 21300000, guid: 195c27a38029adf4aa0a1c713973cc54, type: 3}
+  boxObstacleSprite: {fileID: -847677620, guid: 531da405336ba7349b22dd543aca1a93, type: 3}
 --- !u!222 &5535400038594042428
 CanvasRenderer:
   m_ObjectHideFlags: 0

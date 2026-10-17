@@ -134,7 +134,6 @@ GameObject:
   - component: {fileID: 210603730}
   - component: {fileID: 210603729}
   - component: {fileID: 210603728}
-  - component: {fileID: 210603731}
   m_Layer: 5
   m_Name: BackButton
   m_TagString: Untagged
@@ -255,37 +254,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 210603726}
   m_CullTransparentMesh: 1
---- !u!114 &210603731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 210603726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d9c35dbdb8a4e25a61249622c5144e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sourceMaterial: {fileID: 2100000, guid: 4ee3522ee3542f1499cd3f7713fe62a2, type: 2}
-  createRuntimeMaterialInstance: 1
-  useUnscaledTime: 1
-  outerRingDegreesPerSecond: 18
-  innerRingDegreesPerSecond: -28
-  outerMinRadius: 0.365
-  outerMaxRadius: 0.405
-  innerMinRadius: 0.285
-  innerMaxRadius: 0.315
-  bandSoftness: 0.012
-  pulseSpeed: 1.4
-  minGlow: 1.05
-  maxGlow: 1.65
-  minAlpha: 0.86
-  maxAlpha: 1
-  scalePulseAmount: 0.035
-  hoverGlowBonus: 0.25
-  hoverScaleBonus: 0.025
-  pressedScaleOffset: -0.035
 --- !u!1 &285899603
 GameObject:
   m_ObjectHideFlags: 0
