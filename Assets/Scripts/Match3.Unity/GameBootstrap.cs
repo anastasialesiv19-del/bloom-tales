@@ -34,14 +34,11 @@ namespace Match3.Unity
         [SerializeField] private GameObject victoryPanel;
         [SerializeField] private GameObject defeatPanel;
         [SerializeField] private TMP_Text scoreText;
-        [SerializeField] private TMP_Text targetText;
-        [SerializeField] private Image progressBar;
         [SerializeField] private Transform goalsRoot;
         [SerializeField] private GoalItemView goalItemPrefab;
-        [SerializeField] private Sprite redGoalIcon;
-        [SerializeField] private Sprite blueGoalIcon;
-        [SerializeField] private Sprite greenGoalIcon;
         [SerializeField] private Sprite boxGoalIcon;
+        [SerializeField] private Sprite scoreGoalIcon;
+        [SerializeField] private PieceSpriteLibrary pieceSpriteLibrary ;
         
         private GameSession session;
         private BoardInputController inputController;
@@ -62,6 +59,7 @@ namespace Match3.Unity
         private int hintsAppliedThisRun;
         private int clearedCellsThisRun;
         private int destroyedObstaclesThisRun;
+        private int scoreThisRun;
         private int turnsUsedThisRun;
         private bool resultSavedForCurrentRun;
         
@@ -162,9 +160,7 @@ namespace Match3.Unity
         
         private void ApplyMove(Move move)
         {
-            var activeHintWasApplied =
-                activeHintMove.HasValue &&
-                IsSameMove(activeHintMove.Value, move);
+            var activeHintWasApplied = activeHintMove.HasValue && IsSameMove(activeHintMove.Value, move);
 
             activeHintMove = null;
             hintController.ClearHint();
@@ -180,7 +176,8 @@ namespace Match3.Unity
 
                 foreach (var goal in goals)
                     goal.Apply(presentation.ClearStats);
-
+                
+                scoreThisRun += presentation.ClearStats.TotalClearedCells;
                 RefreshGoalHud();
 
                 turnsPlayed++;
@@ -188,7 +185,7 @@ namespace Match3.Unity
 
                 clearedCellsThisRun += presentation.ClearStats.TotalClearedCells;
                 destroyedObstaclesThisRun += presentation.ClearStats.DestroyedObstacles;
-
+                
                 consecutiveHintsShown = 0;
 
                 if (gameMode == GameModeType.Moves)

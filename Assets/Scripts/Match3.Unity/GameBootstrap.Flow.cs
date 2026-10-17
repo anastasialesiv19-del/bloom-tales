@@ -116,6 +116,7 @@ namespace Match3.Unity
 
             clearedCellsThisRun = 0;
             destroyedObstaclesThisRun = 0;
+            scoreThisRun = 0;
             turnsUsedThisRun = 0;
 
             activeHintMove = null;

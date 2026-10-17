@@ -105,7 +105,7 @@ TextureImporter:
         width: 63
         height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -126,7 +126,7 @@ TextureImporter:
         width: 135
         height: 132
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -134,6 +134,111 @@ TextureImporter:
       bones: []
       spriteID: 16e898432b345474e90fd14f6936894a
       internalID: -1395912449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pieces+Effects+UI_0
+      rect:
+        serializedVersion: 2
+        x: 861
+        y: 371
+        width: 119
+        height: 145
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3f272e414e915a41a20e84c4a172d33
+      internalID: 1756764300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pieces+Effects+UI_1
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 355
+        width: 163
+        height: 168
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c8afb1f7ca8efe4fbadae6e178e5723
+      internalID: 1051022086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pieces+Effects+UI_2
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 661
+        width: 180
+        height: 91
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fd6bee49eddfe34b9fb5029cdfb4789
+      internalID: -1452953061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pieces+Effects+UI_3
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 622
+        width: 93
+        height: 153
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec643f2b02ecb104cbb41c607b80c010
+      internalID: -1192619571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pieces+Effects+UI_4
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 42
+        width: 51
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a650734de92970d479cba2f904a8deff
+      internalID: 380755039
       vertices: []
       indices: 
       edges: []
@@ -149,6 +254,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
+      Pieces+Effects+UI_0: 1756764300
+      Pieces+Effects+UI_1: 1051022086
+      Pieces+Effects+UI_2: -1452953061
+      Pieces+Effects+UI_3: -1192619571
+      Pieces+Effects+UI_4: 380755039
       piece pack_2 + UI_0: -786772665
       piece pack_2 + UI_1: -1395912449
   mipmapLimitGroupName: 

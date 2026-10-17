@@ -6,8 +6,9 @@ namespace Match3.Unity.Goals
 {
     public class GoalItemView :MonoBehaviour
     {
-        [SerializeField] private Image icon;
-        [SerializeField] private TMP_Text text;
+        [SerializeField] private Image goalIcon;
+        [SerializeField] private TMP_Text goalText;
+        [SerializeField] private Image completedIcon;
 
         private IGoal boundGoal;
 
@@ -15,8 +16,8 @@ namespace Match3.Unity.Goals
         {
             boundGoal = goal;
 
-            if (icon != null)
-                icon.sprite = iconSprite;
+            if (goalIcon != null)
+                goalIcon.sprite = iconSprite;
 
             Refresh();
         }
@@ -26,7 +27,10 @@ namespace Match3.Unity.Goals
             if (boundGoal == null)
                 return;
 
-            text.text = $"{GetCurrent(boundGoal)} / {GetTarget(boundGoal)}";
+            goalText.text = $"{Mathf.Min(GetCurrent(boundGoal), GetTarget(boundGoal))} / {GetTarget(boundGoal)}";
+            
+            if(boundGoal.IsCompleted)
+                completedIcon.gameObject.SetActive(true);
         }
         
         private static int GetCurrent(IGoal goal)
@@ -35,10 +39,10 @@ namespace Match3.Unity.Goals
             {
                 case ColorGoalProgress colorGoal:
                     return colorGoal.Current;
-
                 case ObstacleGoalProgress obstacleGoal:
                     return obstacleGoal.Current;
-
+                case GoalProgress scoreGoal:
+                    return scoreGoal.Current;
                 default:
                     return 0;
             }
@@ -50,10 +54,10 @@ namespace Match3.Unity.Goals
             {
                 case ColorGoalProgress colorGoal:
                     return colorGoal.Target;
-
                 case ObstacleGoalProgress obstacleGoal:
                     return obstacleGoal.Target;
-
+                case GoalProgress scoreGoal:
+                    return scoreGoal.Target;
                 default:
                     return 0;
             }
