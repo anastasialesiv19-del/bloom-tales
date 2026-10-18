@@ -127,7 +127,7 @@ namespace Match3.Unity
         
         private void Update()
         {
-            if (isPaused) return;
+            if (isPaused || gameOverShown) return;
             
             if (gameMode == GameModeType.Timer && !timerController.IsExpired)
             {

@@ -7,7 +7,7 @@ namespace Match3.Unity
     {
         private void TryShowIdleHint()
         {
-            if (isPaused) return;
+            if (isPaused || gameOverShown) return;
             if (IsCurrentModeExpired()) return;
             if (hintShownForCurrentIdle) return;
             if (idleTracker.IdleSeconds < idleHintDelaySeconds) return;
@@ -18,7 +18,7 @@ namespace Match3.Unity
         
         public void OnHintButtonClick()
         {
-            if (isPaused) return;
+            if (isPaused || gameOverShown) return;
             if(IsCurrentModeExpired()) return;
             if (turnPlaybackController.IsPlaying) return;
             inputController.ClearSelection();
@@ -29,7 +29,7 @@ namespace Match3.Unity
 
         private void ShowAdaptiveHintInternal(float idleSeconds, bool isManualHint)
         {
-            if (isPaused) return;
+            if (isPaused || gameOverShown) return;
             if(IsCurrentModeExpired()) return;
             hintController.ClearHint();
             
