@@ -16,14 +16,14 @@ namespace Match3.Unity.Menu
                     return new LevelConfig(levelId, 
                         "Level 1", 
                         GameModeType.Moves, 
-                        10, 
+                        5, 
                         0f,
                         new List<GoalDefinition>
                         {
                             new GoalDefinition(GoalType.Score, 3),
                             new GoalDefinition(GoalType.Color, 5, PieceColor.Red),
-                            new GoalDefinition(GoalType.Color, 6, PieceColor.Cyan),
-                            new GoalDefinition(GoalType.Color, 7, PieceColor.Yellow),
+                            new GoalDefinition(GoalType.Color, 6, PieceColor.Blue),
+                            new GoalDefinition(GoalType.Color, 7, PieceColor.Green),
                             new GoalDefinition(GoalType.Obstacle, 2, obstacleKind: ObstacleKind.Box)
                         },
                         new List<ObstacleDefinition>
@@ -37,7 +37,7 @@ namespace Match3.Unity.Menu
                         "Level 2", 
                         GameModeType.Timer, 
                         0, 
-                        60f,
+                        10f,
                         new List<GoalDefinition>
                         {
                             new GoalDefinition(GoalType.Score, 3),
