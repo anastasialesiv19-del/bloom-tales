@@ -38,7 +38,8 @@ namespace Match3.Unity
         [SerializeField] private GoalItemView goalItemPrefab;
         [SerializeField] private Sprite boxGoalIcon;
         [SerializeField] private Sprite scoreGoalIcon;
-        [SerializeField] private PieceSpriteLibrary pieceSpriteLibrary ;
+        [SerializeField] private PieceSpriteLibrary pieceSpriteLibrary; 
+        [SerializeField] private HintExplanationView hintExplanationView;
         
         private GameSession session;
         private BoardInputController inputController;
@@ -106,7 +107,7 @@ namespace Match3.Unity
                 !turnPlaybackController.IsPlaying && !IsCurrentModeExpired() &&  !isPaused && !gameOverShown;
             
             idleTracker = new IdleTracker();
-            hintController = new HintController(session, boardRenderer);
+            hintController = new HintController(session, boardRenderer, hintExplanationView);
             
             boardRenderer.CellClicked += HandleBoardCellClicked;
             boardRenderer.CellClicked += inputController.OnCellClicked;
