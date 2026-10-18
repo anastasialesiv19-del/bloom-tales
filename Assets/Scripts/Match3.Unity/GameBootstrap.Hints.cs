@@ -11,6 +11,7 @@ namespace Match3.Unity
             if (IsCurrentModeExpired()) return;
             if (hintShownForCurrentIdle) return;
             if (idleTracker.IdleSeconds < idleHintDelaySeconds) return;
+            inputController.ClearSelection();
             ShowAdaptiveHintInternal(idleTracker.IdleSeconds, false);
             hintShownForCurrentIdle = true;
         }
@@ -20,6 +21,7 @@ namespace Match3.Unity
             if (isPaused) return;
             if(IsCurrentModeExpired()) return;
             if (turnPlaybackController.IsPlaying) return;
+            inputController.ClearSelection();
             var effectiveIdleSeconds = Mathf.Max(idleTracker.IdleSeconds, idleHintDelaySeconds);
             ShowAdaptiveHintInternal(effectiveIdleSeconds, true);
             hintShownForCurrentIdle = false;

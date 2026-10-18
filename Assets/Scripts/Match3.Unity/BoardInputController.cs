@@ -31,6 +31,15 @@ namespace Match3.Unity
                 SelectionChanged?.Invoke(null);
                 return;
             }
+            
+            int dx = Math.Abs(clicked.Row - selectedCell.Value.Row);
+            int dy = Math.Abs(clicked.Col - selectedCell.Value.Col);
+            if (dx + dy != 1)
+            {
+                selectedCell = clicked;
+                SelectionChanged?.Invoke(selectedCell);
+                return;
+            }
 
             var move = new Move(selectedCell.Value, clicked);
             selectedCell = null;
