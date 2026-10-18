@@ -12,9 +12,12 @@ namespace Match3.Unity
         [SerializeField] private Image pieceImage;
         [SerializeField] private Image selectionHighlight;
         [SerializeField] private Image hintHighlight;
+        [SerializeField] private Image specialOverlay;
         [SerializeField] private Image obstacleImage;
         [SerializeField] private Sprite boxObstacleSprite;
         private PieceSpriteLibrary spriteLibrary;
+        private bool isSelected;
+        private bool isHinted;
         public int Row { get; private set; }
         public int Col { get; private set; }
         
@@ -27,24 +30,18 @@ namespace Match3.Unity
             this.spriteLibrary = spriteLibrary;
             selectionHighlight.enabled = false;
             hintHighlight.enabled = false;
+            RefreshHighlights();
         }
 
         public void SetPiece(Piece piece)
         {
-            // piece rendering залишається як є
-            // obstacle окремо ставиться через SetObstacle(...)
             var viewData = PieceViewMapper.Map(piece, spriteLibrary);
-
-            if (viewData.Sprite != null)
-            {
-                pieceImage.enabled = true;
-                pieceImage.sprite = viewData.Sprite;
-            }
-            else
-            {
-                pieceImage.enabled = false;
-                pieceImage.sprite = null;
-            }
+            
+            pieceImage.sprite = viewData.Sprite;
+            pieceImage.enabled = viewData.Sprite != null;
+            
+            specialOverlay.sprite = viewData.OverlaySprite;
+            specialOverlay.enabled = viewData.Sprite != null && viewData.OverlaySprite != null;
         }
         
         public void SetObstacle(ObstacleModel obstacle)
@@ -62,6 +59,8 @@ namespace Match3.Unity
             obstacleImage.gameObject.SetActive(true);
             pieceImage.enabled = false;
             pieceImage.sprite = null;
+            specialOverlay.enabled = false;
+            specialOverlay.sprite = null;
             
             switch (obstacle.Kind)
             {
@@ -83,12 +82,20 @@ namespace Match3.Unity
 
         public void SetSelected(bool isSelected)
         {
-            selectionHighlight.enabled = isSelected;
+            this.isSelected = isSelected;
+            RefreshHighlights();
         }
 
         public void SetHint(bool isHinted)
         {
+            this.isHinted = isHinted;
+            RefreshHighlights();
+        }
+
+        private void RefreshHighlights()
+        {
             hintHighlight.enabled = isHinted;
+            selectionHighlight.enabled = isSelected && !isHinted;
         }
     }
 }

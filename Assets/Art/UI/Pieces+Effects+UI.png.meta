@@ -231,7 +231,7 @@ TextureImporter:
         width: 51
         height: 51
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -239,6 +239,27 @@ TextureImporter:
       bones: []
       spriteID: a650734de92970d479cba2f904a8deff
       internalID: 380755039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pieces+Effects+UI_5
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 630
+        width: 164
+        height: 141
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f421d3f665ebfd74db78b5b716311fb5
+      internalID: -1046863971
       vertices: []
       indices: 
       edges: []
@@ -259,6 +280,7 @@ TextureImporter:
       Pieces+Effects+UI_2: -1452953061
       Pieces+Effects+UI_3: -1192619571
       Pieces+Effects+UI_4: 380755039
+      Pieces+Effects+UI_5: -1046863971
       piece pack_2 + UI_0: -786772665
       piece pack_2 + UI_1: -1395912449
   mipmapLimitGroupName: 
