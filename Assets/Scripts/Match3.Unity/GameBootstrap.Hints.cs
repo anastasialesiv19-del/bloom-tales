@@ -7,6 +7,7 @@ namespace Match3.Unity
     {
         private void TryShowIdleHint()
         {
+            if (!gameSettings.autoHintsEnabled) return;
             if (isPaused || gameOverShown) return;
             if (IsCurrentModeExpired()) return;
             if (hintShownForCurrentIdle) return;

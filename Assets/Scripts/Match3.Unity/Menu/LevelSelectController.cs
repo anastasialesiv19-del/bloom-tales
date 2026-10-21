@@ -1,3 +1,4 @@
+using Match3.Unity.Audio;
 using Match3.Unity.GameMode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,6 +7,11 @@ namespace Match3.Unity.Menu
 {
     public class LevelSelectController : MonoBehaviour
     {
+        private void Start()
+        {
+            GameAudioController.Instance.PlayMenuMusic();
+        }
+        
         public void OnLevel1Clicked()
         {
             var config = LevelConfigFactory.Create(LevelId.Level1);

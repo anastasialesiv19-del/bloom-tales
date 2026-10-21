@@ -29,5 +29,21 @@ namespace Match3.Unity
             pausePanel.Hide();
             isPaused = false;
         }
+
+        public void OnSettingsButtonClick()
+        {
+            if (!isPaused || gameOverShown) return;
+            pausePanel.Hide();
+            settingsPanelView.Show(gameSettings);
+        }
+
+        public void OnSettingsBackButtonClick()
+        {
+            settingsStore.Save(gameSettings);
+            settingsPanelView.Hide();
+            idleTracker.ResetIdle();
+            hintShownForCurrentIdle = false;
+            pausePanel.Show();
+        }
     }
 }

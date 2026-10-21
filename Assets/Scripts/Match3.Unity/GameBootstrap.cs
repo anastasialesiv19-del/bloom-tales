@@ -3,11 +3,13 @@ using System.Linq;
 using Core.Board;
 using Core.Matching;
 using Core.Progress;
+using Match3.Unity.Audio;
 using Match3.Unity.GameFlow;
 using Match3.Unity.GameMode;
 using Match3.Unity.Goals;
 using Match3.Unity.Menu;
 using Match3.Unity.Save;
+using Match3.Unity.Settings;
 using Match3.Unity.Theme;
 using TMPro;
 using UnityEngine;
@@ -40,6 +42,7 @@ namespace Match3.Unity
         [SerializeField] private Sprite scoreGoalIcon;
         [SerializeField] private PieceSpriteLibrary pieceSpriteLibrary; 
         [SerializeField] private HintExplanationView hintExplanationView;
+        [SerializeField] private SettingsPanelView settingsPanelView;
         
         private GameSession session;
         private BoardInputController inputController;
@@ -74,7 +77,9 @@ namespace Match3.Unity
         private List<GoalItemView> goalViews = new();
         private IReadOnlyList<ObstacleDefinition> currentObstacles;
         private IReadOnlyList<GoalDefinition> currentGoalDefinitions;
-         
+
+        private JsonSettingsStore settingsStore;
+        private GameSettings gameSettings;
 
         public void Start()
         {
@@ -119,6 +124,13 @@ namespace Match3.Unity
             
             victoryPanel.SetActive(false);
             defeatPanel.SetActive(false);
+
+            settingsStore = new JsonSettingsStore();
+            gameSettings = settingsStore.Load();
+
+            GameAudioController.Instance.SetMusicVolume(gameSettings.musicVolume);
+            GameAudioController.Instance.PlayGameplayMusic();
+            GameAudioController.Instance.SetEffectsVolume(gameSettings.effectVolume);
             
             RebuildGoals();
             RebuildGoalViews();

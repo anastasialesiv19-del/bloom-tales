@@ -231,7 +231,7 @@ TextureImporter:
         width: 83
         height: 82
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -239,6 +239,27 @@ TextureImporter:
       bones: []
       spriteID: 5029009c42886be46a8acea68114120c
       internalID: 180367427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GameIU_2
+      rect:
+        serializedVersion: 2
+        x: 979
+        y: 514
+        width: 89
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 948d95cd05518b047b1195d4b6bc24f6
+      internalID: 1742834805
       vertices: []
       indices: 
       edges: []
@@ -256,6 +277,7 @@ TextureImporter:
     nameFileIdTable:
       GameIU_0: 1859839262
       GameIU_1: 180367427
+      GameIU_2: 1742834805
       LevelSelectPanel: -1117933539
       "\u043E\u0441\u043D\u043E\u0432\u0438\u0439 UI_0": 362497508
       "\u043E\u0441\u043D\u043E\u0432\u0438\u0439 UI_1": 673360278

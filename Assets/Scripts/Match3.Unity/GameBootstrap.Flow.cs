@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Core.Matching;
+using Match3.Unity.Audio;
 using Match3.Unity.GameFlow;
 using Match3.Unity.GameMode;
 using Match3.Unity.Goals;
@@ -14,6 +15,8 @@ namespace Match3.Unity
     {
         public void OnRestartButtonClick()
         {
+            GameAudioController.Instance.StopEffects();
+            
             if (isPaused)
             {
                 pausePanel.Hide();
@@ -24,6 +27,8 @@ namespace Match3.Unity
 
         public void OnNextLevelClicked()
         {
+            GameAudioController.Instance.StopEffects();
+            
             if (!LevelProgression.TryGetNext(currentLevelId, out var nextLevel))
             {
                 OnBackToMenuClicked();
@@ -36,6 +41,8 @@ namespace Match3.Unity
         
         public void OnBackToMenuClicked()
         {
+            GameAudioController.Instance.StopEffects();
+            
             hintController.ClearHint();
             inputController.ClearSelection();
             pausePanel.Hide();
@@ -49,6 +56,8 @@ namespace Match3.Unity
         
         private void StartNewGameFlow()
         {
+            GameAudioController.Instance.SetMusicDucked(false);
+            
             hintController.ClearHint();
             inputController.ClearSelection();
             idleTracker.ResetIdle();
@@ -81,6 +90,7 @@ namespace Match3.Unity
         
         private void HandleGameResult(GameResultType result)
         {
+            GameAudioController.Instance.SetMusicDucked(true);
             SaveLevelResult(result);
             hintController.ClearHint();
             inputController.ClearSelection();
@@ -95,10 +105,12 @@ namespace Match3.Unity
             {
                 case GameResultType.Defeat:
                     defeatPanel.SetActive(true);
+                    GameAudioController.Instance.PlayDefeatSound();
                     break;
 
                 case GameResultType.Victory:
                     victoryPanel.SetActive(true);
+                    GameAudioController.Instance.PlayVictorySound();
                     break;
             }
         }
