@@ -15,7 +15,7 @@ namespace Match3.Unity
     {
         public void OnRestartButtonClick()
         {
-            GameAudioController.Instance.StopEffects();
+            GameAudioController.Instance.StopResultEffects();
             
             if (isPaused)
             {
@@ -27,7 +27,7 @@ namespace Match3.Unity
 
         public void OnNextLevelClicked()
         {
-            GameAudioController.Instance.StopEffects();
+            GameAudioController.Instance.StopResultEffects();
             
             if (!LevelProgression.TryGetNext(currentLevelId, out var nextLevel))
             {
@@ -41,7 +41,7 @@ namespace Match3.Unity
         
         public void OnBackToMenuClicked()
         {
-            GameAudioController.Instance.StopEffects();
+            GameAudioController.Instance.StopResultEffects();
             
             hintController.ClearHint();
             inputController.ClearSelection();

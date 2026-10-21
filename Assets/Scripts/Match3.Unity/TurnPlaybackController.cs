@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Core.Contracts;
+using Core.Matching;
 using Core.Presentation;
+using Match3.Unity.Audio;
 using UnityEngine;
 
 namespace Match3.Unity
@@ -34,9 +36,28 @@ namespace Match3.Unity
                 AddIfNotNull(steps, cascadeBoard);
             AddIfNotNull(steps, presentation.ShuffleBoard);
 
+            int previousPieceCount = CountPieces(presentation.InitialBoard);
+
             foreach (var snapshot in steps)
             {
+                int currentPieceCount = CountPieces(snapshot);
+
                 boardRenderer.Render(snapshot);
+
+                if (GameAudioController.Instance != null)
+                {
+                    if (ReferenceEquals(snapshot, presentation.DirectActivationBoard))
+                    {
+                        GameAudioController.Instance.PlaySpecialActivationSound();
+                    }
+                    else if (currentPieceCount < previousPieceCount)
+                    {
+                        GameAudioController.Instance.PlayMatchSound();
+                    }
+                }
+
+                previousPieceCount = currentPieceCount;
+
                 yield return new WaitForSeconds(stepDelaySeconds);
             }
 
@@ -50,6 +71,22 @@ namespace Match3.Unity
             {
                 snapshots.Add(snapshot);
             }
+        }
+        
+        private static int CountPieces(BoardSnapshot snapshot)
+        {
+            int count = 0;
+
+            for (int row = 0; row < snapshot.Height; row++)
+            {
+                for (int col = 0; col < snapshot.Width; col++)
+                {
+                    if (snapshot.Get(row, col).Kind != PieceKind.Empty)
+                        count++;
+                }
+            }
+
+            return count;
         }
     }
 }

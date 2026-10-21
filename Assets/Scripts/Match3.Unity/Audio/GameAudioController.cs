@@ -13,6 +13,10 @@ namespace Match3.Unity.Audio
         [SerializeField] private AudioSource effectsSource;
         [SerializeField] private AudioClip victorySound;
         [SerializeField] private AudioClip defeatSound;
+        [SerializeField] private AudioSource uiSource;
+        [SerializeField] private AudioClip buttonClickSound;
+        [SerializeField] private AudioClip matchSound;
+        [SerializeField] private AudioClip specialActivationSound;
 
         private float musicVolume = 0.5f;
         private float musicMultiplier = 1f;
@@ -66,7 +70,9 @@ namespace Match3.Unity.Audio
 
         public void SetEffectsVolume(float value)
         {
-            effectsSource.volume = Mathf.Clamp01(value);
+            float volume = Mathf.Clamp01(value);
+            effectsSource.volume = volume;
+            uiSource.volume = volume;
         }
         
         public void SetMusicDucked(bool ducked)
@@ -101,32 +107,7 @@ namespace Match3.Unity.Audio
 
             musicTransition = StartCoroutine(TransitionMusic(clip));
         }
-
-        public void PlayVictorySound()
-        {
-            PlayResultSound(victorySound);
-        }
-
-        public void PlayDefeatSound()
-        {
-            PlayResultSound(defeatSound);
-        }
-
-        private void PlayResultSound(AudioClip clip)
-        {
-            StopEffects();
-
-            if (clip == null) return;
-            
-            effectsSource.clip = clip;
-            effectsSource.Play();
-        }
-
-        public void StopEffects()
-        {
-            effectsSource.Stop();
-        }
-
+        
         private IEnumerator TransitionMusic(AudioClip clip)
         {
             bool alreadyPlaying = musicSource.clip == clip && musicSource.isPlaying;
@@ -164,6 +145,52 @@ namespace Match3.Unity.Audio
 
             transitionMultiplier = target;
             ApplyMusicVolume();
+        }
+        
+        public void PlayVictorySound()
+        {
+            PlayResultSound(victorySound);
+        }
+
+        public void PlayDefeatSound()
+        {
+            PlayResultSound(defeatSound);
+        }
+
+        private void PlayResultSound(AudioClip clip)
+        {
+            StopResultEffects();
+
+            if (clip == null) return;
+            
+            effectsSource.clip = clip;
+            effectsSource.Play();
+        }
+
+        public void PlayButtonClick()
+        {
+            if (buttonClickSound == null) return;
+            
+            uiSource.PlayOneShot(buttonClickSound);
+        }
+        
+        public void StopResultEffects()
+        {
+            effectsSource.Stop();
+        }
+
+        public void PlayMatchSound()
+        {
+            if(matchSound == null) return;
+            
+            effectsSource.PlayOneShot(matchSound);
+        }
+        
+        public void PlaySpecialActivationSound()
+        {
+            if(specialActivationSound == null) return;
+            
+            effectsSource.PlayOneShot(specialActivationSound);
         }
     }
 }
