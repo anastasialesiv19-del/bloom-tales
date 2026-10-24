@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cfad2885870318146aebb0ca15214525
+guid: de1cc71a1833fa742b7debaf2494012d
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,13 +97,15 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: VictoryPanelShort_0
+      name: "\u041E\u0440\u043D\u0430\u043C\u0435\u043D\u0442\u0430\u043B\u044C\u043D\u0430
+        \u0440\u0430\u043C\u043A\u0430 \u0437 \u0437\u043E\u043B\u043E\u0442\u0438\u043C
+        \u0433\u0435\u0440\u0431\u043E\u043C \u0442\u0430 \u043A\u0432\u0456\u0442\u0430\u043C\u0438_0"
       rect:
         serializedVersion: 2
-        x: 777
-        y: 356
-        width: 1347
-        height: 1508
+        x: 55
+        y: 66
+        width: 907
+        height: 1430
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -111,8 +113,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: efccc6b9c66b0c647825d34e36edf694
-      internalID: 2102820642
+      spriteID: 5b21f70abb3869c4b87364312e1cfae4
+      internalID: -1904378601
       vertices: []
       indices: 
       edges: []
@@ -128,7 +130,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      VictoryPanelShort_0: 2102820642
+      "\u041E\u0440\u043D\u0430\u043C\u0435\u043D\u0442\u0430\u043B\u044C\u043D\u0430 \u0440\u0430\u043C\u043A\u0430 \u0437 \u0437\u043E\u043B\u043E\u0442\u0438\u043C \u0433\u0435\u0440\u0431\u043E\u043C \u0442\u0430 \u043A\u0432\u0456\u0442\u0430\u043C\u0438_0": -1904378601
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
