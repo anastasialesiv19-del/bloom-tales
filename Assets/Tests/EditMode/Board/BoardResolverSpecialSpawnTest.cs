@@ -34,6 +34,8 @@ namespace Tests.EditMode.Board
             var matches = MatchFinder.FindMatches(board);
             var decisions = SpecialSpawnResolver.BuildDecisions(board, matches, move);
             BoardResolver.ClearMatchesAndSpawnSpecials(board, matches, decisions);
+            Assert.AreEqual(1, decisions.Count);
+            Assert.AreEqual(5, decisions[0].ConsumedCells.Count);
             var spawnPositions = decisions.Select(x => x.SpawnPosition).ToList();
             foreach (var decision in decisions)
             foreach (var pos in decision.ConsumedCells)
@@ -72,7 +74,7 @@ namespace Tests.EditMode.Board
             var decisions = SpecialSpawnResolver.BuildDecisions(board, matches);
             BoardResolver.ClearMatchesAndSpawnSpecials(board, matches, decisions);
             var piece = board.Get(decisions[0].SpawnPosition.Row, decisions[0].SpawnPosition.Col);
-            
+
             Assert.AreEqual(piece.Kind, decisions[0].SpawnPiece.Kind);
             Assert.AreEqual(piece.Color, decisions[0].SpawnPiece.Color);
             Assert.AreEqual(piece.IsSpecial, decisions[0].SpawnPiece.IsSpecial);
@@ -104,7 +106,9 @@ namespace Tests.EditMode.Board
             var matches = MatchFinder.FindMatches(board);
             var decisions = SpecialSpawnResolver.BuildDecisions(board, matches);
 
-            Assert.IsFalse(board.Get(decisions[0].SpawnPosition.Row, decisions[0].SpawnPosition.Col).IsEmpty);
+            Assert.AreEqual(1, decisions.Count);
+            BoardResolver.ClearMatchesAndSpawnSpecials(board, matches, decisions);
+            Assert.AreEqual(Piece.AreaBomb(PieceColor.Green), board.Get(0, 2));
         }
     }
 }

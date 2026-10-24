@@ -1,3 +1,4 @@
+using System.Linq;
 using Core.Board;
 using Core.Matching;
 using NUnit.Framework;
@@ -117,6 +118,46 @@ namespace Tests.EditMode.Board
             bool itHasEmpty =  BoardResolver.HasEmptyCells(board);
             
             Assert.IsFalse(itHasEmpty, board.ToDebugString());
+        }
+
+        [Test]
+        public void ApplyGravity_WhenPieceFalls_ReturnsActualMovement()
+        {
+            var board = new BoardModel(4, 1);
+            board.Set(0, 0, Piece.Normal(PieceColor.Red));
+            board.Set(1, 0, Piece.Empty());
+            board.Set(2, 0, Piece.Empty());
+            board.Set(3, 0, Piece.Normal(PieceColor.Blue));
+            
+            var pieceFalls = BoardResolver.ApplyGravity(board);
+            Assert.AreEqual(1, pieceFalls.Count);
+            Assert.AreEqual(new Pos(0,0), pieceFalls[0].From);
+            Assert.AreEqual(new Pos(2,0), pieceFalls[0].To);
+            Assert.AreEqual(Piece.Normal(PieceColor.Red), board.Get(pieceFalls[0].To.Row, pieceFalls[0].To.Col));
+            Assert.AreEqual(Piece.Normal(PieceColor.Blue), board.Get(3, 0));
+            Assert.IsTrue(board.Get(0, 0).IsEmpty);
+            Assert.IsTrue(board.Get(1, 0).IsEmpty);
+        }
+
+        [Test]
+        public void Refill_WhenBoardHasEmptyCells_ReturnsOnlyFilledPositions()
+        {
+            var board = new BoardModel(2, 2);
+            board.Set(0, 0, Piece.Normal(PieceColor.Red));
+            board.Set(0, 1, Piece.Empty());
+            board.Set(1, 0, Piece.Empty());
+            board.Set(1, 1, Piece.Empty());
+            
+            var pieceRefills = BoardResolver.Refill(board);
+            
+            Assert.AreEqual(3,  pieceRefills.Count);
+            Assert.IsTrue(pieceRefills.Contains(new Pos(0,1)));
+            Assert.IsTrue(pieceRefills.Contains(new Pos(1,0)));
+            Assert.IsTrue(pieceRefills.Contains(new Pos(1,1)));
+            Assert.AreEqual(PieceKind.Normal, board.Get(0,1).Kind);
+            Assert.AreEqual(PieceKind.Normal, board.Get(1,0).Kind);
+            Assert.AreEqual(PieceKind.Normal, board.Get(1,1).Kind);
+            Assert.AreEqual( Piece.Normal(PieceColor.Red), board.Get(0,0));
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Tests.EditMode.Turns
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
 
             var move = new Move(new Pos(0, 1), new Pos(2, 2));
-            var turnResult = TurnProcessor.TryProcessMove(board, move);
+            var turnResult = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
             Assert.IsFalse(turnResult.WasSwapValid);
             Assert.IsFalse(turnResult.WasApplied);
@@ -64,7 +64,7 @@ namespace Tests.EditMode.Turns
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(1, 1), new Pos(1, 2));
-            var turnResult = TurnProcessor.TryProcessMove(board, move);
+            var turnResult = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
             Assert.IsFalse(turnResult.WasApplied);
             Assert.AreEqual(FailureReason.NoMatchCreated, turnResult.FailureReason);
@@ -100,7 +100,7 @@ namespace Tests.EditMode.Turns
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(1, 2), new Pos(1, 3));
-            var turnResult = TurnProcessor.TryProcessMove(board, move);
+            var turnResult = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
@@ -132,7 +132,7 @@ namespace Tests.EditMode.Turns
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(2, 2), new Pos(1, 2));
-            var turnResult = TurnProcessor.TryProcessMove(board, move);
+            var turnResult = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
             var primaryPhase = turnResult.Trace.Phases
                 .Single(p => p.Type == TurnPhaseType.PrimaryMatchResolved);
@@ -167,7 +167,7 @@ namespace Tests.EditMode.Turns
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(2, 2), new Pos(1, 2));
-            var turnResult = TurnProcessor.TryProcessMove(board, move);
+            var turnResult = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsFalse(turnResult.CreatedMatch);
@@ -181,41 +181,17 @@ namespace Tests.EditMode.Turns
         [Test]
         public void TryProcessMove_WithCascade_TraceContainsOnePhasePerCascadeWave()
         {
-            var board = new BoardModel(3, 4);
-
-            board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
-            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
-            board.Set(0, 2, Piece.Normal(PieceColor.Yellow));
-            board.Set(0, 3, Piece.Normal(PieceColor.Blue));
-
-            board.Set(1, 0, Piece.Normal(PieceColor.Green));
-            board.Set(1, 1, Piece.Normal(PieceColor.Green));
-            board.Set(1, 2, Piece.Normal(PieceColor.Blue));
-            board.Set(1, 3, Piece.Normal(PieceColor.Green));
-
-            board.Set(2, 0, Piece.Normal(PieceColor.Green));
-            board.Set(2, 1, Piece.Normal(PieceColor.Blue));
-            board.Set(2, 2, Piece.Normal(PieceColor.Green));
-            board.Set(2, 3, Piece.Normal(PieceColor.Blue));
-
-            var move = new Move(new Pos(1, 1), new Pos(2, 1));
-            var turnResult = TurnProcessor.TryProcessMove(board, move);
-
-            var cascadePhases = turnResult.Trace.Phases
-                .Where(p => p.Type == TurnPhaseType.CascadeWaveResolved)
-                .ToList();
-
-            Assert.IsTrue(turnResult.WasApplied);
-            Assert.IsTrue(turnResult.CreatedMatch);
-            Assert.IsTrue(turnResult.CascadeCount > 0);
-            Assert.IsTrue(turnResult.Trace.Phases.Any(p => p.Type == TurnPhaseType.GravityApplied));
-            Assert.IsTrue(turnResult.Trace.Phases.Any(p => p.Type == TurnPhaseType.CascadeWaveResolved));
-            Assert.AreEqual(turnResult.CascadeCount, cascadePhases.Count);
-
-            for (int i = 0; i < cascadePhases.Count; i++)
+            var result = CascadeTestScenario.ResolveTwoWaves();
+            Assert.IsTrue(result.WasApplied);
+            Assert.IsTrue(result.CreatedMatch);
+            Assert.AreEqual(2, result.CascadeCount);
+            var phases = TurnTraceQueries.GetCascadePhases(result.Trace);
+            Assert.AreEqual(2, phases.Count);
+            for (int i = 0; i < 2; i++)
             {
-                Assert.AreEqual(i + 1, cascadePhases[i].CascadeIndex);
-                Assert.Greater(cascadePhases[i].ClearedCells, 0);
+                Assert.AreEqual(i + 1, phases[i].CascadeIndex);
+                Assert.AreEqual(3, phases[i].ClearedCells);
+                Assert.IsNotNull(phases[i].BoardAfterPhase);
             }
         }
 

@@ -76,11 +76,11 @@ namespace Core.Turns
                 tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.PrimaryMatchResolved, primaryStats.TotalClearedCells, spawns.Count, boardAfterPhase: directSnapshot));
             }
             
-            BoardResolver.ApplyGravity(board);
+            var initialFalls = BoardResolver.ApplyGravity(board);
             var gravitySnapshot = BoardSnapshotFactory.Capture(board);
             tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.GravityApplied, boardAfterPhase: gravitySnapshot));
             
-            BoardResolver.Refill(board, provider);
+            var initialRefills = BoardResolver.Refill(board, provider);
             var refillSnapshot = BoardSnapshotFactory.Capture(board);
             tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.RefillApplied, boardAfterPhase: refillSnapshot));
             
@@ -94,7 +94,7 @@ namespace Core.Turns
                             clearedCells: clearedCells,
                             cascadeIndex: cascadeIndex,
                             boardAfterPhase: waveSnapshot));
-                });
+                }, initialFalls, initialRefills);
             totalClearStats = totalClearStats.Add(cascadeResult.ClearStats);
             totalCleared = totalClearStats.TotalClearedCells;
 

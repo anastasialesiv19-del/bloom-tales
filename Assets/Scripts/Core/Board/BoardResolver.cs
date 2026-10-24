@@ -142,8 +142,9 @@ namespace Core.Board
             return stats;
         }
 
-        public static void ApplyGravity(BoardModel board)
+        public static IReadOnlyList<PieceFall> ApplyGravity(BoardModel board)
         {
+            var pieceFallList = new  List<PieceFall>();
             for (int col = 0; col < board.Width; col++)
             {
                 int writeRow = board.Height - 1;
@@ -173,6 +174,8 @@ namespace Core.Board
                     {
                         board.Set(writeRow, col, currentPiece);
                         board.Set(row, col, Piece.Empty());
+                        
+                        pieceFallList.Add(new PieceFall(new Pos(row, col), new Pos(writeRow, col)));
                     }
 
                     writeRow--;
@@ -188,11 +191,13 @@ namespace Core.Board
                     writeRow--;
                 }
             }
+            return pieceFallList;
         }
 
-        public static void Refill(BoardModel board, IRandomProvider provider = null)
+        public static IReadOnlyList<Pos> Refill(BoardModel board, IRandomProvider provider = null)
         {
             var rng = provider ?? new SystemRandomProvider();
+            var spawnPieces =  new List<Pos>();
             
             foreach (var pos in board.AllPositions())
             {
@@ -206,7 +211,9 @@ namespace Core.Board
                     : throw new InvalidOperationException();
                 var piece = Piece.Normal(AllSpawnable[allowedIndex]);
                 board.Set(pos.Row, pos.Col, piece);
+                spawnPieces.Add(pos);
             }
+            return spawnPieces;
         }
 
         public static bool HasEmptyCells(BoardModel board)

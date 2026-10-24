@@ -1,3 +1,6 @@
+using Tests.EditMode.TestDoubles;
+using System.Linq;
+using System;
 using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
@@ -6,7 +9,7 @@ namespace Tests.EditMode.Turns
 {
     public class TurnProcessorDirectSpecial_SpecialComboTest
     {
-            
+
         [Test]
         public void TryProcessMove_SwappedRowClearWithRowClear_ClearsBothRows()
         {
@@ -27,13 +30,13 @@ namespace Tests.EditMode.Turns
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(1, 1), new Pos(2, 1));
-            var result = TurnProcessor.TryProcessMove(board, move);
-            
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
+
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
-            Assert.GreaterOrEqual(result.TotalClearedCells, board.Width * 2);
+            AssertDirectEffect(result, (row, col) => row == 1 || row == 2);
         }
-        
+
         [Test]
         public void TryProcessMove_SwappedColumnClearWithColumnClear_ClearsBothColumns()
         {
@@ -54,13 +57,13 @@ namespace Tests.EditMode.Turns
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(1, 1), new Pos(1, 2));
-            var result = TurnProcessor.TryProcessMove(board, move);
-            
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
+
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
-            Assert.GreaterOrEqual(result.TotalClearedCells, board.Height * 2);
+            AssertDirectEffect(result, (row, col) => col == 1 || col == 2);
         }
-        
+
         [Test]
         public void TryProcessMove_SwappedRowClearWithColumnClear_ClearsRowAndColumn()
         {
@@ -81,11 +84,11 @@ namespace Tests.EditMode.Turns
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(1, 1), new Pos(2, 1));
-            var result = TurnProcessor.TryProcessMove(board, move);
-            
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
+
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
-            Assert.GreaterOrEqual(result.TotalClearedCells, 6);
+            AssertDirectEffect(result, (row, col) => row == 2 || col == 1);
         }
 
         [Test]
@@ -108,11 +111,11 @@ namespace Tests.EditMode.Turns
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(1, 1), new Pos(2, 1));
-            var result = TurnProcessor.TryProcessMove(board, move);
-            
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
+
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
-            Assert.GreaterOrEqual(result.TotalClearedCells, 10);
+            AssertDirectEffect(result, (row, col) => col <= 2 || row == 2);
         }
 
         [Test]
@@ -133,20 +136,20 @@ namespace Tests.EditMode.Turns
             board.Set(2, 1, Piece.Normal(PieceColor.Blue));
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
-            
+
             board.Set(3, 0, Piece.Normal(PieceColor.Green));
             board.Set(3, 1, Piece.Normal(PieceColor.Blue));
             board.Set(3, 2, Piece.Normal(PieceColor.Green));
             board.Set(3, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(1, 1), new Pos(1, 2));
-            var result = TurnProcessor.TryProcessMove(board, move);
-            
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
+
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
-            Assert.GreaterOrEqual(result.TotalClearedCells, 10);
+            AssertDirectEffect(result, (row, col) => (row <= 2 && col <= 2) || col == 2);
         }
-        
+
         [Test]
         public void TryProcessMove_SwappedAreaBombWithAreaBomb_ClearsBothAreas()
         {
@@ -167,11 +170,29 @@ namespace Tests.EditMode.Turns
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(1, 1), new Pos(1, 2));
-            var result = TurnProcessor.TryProcessMove(board, move);
-            
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
+
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
-            Assert.GreaterOrEqual(result.TotalClearedCells, 12);
+            AssertDirectEffect(result, (row, col) => true);
+        }
+        private static void AssertDirectEffect(TurnResult result, Func<int, int, bool> cleared)
+        {
+            var phase = result.Trace.Phases.Single(p => p.Type == TurnPhaseType.DirectSpecialActivation);
+            var before = result.InitialBoardSnapshot;
+            int expectedCount = 0;
+            for (int row = 0; row < before.Height; row++)
+            for (int col = 0; col < before.Width; col++)
+            {
+                if (cleared(row, col))
+                {
+                    expectedCount++;
+                    Assert.IsTrue(phase.BoardAfterPhase.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
+                }
+                else
+                    Assert.AreEqual(before.Get(row, col), phase.BoardAfterPhase.Get(row, col), $"({row}, {col}) must stay");
+            }
+            Assert.AreEqual(expectedCount, phase.ClearedCells);
         }
     }
 }

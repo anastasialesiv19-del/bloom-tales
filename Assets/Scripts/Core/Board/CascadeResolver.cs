@@ -4,6 +4,7 @@ using Core.Board;
 using Core.Contracts;
 using Core.Matching;
 using Core.Randomness;
+using Core.Specials;
 
 namespace Core.Matching
 {
@@ -20,7 +21,7 @@ namespace Core.Matching
         }
 
         public static CascadeResult Resolve(BoardModel board, IRandomProvider provider,
-            Action<int, int, BoardSnapshot> onWaveResolved = null)
+            Action<int, int, BoardSnapshot> onWaveResolved = null, IReadOnlyList<PieceFall> initialFalls = null, IReadOnlyList<Pos> initialRefills = null)
         {
             int cascadeCount = 0;
             int totalClearedCells = 0;
@@ -29,6 +30,8 @@ namespace Core.Matching
 
             var totalStats = ClearResolutionStats.Empty;
             int maxIterations = 100;
+            IReadOnlyList<PieceFall> fallsBeforeWave = initialFalls ?? Array.Empty<PieceFall>();
+            IReadOnlyList<Pos> refillsBeforeWave = initialRefills ?? Array.Empty<Pos>();
             while (maxIterations > 0)
             {
                 var matches = MatchFinder.FindMatches(board);
@@ -36,11 +39,13 @@ namespace Core.Matching
                     break;
 
                 hadAnyMatches = true;
-                var waveStats = BoardResolver.ClearMatches(board, matches);
+                var spawns = SpecialSpawnResolver
+                    .BuildDecisions(board, matches, fallsBeforeWave: fallsBeforeWave, refillsBeforeWave: refillsBeforeWave);
+                var waveStats = BoardResolver.ClearMatchesAndSpawnSpecials(board, matches, spawns);
                 var cleared = waveStats.TotalClearedCells;
                 totalStats = totalStats.Add(waveStats);
-                BoardResolver.ApplyGravity(board);
-                BoardResolver.Refill(board,  provider);
+                fallsBeforeWave = BoardResolver.ApplyGravity(board);
+                refillsBeforeWave = BoardResolver.Refill(board,  provider);
 
                 cascadeCount++;
                 totalClearedCells += cleared;

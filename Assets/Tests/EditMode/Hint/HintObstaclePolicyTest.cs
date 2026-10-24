@@ -22,6 +22,7 @@ namespace Tests.EditMode.Hint
 
             var moves = HintMoveCollector.Collect(board);
 
+            Assert.Greater(moves.Count, 0);
             foreach (var move in moves)
             {
                 Assert.IsFalse(board.HasObstacle(move.From.Row, move.From.Col));

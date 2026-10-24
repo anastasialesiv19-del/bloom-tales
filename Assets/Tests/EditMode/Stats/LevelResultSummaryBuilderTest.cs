@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using Match3.Unity.Save;
 using Match3.Unity.Stats;
@@ -38,9 +39,20 @@ namespace Tests.EditMode.Stats
                 }
             };
 
+            results.Add(new LevelRunResultDto
+            {
+                LevelId = "Level2", Result = "Victory", TurnsUsed = 3,
+                TotalClearedCells = 7, CompletedAtUtc = "2026-01-03T00:00:00Z"
+            });
             var summaries = LevelResultSummaryBuilder.Build(results);
 
-            Assert.AreEqual(1, summaries.Count);
+            Assert.AreEqual(2, summaries.Count);
+            var second = summaries.Single(summary => summary.LevelId == "Level2");
+            Assert.AreEqual(1, second.Attempts);
+            Assert.AreEqual(1, second.Victories);
+            Assert.AreEqual(0, second.Defeats);
+            Assert.AreEqual(7, second.TotalClearedCells);
+            Assert.AreEqual(30, summaries.Single(summary => summary.LevelId == "Level1").TotalClearedCells);
             Assert.AreEqual("Level1", summaries[0].LevelId);
             Assert.AreEqual(2, summaries[0].Attempts);
             Assert.AreEqual(1, summaries[0].Victories);

@@ -1,3 +1,6 @@
+using Tests.EditMode.TestDoubles;
+using Core.Contracts;
+using System;
 using System.Linq;
 using Core.Matching;
 using Core.Turns;
@@ -28,7 +31,7 @@ namespace Tests.EditMode.Turns
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(1, 2), new Pos(0, 2));
-            var result = TurnProcessor.TryProcessMove(board, move);
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
@@ -46,7 +49,7 @@ namespace Tests.EditMode.Turns
             board.Set(1, 1, Piece.Normal(PieceColor.Green));
 
             var move = new Move(new Pos(2, 1), new Pos(1, 1));
-            var result = TurnProcessor.TryProcessMove(board, move);
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
@@ -61,6 +64,7 @@ namespace Tests.EditMode.Turns
 
             Assert.IsTrue(directPhase.BoardAfterPhase.Get(1, 1).IsEmpty);
             Assert.IsFalse(directPhase.BoardAfterPhase.Get(2, 1).IsEmpty);
+            AssertEffect(swapPhase.BoardAfterPhase, directPhase, (row, col) => row == 1);
         }
 
         [Test]
@@ -73,7 +77,7 @@ namespace Tests.EditMode.Turns
             board.Set(1, 2, Piece.Normal(PieceColor.Green));
 
             var move = new Move(new Pos(1, 1), new Pos(1, 2));
-            var result = TurnProcessor.TryProcessMove(board, move);
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
@@ -88,6 +92,7 @@ namespace Tests.EditMode.Turns
 
             Assert.IsTrue(directPhase.BoardAfterPhase.Get(1, 1).IsEmpty);
             Assert.IsTrue(directPhase.BoardAfterPhase.Get(1, 2).IsEmpty);
+            AssertEffect(swapPhase.BoardAfterPhase, directPhase, (row, col) => row == 1);
         }
 
         [Test]
@@ -100,7 +105,7 @@ namespace Tests.EditMode.Turns
             board.Set(1, 2, Piece.Normal(PieceColor.Green));
 
             var move = new Move(new Pos(1, 1), new Pos(1, 2));
-            var result = TurnProcessor.TryProcessMove(board, move);
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
@@ -113,6 +118,7 @@ namespace Tests.EditMode.Turns
 
             Assert.IsFalse(directPhase.BoardAfterPhase.Get(1, 1).IsEmpty);
             Assert.IsTrue(directPhase.BoardAfterPhase.Get(1, 2).IsEmpty);
+            AssertEffect(swapPhase.BoardAfterPhase, directPhase, (row, col) => col == 2);
         }
 
         [Test]
@@ -125,7 +131,7 @@ namespace Tests.EditMode.Turns
             board.Set(2, 1, Piece.Normal(PieceColor.Green));
 
             var move = new Move(new Pos(1, 1), new Pos(2, 1));
-            var result = TurnProcessor.TryProcessMove(board, move);
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
@@ -138,6 +144,7 @@ namespace Tests.EditMode.Turns
 
             Assert.IsTrue(directPhase.BoardAfterPhase.Get(1, 1).IsEmpty);
             Assert.IsTrue(directPhase.BoardAfterPhase.Get(2, 1).IsEmpty);
+            AssertEffect(swapPhase.BoardAfterPhase, directPhase, (row, col) => col == 1);
         }
 
         [Test]
@@ -150,7 +157,7 @@ namespace Tests.EditMode.Turns
             board.Set(1, 2, Piece.Normal(PieceColor.Green));
 
             var move = new Move(new Pos(1, 1), new Pos(1, 2));
-            var result = TurnProcessor.TryProcessMove(board, move);
+            var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
@@ -163,6 +170,24 @@ namespace Tests.EditMode.Turns
 
             Assert.IsTrue(directPhase.BoardAfterPhase.Get(1, 1).IsEmpty);
             Assert.IsTrue(directPhase.BoardAfterPhase.Get(1, 2).IsEmpty);
+            AssertEffect(swapPhase.BoardAfterPhase, directPhase, (row, col) => row <= 2 && col >= 1);
+        }
+
+        private static void AssertEffect(BoardSnapshot before, TurnPhaseTrace phase, Func<int, int, bool> cleared)
+        {
+            int count = 0;
+            for (int row = 0; row < before.Height; row++)
+            for (int col = 0; col < before.Width; col++)
+            {
+                if (cleared(row, col))
+                {
+                    count++;
+                    Assert.IsTrue(phase.BoardAfterPhase.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
+                }
+                else
+                    Assert.AreEqual(before.Get(row, col), phase.BoardAfterPhase.Get(row, col), $"({row}, {col}) must stay");
+            }
+            Assert.AreEqual(count, phase.ClearedCells);
         }
 
         private static void AssertPhaseOrder(
@@ -181,7 +206,7 @@ namespace Tests.EditMode.Turns
             Assert.GreaterOrEqual(secondIndex, 0);
             Assert.Less(firstIndex, secondIndex);
         }
-        
+
         private static void Fill(BoardModel board, PieceColor color)
         {
             foreach (var pos in board.AllPositions())
