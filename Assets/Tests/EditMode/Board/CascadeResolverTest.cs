@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Core.Board;
 using Core.Matching;
 using NUnit.Framework;
@@ -127,7 +128,7 @@ namespace Tests.EditMode.Board
             board.Set(1, 2, Piece.AreaBomb(PieceColor.Green));
             var provider = new SequenceRandomProvider(new[] { 0, 1, 2, 1, 2, 4, 2, 4, 0 });
             int callbacks = 0;
-            var result = CascadeResolver.Resolve(board, provider, (index, cleared, snapshot) =>
+            var result = CascadeResolver.Resolve(board, provider, (index, cleared, snapshot, spawns, activations) =>
             {
                 callbacks++;
                 Assert.AreEqual(1, index);
@@ -138,6 +139,22 @@ namespace Tests.EditMode.Board
                 for (int row = 0; row < 3; row++)
                 for (int col = 1; col < 4; col++)
                     Assert.AreEqual(Piece.Normal((PieceColor)expected[row, col - 1]), snapshot.Get(row, col));
+                Assert.AreEqual(1, activations.Count);
+                Assert.AreEqual(new Pos(1,2), activations[0].Position);
+                Assert.AreEqual(Piece.AreaBomb(PieceColor.Green), activations[0].Piece);
+                Assert.AreEqual(0, activations[0].ChainDepth);
+                Assert.AreEqual(9, activations[0].AffectedCells.Count);
+                CollectionAssert.AreEquivalent(new List<Pos>(){ 
+                    new Pos(0,1),
+                    new Pos(0,2),
+                    new Pos(0,3),
+                    new Pos(1,1),
+                    new Pos(1,2),
+                    new Pos(1,3),
+                    new Pos(2,1),
+                    new Pos(2,2),
+                    new Pos(2,3),              
+                }, activations[0].AffectedCells);
             });
             Assert.AreEqual(1, callbacks);
             Assert.AreEqual(1, result.CascadeCount);
@@ -146,16 +163,13 @@ namespace Tests.EditMode.Board
 
         [TestCase(4, PieceKind.RowClear)]
         [TestCase(5, PieceKind.ColorBomb)]
-        public void Resolve_WhenCascadeHasLongLine_CreatesSpecial(
-            int lineLength,
-            PieceKind expectedKind)
+        public void Resolve_WhenCascadeHasLongLine_CreatesSpecial(int lineLength, PieceKind expectedKind)
         {
             var board = new BoardModel(1, lineLength);
 
             for (int col = 0; col < lineLength; col++)
                 board.Set(0, col, Piece.Normal(PieceColor.Green));
 
-            // Нові фішки чергуються, тому наступного збігу не буде.
             var refillSequence = new int[lineLength - 1];
 
             for (int i = 0; i < refillSequence.Length; i++)

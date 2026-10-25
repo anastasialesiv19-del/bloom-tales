@@ -1,5 +1,6 @@
 using Tests.EditMode.TestDoubles;
 using System;
+using System.Collections.Generic;
 using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
@@ -224,19 +225,28 @@ namespace Tests.EditMode.Turns
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.AreaBomb(PieceColor.Red));
 
-            var allNonEmptyCells = 0;
+            var allNonEmptyCells = new List<Pos>();
             foreach (var pos in board.AllPositions())
                 if (!board.Get(pos.Row, pos.Col).IsEmpty)
-                    allNonEmptyCells++;
-
+                    allNonEmptyCells.Add(pos);
+                    
             var move = new Move(new Pos(1, 1), new Pos(1, 2));
             var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
             var directPhase = result.Trace.Phases.Single(phase => phase.Type == TurnPhaseType.DirectSpecialActivation);
 
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
-            Assert.AreEqual(allNonEmptyCells, directPhase.ClearedCells);
+            Assert.AreEqual(allNonEmptyCells.Count, directPhase.ClearedCells);
             AssertDirectEffect(result, (row, col) => true);
+            Assert.AreEqual(2, directPhase.SpecialActivations.Count);
+            Assert.AreEqual(new Pos(1,1), directPhase.SpecialActivations[0].Position);
+            Assert.AreEqual(new Pos(1,2), directPhase.SpecialActivations[1].Position);
+            Assert.AreEqual(Piece.ColorBomb(), directPhase.SpecialActivations[0].Piece);
+            Assert.AreEqual(Piece.ColorBomb(), directPhase.SpecialActivations[1].Piece);
+            Assert.AreEqual(0, directPhase.SpecialActivations[0].ChainDepth);
+            Assert.AreEqual(0, directPhase.SpecialActivations[1].ChainDepth);
+            CollectionAssert.AreEquivalent(allNonEmptyCells, directPhase.SpecialActivations[0].AffectedCells);
+            CollectionAssert.AreEquivalent(allNonEmptyCells, directPhase.SpecialActivations[1].AffectedCells);
         }
 
         [Test]

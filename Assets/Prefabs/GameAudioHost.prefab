@@ -436,8 +436,10 @@ MonoBehaviour:
   gameplayMusic: {fileID: 8300000, guid: 4592501692d6d1748a3af57b6c5d66b8, type: 3}
   musicFadeSeconds: 1
   effectsSource: {fileID: 542800798657233685}
-  victorySound: {fileID: 8300000, guid: 670bc022f2952334ebc49ad3f60ef1ea, type: 3}
+  victorySound: {fileID: 8300000, guid: 387f0d117edfb0a4988076b7dacd645b, type: 3}
   defeatSound: {fileID: 8300000, guid: 4a5f67397d3cf7c4ab7c6bded0dfbbac, type: 3}
   uiSource: {fileID: 7060815898092864136}
   buttonClickSound: {fileID: 8300000, guid: 90c26e131e2617b42a954f204bdc5685, type: 3}
-  matchSound: {fileID: 8300000, guid: d200b05e18676a648b587132dfed7d24, type: 3}
+  matchSound: {fileID: 8300000, guid: 00c2192ab6301bf418edb4e09546f21b, type: 3}
+  specialActivationSound: {fileID: 8300000, guid: ce5b9da583c57ab4bbdaf290833b20a7, type: 3}
+  specialSpawnSound: {fileID: 8300000, guid: ce5b9da583c57ab4bbdaf290833b20a7, type: 3}

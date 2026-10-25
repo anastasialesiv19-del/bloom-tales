@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Tests.EditMode.TestDoubles;
 using Core.Matching;
 using Core.Turns;
@@ -179,6 +180,16 @@ namespace Tests.EditMode.Turns
             Assert.IsTrue(TurnTraceQueries.TryGetPhase(result.Trace, TurnPhaseType.CascadeWaveResolved, out var cascadePhase));
             Assert.AreEqual(1, cascadePhase.CascadeIndex);
             Assert.AreEqual(4, cascadePhase.ClearedCells);
+            Assert.AreEqual(1, cascadePhase.SpawnedSpecials);
+            Assert.AreEqual(1, cascadePhase.SpecialSpawns.Count);
+            Assert.AreEqual(new Pos(3,2), cascadePhase.SpecialSpawns[0].SpawnPosition);
+            Assert.AreEqual(Piece.RowClear(PieceColor.Red), cascadePhase.SpecialSpawns[0].SpawnPiece);
+            Assert.AreEqual(4, cascadePhase.SpecialSpawns[0].ConsumedCells.Count);
+            Assert.IsTrue(cascadePhase.SpecialSpawns[0].ConsumedCells.Contains(new Pos(3,0)));
+            Assert.IsTrue(cascadePhase.SpecialSpawns[0].ConsumedCells.Contains(new Pos(3,1)));
+            Assert.IsTrue(cascadePhase.SpecialSpawns[0].ConsumedCells.Contains(new Pos(3,2)));
+            Assert.IsTrue(cascadePhase.SpecialSpawns[0].ConsumedCells.Contains(new Pos(3,3)));
+            
             
             var boardAfterPhase = cascadePhase.BoardAfterPhase;
             Assert.IsNotNull(boardAfterPhase);

@@ -10,32 +10,42 @@ namespace Core.Specials
         public static IReadOnlyCollection<Pos> CollectTriggeredCells(BoardModel board,
             IReadOnlyCollection<Pos> initiallyClearedCells)
         {
+            return CollectTriggeredCells(board, initiallyClearedCells, out _);
+        }
+
+        public static IReadOnlyCollection<Pos> CollectTriggeredCells(BoardModel board,
+            IReadOnlyCollection<Pos> initiallyClearedCells, out IReadOnlyList<SpecialActivationEvent> activations)
+        {
+            var activationEvents = new List<SpecialActivationEvent>();
             var allCleared =  new HashSet<Pos>(initiallyClearedCells);
             var processedSpecials =  new HashSet<Pos>();
-            bool changed =  true;
-            while (changed)
+            var currentWave = new HashSet<Pos>(initiallyClearedCells);
+            var chainDepth = 0;
+            while (currentWave.Count != 0)
             {
-                changed = false;
-                foreach (var cell in allCleared.ToList())
+                var nextWave = new HashSet<Pos>();
+                foreach (var cell in currentWave.OrderBy(pos => pos.Row).ThenBy(pos => pos.Col))
                 {
                     var piece = board.Get(cell.Row, cell.Col);
                     
                     if (!IsTriggerableSpecial(piece.Kind)) continue;
                     if (processedSpecials.Contains(cell)) continue;
                     
-                    var effectCells = GetEffectCells(board, cell, piece.Kind, initiallyClearedCells.ToList());
+                    var effectCells = GetEffectCells(board, cell, piece.Kind, initiallyClearedCells.ToList()).ToList();
+                    activationEvents.Add(new SpecialActivationEvent(cell, piece, chainDepth, effectCells));
                     processedSpecials.Add(cell);
+                    
                     foreach (var effectCell in effectCells)
-                    {
                         if (allCleared.Add(effectCell))
-                        {
-                            changed = true;
-                        }
-                    }
+                            nextWave.Add(effectCell);
                 }
+                currentWave = nextWave;
+                chainDepth++;
             }
+            activations = new List<SpecialActivationEvent>(activationEvents).AsReadOnly();
             return allCleared;
         }
+
 
         private static bool IsTriggerableSpecial(PieceKind kind)
         {

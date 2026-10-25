@@ -190,10 +190,7 @@ namespace Tests.EditMode.Turns
             Assert.AreEqual(count, phase.ClearedCells);
         }
 
-        private static void AssertPhaseOrder(
-            TurnResult result,
-            TurnPhaseType first,
-            TurnPhaseType second)
+        private static void AssertPhaseOrder(TurnResult result, TurnPhaseType first, TurnPhaseType second)
         {
             var phases = result.Trace.Phases
                 .Select(phase => phase.Type)

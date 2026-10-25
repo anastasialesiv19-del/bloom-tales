@@ -15,13 +15,13 @@ namespace Core.Matching
             return Resolve(board, null, null);
         }
 
-        public static CascadeResult Resolve(BoardModel board, Action<int, int, BoardSnapshot> onWaveResolved)
+        public static CascadeResult Resolve(BoardModel board, Action<int, int, BoardSnapshot, IReadOnlyList<SpecialSpawnDecision>, IReadOnlyList<SpecialActivationEvent>> onWaveResolved)
         {
             return Resolve(board, null, onWaveResolved);
         }
 
         public static CascadeResult Resolve(BoardModel board, IRandomProvider provider,
-            Action<int, int, BoardSnapshot> onWaveResolved = null, IReadOnlyList<PieceFall> initialFalls = null, IReadOnlyList<Pos> initialRefills = null)
+            Action<int, int, BoardSnapshot, IReadOnlyList<SpecialSpawnDecision>, IReadOnlyList<SpecialActivationEvent>> onWaveResolved = null, IReadOnlyList<PieceFall> initialFalls = null, IReadOnlyList<Pos> initialRefills = null)
         {
             int cascadeCount = 0;
             int totalClearedCells = 0;
@@ -41,7 +41,7 @@ namespace Core.Matching
                 hadAnyMatches = true;
                 var spawns = SpecialSpawnResolver
                     .BuildDecisions(board, matches, fallsBeforeWave: fallsBeforeWave, refillsBeforeWave: refillsBeforeWave);
-                var waveStats = BoardResolver.ClearMatchesAndSpawnSpecials(board, matches, spawns);
+                var waveStats = BoardResolver.ClearMatchesAndSpawnSpecials(board, matches, spawns, out var waveActivations);
                 var cleared = waveStats.TotalClearedCells;
                 totalStats = totalStats.Add(waveStats);
                 fallsBeforeWave = BoardResolver.ApplyGravity(board);
@@ -51,7 +51,7 @@ namespace Core.Matching
                 totalClearedCells += cleared;
                 clearedPerWave.Add(cleared);
                 var waveSnapshot = BoardSnapshotFactory.Capture(board);
-                onWaveResolved?.Invoke(cascadeCount, cleared, waveSnapshot);
+                onWaveResolved?.Invoke(cascadeCount, cleared, waveSnapshot, spawns, waveActivations);
                 maxIterations--;
             }
             return new CascadeResult(cascadeCount, totalClearedCells, hadAnyMatches, clearedPerWave, totalStats);

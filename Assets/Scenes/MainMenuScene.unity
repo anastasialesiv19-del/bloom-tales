@@ -1538,22 +1538,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameAudioHost
       objectReference: {fileID: 0}
-    - target: {fileID: 8547787440089930881, guid: b7450d9d44bfece48b648219cd64170d, type: 3}
-      propertyPath: matchSound
-      value: 
-      objectReference: {fileID: 8300000, guid: d200b05e18676a648b587132dfed7d24, type: 3}
-    - target: {fileID: 8547787440089930881, guid: b7450d9d44bfece48b648219cd64170d, type: 3}
-      propertyPath: defeatSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 65e1253a158b7ab41a2a7960c0fb5744, type: 3}
-    - target: {fileID: 8547787440089930881, guid: b7450d9d44bfece48b648219cd64170d, type: 3}
-      propertyPath: victorySound
-      value: 
-      objectReference: {fileID: 8300000, guid: 6bb53bea5cfcfd444834ae80544e2d94, type: 3}
-    - target: {fileID: 8547787440089930881, guid: b7450d9d44bfece48b648219cd64170d, type: 3}
-      propertyPath: specialActivationSound
-      value: 
-      objectReference: {fileID: 8300000, guid: ce5b9da583c57ab4bbdaf290833b20a7, type: 3}
     - target: {fileID: 9123345081933558415, guid: b7450d9d44bfece48b648219cd64170d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1118

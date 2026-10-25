@@ -31,7 +31,7 @@ namespace Core.Turns
             }
             
             var totalCleared = 0;
-            var specialApplied = TryResolveDirectSpecialActivation(board, move, out var directClearStats, out var directSwapSnapshot);
+            var specialApplied = TryResolveDirectSpecialActivation(board, move, out var directClearStats, out var directSwapSnapshot, out var directActivations);
             
             if (specialApplied)
             {
@@ -50,7 +50,7 @@ namespace Core.Turns
                 tracePhases.Add(new TurnPhaseTrace(
                     TurnPhaseType.DirectSpecialActivation,
                     directClearStats.TotalClearedCells,
-                    boardAfterPhase: directSnapshot));
+                    boardAfterPhase: directSnapshot, specialActivations: directActivations));
             }
             
             bool createdMatch = false;
@@ -59,7 +59,8 @@ namespace Core.Turns
                 if (!MoveFinder.CreatesMatch(board, move.From, move.To))
                 {
                     tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.NoMatchCreated));
-                    return  CreateFailureResult(tracePhases, move, isPlayable, FailureReason.NoMatchCreated, true,false, initialBoardSnapshot,  initialBoardSnapshot);
+                    return  CreateFailureResult(tracePhases, move, isPlayable, FailureReason.NoMatchCreated, true,
+                        false, initialBoardSnapshot,  initialBoardSnapshot);
                 }
                 
                 createdMatch = true;
@@ -69,11 +70,12 @@ namespace Core.Turns
                 
                 var primaryMatches = MatchFinder.FindMatches(board);
                 var spawns = SpecialSpawnResolver.BuildDecisions(board, primaryMatches, move);
-                var primaryStats = BoardResolver.ClearMatchesAndSpawnSpecials(board, primaryMatches, spawns);
+                var primaryStats = BoardResolver.ClearMatchesAndSpawnSpecials(board, primaryMatches, spawns, out var primaryActivations);
                 totalClearStats = totalClearStats.Add(primaryStats);
                 totalCleared = totalClearStats.TotalClearedCells;
                 directSnapshot = BoardSnapshotFactory.Capture(board);
-                tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.PrimaryMatchResolved, primaryStats.TotalClearedCells, spawns.Count, boardAfterPhase: directSnapshot));
+                tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.PrimaryMatchResolved, primaryStats.TotalClearedCells, 
+                    spawns.Count, boardAfterPhase: directSnapshot, specialSpawns: spawns, specialActivations: primaryActivations));
             }
             
             var initialFalls = BoardResolver.ApplyGravity(board);
@@ -84,16 +86,13 @@ namespace Core.Turns
             var refillSnapshot = BoardSnapshotFactory.Capture(board);
             tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.RefillApplied, boardAfterPhase: refillSnapshot));
             
-            var cascadeResult = CascadeResolver.Resolve(
-                board, provider,
-                (cascadeIndex, clearedCells, waveSnapshot) =>
+            var cascadeResult = CascadeResolver.Resolve(board, provider,
+                (cascadeIndex, clearedCells, waveSnapshot, waveSpawns, waveActivations) =>
                 {
                     tracePhases.Add(
                         new TurnPhaseTrace(
-                            TurnPhaseType.CascadeWaveResolved,
-                            clearedCells: clearedCells,
-                            cascadeIndex: cascadeIndex,
-                            boardAfterPhase: waveSnapshot));
+                            TurnPhaseType.CascadeWaveResolved, clearedCells: clearedCells, cascadeIndex: cascadeIndex,
+                            boardAfterPhase: waveSnapshot, spawnedSpecials: waveSpawns.Count, specialSpawns: waveSpawns, specialActivations: waveActivations));
                 }, initialFalls, initialRefills);
             totalClearStats = totalClearStats.Add(cascadeResult.ClearStats);
             totalCleared = totalClearStats.TotalClearedCells;
@@ -110,18 +109,20 @@ namespace Core.Turns
             var finalBoardSnapshot = BoardSnapshotFactory.Capture(board);
             tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.TurnCompleted));
                         return new TurnResult(true, true, wasShuffled, createdMatch, isPlayable,
-                cascadeResult.CascadeCount, totalCleared, move, FailureReason.None, new TurnTrace(tracePhases), initialBoardSnapshot, finalBoardSnapshot, totalClearStats);
-
+                cascadeResult.CascadeCount, totalCleared, move, FailureReason.None, new TurnTrace(tracePhases), 
+                initialBoardSnapshot, finalBoardSnapshot, totalClearStats);
         }
         
-        private static TurnResult CreateFailureResult(List<TurnPhaseTrace> tracePhases, Move move, bool boardWasPlayableBeforeMove, FailureReason failureReason, bool wasSwapValid, bool wasApplied, BoardSnapshot initialBoardSnapshot, BoardSnapshot finalBoardSnapshot)
+        private static TurnResult CreateFailureResult(List<TurnPhaseTrace> tracePhases, Move move, bool boardWasPlayableBeforeMove, 
+            FailureReason failureReason, bool wasSwapValid, bool wasApplied, BoardSnapshot initialBoardSnapshot, BoardSnapshot finalBoardSnapshot)
         {
             return new TurnResult(wasSwapValid, wasApplied, false, false, boardWasPlayableBeforeMove,
                 0, 0, move, failureReason, new TurnTrace(tracePhases), initialBoardSnapshot, finalBoardSnapshot);
         }
 
-        private static bool TryResolveDirectSpecialActivation(BoardModel board, Move move, out ClearResolutionStats clearStats, out BoardSnapshot swapSnapshot)
-        { 
+        private static bool TryResolveDirectSpecialActivation(BoardModel board, Move move, out ClearResolutionStats clearStats, out BoardSnapshot swapSnapshot, out IReadOnlyList<SpecialActivationEvent> activations)
+        {
+            activations = new List<SpecialActivationEvent>();
             swapSnapshot = null;
             clearStats = ClearResolutionStats.Empty;
             var pieceA = board.Get(move.From.Row, move.From.Col);
@@ -140,6 +141,12 @@ namespace Core.Turns
                 if (aIsColorBomb && bIsColorBomb)
                 {
                     var allNonEmptyCells = board.AllPositions().Where(pos => !board.Get(pos.Row, pos.Col).IsEmpty).ToArray();
+                    var directActivations = new List<SpecialActivationEvent>()
+                    {
+                        new (move.From, pieceA, 0, allNonEmptyCells),
+                        new (move.To, pieceB, 0, allNonEmptyCells)
+                    };
+                    activations = new List<SpecialActivationEvent>(directActivations).AsReadOnly();
                     clearStats = BoardResolver.ClearCells(board, allNonEmptyCells);
                     return true;
                 }
@@ -162,13 +169,11 @@ namespace Core.Turns
                 if (otherPiece.IsEmpty) return false;
                 if (otherPiece.Color == null) return false;
                 
-                return ClearDirectActivation(board, specialCell, otherCell, out clearStats);
+                return ClearDirectActivation(board, specialCell, otherCell, out clearStats, out activations);
             }
 
             if (aIsLineOrArea && bIsLineOrArea)
-            {
-                return ClearDirectSpecialCombo(board, move, out clearStats);
-            }
+                return ClearDirectSpecialCombo(board, move, out clearStats, out activations);
             
             Pos lineOrAreaCell, otherLineOrAreaCell;
             Piece otherLineOrAreaPiece;
@@ -192,12 +197,7 @@ namespace Core.Turns
             if (otherLineOrAreaPiece.IsSpecial)
                 return false;
 
-            return ClearLineOrAreaWithNormalAfterSwap(
-                board,
-                move,
-                lineOrAreaCell,
-                out clearStats,
-                out swapSnapshot);
+            return ClearLineOrAreaWithNormalAfterSwap(board, move, lineOrAreaCell, out clearStats, out swapSnapshot, out activations);
         }
 
         private static bool IsDirectColorBomb(PieceKind kind)
@@ -214,18 +214,16 @@ namespace Core.Turns
             };
         }
 
-        private static bool ClearDirectActivation(BoardModel board, Pos specialCell, Pos otherCell,
-            out ClearResolutionStats clearStats)
+        private static bool ClearDirectActivation(BoardModel board, Pos specialCell, Pos otherCell, out ClearResolutionStats clearStats, out IReadOnlyList<SpecialActivationEvent> activations)
         {
             var initialCells = new HashSet<Pos> { specialCell, otherCell };
-            var finalCells = SpecialEffectResolver.CollectTriggeredCells(board, initialCells);
+            var finalCells = SpecialEffectResolver.CollectTriggeredCells(board, initialCells, out activations);
             clearStats = BoardResolver.ClearCells(board, finalCells);
             return true;
         }
         
-        private static bool ClearLineOrAreaWithNormalAfterSwap(
-            BoardModel board, Move move, Pos specialCellBeforeSwap,
-            out ClearResolutionStats clearStats, out BoardSnapshot swapSnapshot)
+        private static bool ClearLineOrAreaWithNormalAfterSwap(BoardModel board, Move move, Pos specialCellBeforeSwap,
+            out ClearResolutionStats clearStats, out BoardSnapshot swapSnapshot, out IReadOnlyList<SpecialActivationEvent> activations)
         {
             clearStats = ClearResolutionStats.Empty;
 
@@ -233,68 +231,19 @@ namespace Core.Turns
             swapSnapshot = BoardSnapshotFactory.Capture(board);
 
             var specialFinalCell = specialCellBeforeSwap.Equals(move.From) ? move.To : move.From;
-
-            var specialPiece = board.Get(specialFinalCell.Row, specialFinalCell.Col);
-
-            var directEffectCells = GetDirectSpecialEffectCells(board, specialFinalCell, specialPiece.Kind);
-
-            var finalCells = SpecialEffectResolver
-                .CollectTriggeredCells(board, directEffectCells.ToHashSet());
+            var initialCells = new HashSet<Pos> { specialFinalCell };
+            var finalCells = SpecialEffectResolver.CollectTriggeredCells(board, initialCells, out activations);
 
             clearStats = BoardResolver.ClearCells(board, finalCells);
             return true;
         }
 
-        private static bool ClearDirectSpecialCombo(BoardModel board, Move move, out ClearResolutionStats clearStats)
+        private static bool ClearDirectSpecialCombo(BoardModel board, Move move, out ClearResolutionStats clearStats, out IReadOnlyList<SpecialActivationEvent> activations)
         {
-            var pieceA = board.Get(move.From.Row, move.From.Col);
-            var pieceB = board.Get(move.To.Row, move.To.Col);
             var initialCellsToClear = new HashSet<Pos>{move.From,  move.To};
-            
-            var cellsEffectA = GetDirectSpecialEffectCells(board, move.From, pieceA.Kind);
-            var cellsEffectB = GetDirectSpecialEffectCells(board, move.To, pieceB.Kind);
-            
-            initialCellsToClear.UnionWith(cellsEffectA);
-            initialCellsToClear.UnionWith(cellsEffectB);
-            
-            var finalCellsToClear = SpecialEffectResolver.CollectTriggeredCells(board, initialCellsToClear);
-            
+            var finalCellsToClear = SpecialEffectResolver.CollectTriggeredCells(board, initialCellsToClear, out activations);
             clearStats = BoardResolver.ClearCells(board, finalCellsToClear);
             return true;
         }
-
-        private static IEnumerable<Pos> GetDirectSpecialEffectCells(BoardModel board, Pos cell, PieceKind kind)
-        {
-            if (kind == PieceKind.RowClear)
-            {
-                for (int col = 0; col < board.Width; col++)
-                    yield return new Pos(cell.Row, col);
-                yield break;
-            }
-            if (kind == PieceKind.ColumnClear)
-            {
-                for(int row = 0;  row < board.Height; row++)
-                    yield return new Pos(row, cell.Col);
-                yield break;
-            }
-            if (kind == PieceKind.AreaBomb)
-            {
-                for (int row = cell.Row - 1; row <= cell.Row + 1; row++)
-                {
-                    for (int col = cell.Col - 1; col <= cell.Col + 1; col++)
-                    {
-                        if (board.InBounds(row, col))
-                        {
-                            yield return new Pos(row, col);
-                        }
-                    }
-                }
-                yield break;
-            }
-            throw new InvalidOperationException("Direct special effect is not supported for this piece kind.");
-                    
-            
-        }
-       
     }
 }

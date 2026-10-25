@@ -16,7 +16,7 @@ namespace Core.Specials
             if(spawnPiece.Kind == PieceKind.Empty) throw new ArgumentException("Spawn piece cannot be empty");
             SpawnPiece = spawnPiece;
             if(consumedCells == null || consumedCells.Count == 0) throw new ArgumentException("Consumed cells cannot be null or empty");
-            ConsumedCells = consumedCells;
+            ConsumedCells = new List<Pos>(consumedCells).AsReadOnly();
         }
     }
 }

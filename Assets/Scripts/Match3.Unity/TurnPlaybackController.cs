@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Contracts;
 using Core.Matching;
 using Core.Presentation;
+using Core.Turns;
 using Match3.Unity.Audio;
 using UnityEngine;
 
@@ -13,6 +15,7 @@ namespace Match3.Unity
     {
         [SerializeField] private BoardRenderer boardRenderer;
         [SerializeField] private float stepDelaySeconds = 0.4f;
+        [SerializeField] private float activationChainDelaySeconds = 0.1f;
         public bool IsPlaying { get; private set; }
 
         public void Play(TurnPresentationModel presentation)
@@ -25,39 +28,38 @@ namespace Match3.Unity
         {
             IsPlaying = true;
 
-            var steps = new List<BoardSnapshot>();
-
-            AddIfNotNull(steps, presentation.SwapBoard);
-            AddIfNotNull(steps, presentation.DirectActivationBoard);
-            AddIfNotNull(steps, presentation.PrimaryResolveBoard);
-            AddIfNotNull(steps, presentation.GravityBoard);
-            AddIfNotNull(steps, presentation.RefillBoard);
-            foreach (var cascadeBoard in presentation.CascadeBoards)
-                AddIfNotNull(steps, cascadeBoard);
-            AddIfNotNull(steps, presentation.ShuffleBoard);
-
-            int previousPieceCount = CountPieces(presentation.InitialBoard);
-
-            foreach (var snapshot in steps)
+            foreach (var phase in presentation.Phases)
             {
-                int currentPieceCount = CountPieces(snapshot);
+                if (phase.BoardAfterPhase == null) continue;
 
-                boardRenderer.Render(snapshot);
+                boardRenderer.Render(phase.BoardAfterPhase);
 
                 if (GameAudioController.Instance != null)
                 {
-                    if (ReferenceEquals(snapshot, presentation.DirectActivationBoard))
-                    {
-                        GameAudioController.Instance.PlaySpecialActivationSound();
-                    }
-                    else if (currentPieceCount < previousPieceCount)
-                    {
+
+                    if ((phase.Type == TurnPhaseType.PrimaryMatchResolved || phase.Type == TurnPhaseType.CascadeWaveResolved)
+                             && phase.ClearedCells > 0 )
                         GameAudioController.Instance.PlayMatchSound();
+                    var specialActivationGroups = phase.SpecialActivations
+                        .GroupBy(phases => phases.ChainDepth).OrderBy(events => events.Key);
+
+                    int groupIndex = 0;
+                    foreach (var specialActivations in specialActivationGroups)
+                    {
+                        if (groupIndex != 0)
+                             yield return new WaitForSeconds(activationChainDelaySeconds);
+                        foreach (var specialActivation in specialActivations)
+                        {
+                            GameAudioController.Instance.PlaySpecialActivationSound();
+                        }
+                        groupIndex++;
+                    }
+                        
+                    foreach (var spawn in phase.SpecialSpawns) 
+                    {
+                        GameAudioController.Instance.PlaySpecialSpawnSound();
                     }
                 }
-
-                previousPieceCount = currentPieceCount;
-
                 yield return new WaitForSeconds(stepDelaySeconds);
             }
 

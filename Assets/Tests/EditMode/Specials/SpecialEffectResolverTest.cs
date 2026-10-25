@@ -360,5 +360,58 @@ namespace Tests.EditMode.Specials
             
             
         }
+
+        [Test]
+        public void CollectTriggeredCells_WhenSpecialsTriggersAnother_RecordsChainDepths()
+        {
+            var board = new BoardModel(4, 4);
+            board.Set(0, 0, Piece.Normal(PieceColor.Red));
+            board.Set(0, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(0, 2, Piece.Normal(PieceColor.Green));
+            board.Set(0, 3, Piece.Normal(PieceColor.Red));
+                            
+            board.Set(1, 0, Piece.RowClear(PieceColor.Red));
+            board.Set(1, 1, Piece.Normal(PieceColor.Yellow));
+            board.Set(1, 2, Piece.ColumnClear(PieceColor.Blue));
+            board.Set(1, 3, Piece.Normal(PieceColor.Green));
+                            
+            board.Set(2, 0, Piece.Normal(PieceColor.Yellow));
+            board.Set(2, 1, Piece.Normal(PieceColor.Red));
+            board.Set(2, 2, Piece.Normal(PieceColor.Green));
+            board.Set(2, 3, Piece.Normal(PieceColor.Red));
+            
+            board.Set(3, 0, Piece.Normal(PieceColor.Red));
+            board.Set(3, 1, Piece.Normal(PieceColor.Blue));
+            board.Set(3, 2, Piece.Normal(PieceColor.Blue));
+            board.Set(3, 3, Piece.Normal(PieceColor.Red));
+            
+            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(1, 0)};
+            var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells, out var activations);
+            
+            Assert.AreEqual(2, activations.Count);
+            Assert.AreEqual(new Pos(1,0), activations[0].Position);
+            Assert.AreEqual(Piece.RowClear(PieceColor.Red), activations[0].Piece);
+            Assert.AreEqual(0, activations[0].ChainDepth);
+            Assert.AreEqual(new Pos(1,2), activations[1].Position);
+            Assert.AreEqual(Piece.ColumnClear(PieceColor.Blue), activations[1].Piece);
+            Assert.AreEqual(1, activations[1].ChainDepth);
+            Assert.AreEqual(4, activations[0].AffectedCells.Count);
+            CollectionAssert.AreEquivalent(new List<Pos>(){ 
+                    new Pos(1,0),
+                    new Pos(1,1),
+                    new Pos(1,2),
+                    new Pos(1,3)
+            }, activations[0].AffectedCells);
+            Assert.AreEqual(4, activations[1].AffectedCells.Count);
+            CollectionAssert.AreEquivalent(new List<Pos>(){ 
+                    new Pos(0,2),
+                    new Pos(1,2),
+                    new Pos(2,2),
+                    new Pos(3,2)
+                }, activations[1].AffectedCells);
+
+            Assert.AreEqual(7, result.Count);
+            CollectionAssert.AreEquivalent(activations[0].AffectedCells.Union(activations[1].AffectedCells).ToList(), result);
+        }
     }
 }

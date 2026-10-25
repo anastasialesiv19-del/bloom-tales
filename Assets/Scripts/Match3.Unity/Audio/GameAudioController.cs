@@ -17,6 +17,7 @@ namespace Match3.Unity.Audio
         [SerializeField] private AudioClip buttonClickSound;
         [SerializeField] private AudioClip matchSound;
         [SerializeField] private AudioClip specialActivationSound;
+        [SerializeField] private AudioClip specialSpawnSound;
 
         private float musicVolume = 0.5f;
         private float musicMultiplier = 1f;
@@ -170,7 +171,6 @@ namespace Match3.Unity.Audio
         public void PlayButtonClick()
         {
             if (buttonClickSound == null) return;
-            
             uiSource.PlayOneShot(buttonClickSound);
         }
         
@@ -182,15 +182,19 @@ namespace Match3.Unity.Audio
         public void PlayMatchSound()
         {
             if(matchSound == null) return;
-            
             effectsSource.PlayOneShot(matchSound);
         }
         
         public void PlaySpecialActivationSound()
         {
             if(specialActivationSound == null) return;
-            
             effectsSource.PlayOneShot(specialActivationSound);
+        }
+
+        public void PlaySpecialSpawnSound()
+        {
+            if(specialSpawnSound == null) return;
+            effectsSource.PlayOneShot(specialSpawnSound);
         }
     }
 }

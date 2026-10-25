@@ -10,8 +10,7 @@ namespace Core.Board
 {
     public static class BoardResolver
     {
-        private static readonly PieceColor[] AllSpawnable =
-            Enum.GetValues(typeof(PieceColor))
+        private static readonly PieceColor[] AllSpawnable = Enum.GetValues(typeof(PieceColor))
                 .Cast<PieceColor>()
                 .ToArray();
 
@@ -56,9 +55,7 @@ namespace Core.Board
                 obstaclePositions.Add(pos);
         }
         
-        private static void AddColorCount(
-            Dictionary<PieceColor, int> clearedByColor,
-            Piece piece)
+        private static void AddColorCount(Dictionary<PieceColor, int> clearedByColor, Piece piece)
         {
             if (piece.Color == null)
                 return;
@@ -72,9 +69,7 @@ namespace Core.Board
         }
         
         
-        public static ClearResolutionStats ClearCells(
-            BoardModel board,
-            IReadOnlyCollection<Pos> initialCells)
+        public static ClearResolutionStats ClearCells(BoardModel board, IReadOnlyCollection<Pos> initialCells)
         {
             var affectedCells = new HashSet<Pos>(initialCells);
 
@@ -99,15 +94,15 @@ namespace Core.Board
                 clearedPieces++;
             }
 
-            return new ClearResolutionStats(
-                clearedPieces,
-                clearedByColor,
-                destroyedObstacles);
+            return new ClearResolutionStats(clearedPieces, clearedByColor, destroyedObstacles);
         }
         
-        public static ClearResolutionStats ClearMatches(
-            BoardModel board,
-            IReadOnlyList<Match> matches)
+        public static ClearResolutionStats ClearMatches(BoardModel board, IReadOnlyList<Match> matches)
+        {
+            return ClearMatches(board, matches, out _);
+        }
+
+        public static ClearResolutionStats ClearMatches(BoardModel board, IReadOnlyList<Match> matches, out IReadOnlyList<SpecialActivationEvent> activations)
         {
             var uniqueCells = new HashSet<Pos>();
 
@@ -118,18 +113,20 @@ namespace Core.Board
                     uniqueCells.Add(cell);
                 }
             }
-
-            var finalCellsToClear = SpecialEffectResolver.CollectTriggeredCells(board, uniqueCells);
+            var finalCellsToClear = SpecialEffectResolver.CollectTriggeredCells(board, uniqueCells, out activations);
 
             return ClearCells(board, finalCellsToClear);
         }
         
-        public static ClearResolutionStats ClearMatchesAndSpawnSpecials(
-            BoardModel board,
-            IReadOnlyList<Match> matches,
-            IReadOnlyList<SpecialSpawnDecision> spawns)
+        public static ClearResolutionStats ClearMatchesAndSpawnSpecials(BoardModel board, IReadOnlyList<Match> matches, IReadOnlyList<SpecialSpawnDecision> spawns)
         {
-            var stats = ClearMatches(board, matches);
+            return ClearMatchesAndSpawnSpecials(board, matches, spawns, out _);
+        }
+
+        public static ClearResolutionStats ClearMatchesAndSpawnSpecials(BoardModel board, IReadOnlyList<Match> matches,
+            IReadOnlyList<SpecialSpawnDecision> spawns, out IReadOnlyList<SpecialActivationEvent> activations)
+        {
+            var stats = ClearMatches(board, matches, out activations);
 
             foreach (var spawn in spawns)
             {
@@ -138,7 +135,6 @@ namespace Core.Board
                     spawn.SpawnPosition.Col,
                     spawn.SpawnPiece);
             }
-
             return stats;
         }
 

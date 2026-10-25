@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Core.Contracts;
+using Core.Specials;
 
 namespace Core.Turns
 {
@@ -10,11 +12,13 @@ namespace Core.Turns
         public int SpawnedSpecials { get; }
         public int CascadeIndex { get; }
         public bool BoardShuffled { get; }
-        
         public BoardSnapshot BoardAfterPhase { get; }
+        public IReadOnlyList<SpecialSpawnDecision> SpecialSpawns { get; }
+        public IReadOnlyList<SpecialActivationEvent> SpecialActivations { get; }
 
-        public TurnPhaseTrace(TurnPhaseType type, int clearedCells = 0, 
-            int spawnedSpecials = 0, int cascadeIndex = 0, bool boardShuffled = false, BoardSnapshot boardAfterPhase = null) : this()
+        public TurnPhaseTrace(TurnPhaseType type, int clearedCells = 0, int spawnedSpecials = 0, 
+            int cascadeIndex = 0, bool boardShuffled = false, BoardSnapshot boardAfterPhase = null, 
+            IReadOnlyList<SpecialSpawnDecision> specialSpawns = null, IReadOnlyList<SpecialActivationEvent> specialActivations = null) : this()
         {
             if (RequiresBoardSnapshot(type) && boardAfterPhase == null)
                 throw new ArgumentException("Mutating phase must has a snapshot.");
@@ -24,18 +28,27 @@ namespace Core.Turns
                 throw new ArgumentException("Spawned specials cannot have negative values.");
             if(cascadeIndex < 0)
                 throw new ArgumentException("Cascade index cannot have negative values.");
-            
             if(type != TurnPhaseType.CascadeWaveResolved && cascadeIndex > 0)
                 throw new ArgumentException("Type that is not CascadeWaveResolved cannot have cascade index.");
             if(type == TurnPhaseType.CascadeWaveResolved && cascadeIndex == 0)
                 throw new ArgumentException("Type that is CascadeWaveResolved must have cascade index.");
-
+            
             Type = type;
             ClearedCells = clearedCells;
             SpawnedSpecials = spawnedSpecials;
             CascadeIndex = cascadeIndex;
             BoardShuffled = boardShuffled;
             BoardAfterPhase = boardAfterPhase;
+            
+            if(specialSpawns == null)
+                SpecialSpawns = Array.Empty<SpecialSpawnDecision>();
+            else
+                SpecialSpawns = new List<SpecialSpawnDecision>(specialSpawns).AsReadOnly();
+            
+            if(specialActivations == null)
+                SpecialActivations = Array.Empty<SpecialActivationEvent>();
+            else
+                SpecialActivations = new List<SpecialActivationEvent>(specialActivations).AsReadOnly();
         }
 
         private static bool RequiresBoardSnapshot(TurnPhaseType type)
