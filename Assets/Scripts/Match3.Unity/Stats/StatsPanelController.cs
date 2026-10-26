@@ -2,6 +2,7 @@ using System.Text;
 using Match3.Unity.Save;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Match3.Unity.Stats
 {
@@ -9,7 +10,8 @@ namespace Match3.Unity.Stats
     {
         [SerializeField] private GameObject root;
         [SerializeField] private TMP_Text statsText;
-        [SerializeField] private TMP_Text filePathText;
+        [SerializeField] private TMP_Dropdown levelDropdown;
+        [SerializeField] private ScrollRect statsScrollRect;
 
         private LevelResultStore store;
 
@@ -52,23 +54,15 @@ namespace Match3.Unity.Stats
             var data = store.LoadAll();
             var summaries = LevelResultSummaryBuilder.Build(data.Results);
 
-            if (filePathText != null)
-                filePathText.text = store.FilePath;
-
-            if (summaries.Count == 0)
-            {
-                statsText.text = "No saved level results yet.";
-                return;
-            }
-
+            var selectedLevelId = $"Level{levelDropdown.value + 1}";
+            
+            statsText.text = "No attempts yet.";
             var builder = new StringBuilder();
-
-            builder.AppendLine("LEVEL RESULTS");
-            builder.AppendLine();
 
             foreach (var summary in summaries)
             {
-                builder.AppendLine(summary.LevelId);
+                if (summary.LevelId != selectedLevelId)
+                    continue;
                 builder.AppendLine($"Attempts: {summary.Attempts}");
                 builder.AppendLine($"Victories: {summary.Victories}");
                 builder.AppendLine($"Defeats: {summary.Defeats}");
@@ -78,16 +72,21 @@ namespace Match3.Unity.Stats
                 else
                     builder.AppendLine("Best victory turns: -");
 
-                builder.AppendLine($"Manual hints shown: {summary.ManualHintsShown}");
-                builder.AppendLine($"Idle hints shown: {summary.IdleHintsShown}");
                 builder.AppendLine($"Hints applied: {summary.HintsApplied}");
-                builder.AppendLine($"Total cleared cells: {summary.TotalClearedCells}");
-                builder.AppendLine($"Destroyed obstacles: {summary.DestroyedObstacles}");
                 builder.AppendLine($"Last result: {summary.LastResult}");
                 builder.AppendLine();
+                
+                statsText.text = builder.ToString();
+                break;
             }
+            
+        }
 
-            statsText.text = builder.ToString();
+        public void OnLevelChanged(int index)
+        {
+            Render();
+            Canvas.ForceUpdateCanvases();
+            statsScrollRect.verticalNormalizedPosition = 1f;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Match3.Unity.Theme
 {
     public static class LevelThemeResolver
     {
-        public static LevelTheme Resolve(LevelId levelId, Sprite level1Bg, Sprite level2Bg)
+        public static LevelTheme Resolve(LevelId levelId, Sprite level1Bg, Sprite level2Bg, Sprite level3Bg)
         {
             switch (levelId)
             {
@@ -21,6 +21,11 @@ namespace Match3.Unity.Theme
                         background = level2Bg
                     };
 
+                case  LevelId.Level3:
+                    return new LevelTheme
+                    {
+                        background = level3Bg
+                    };
                 default:
                     return new LevelTheme
                     {
@@ -28,7 +33,5 @@ namespace Match3.Unity.Theme
                     };
             }
         }
-
-        
     }
 }

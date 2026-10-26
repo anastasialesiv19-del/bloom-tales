@@ -31,6 +31,7 @@ namespace Match3.Unity
         [SerializeField] private int totalMoves = 20;
         [SerializeField] private Sprite level1Background;
         [SerializeField] private Sprite level2Background;
+        [SerializeField] private Sprite level3Background;
         [SerializeField] private Image backgroundImage;
         [SerializeField] private PausePanel pausePanel;
         [SerializeField] private GameObject victoryPanel;
@@ -84,7 +85,7 @@ namespace Match3.Unity
         public void Start()
         {
             ApplySelectedLevelConfigIfPresent();
-            var theme = LevelThemeResolver.Resolve(currentLevelId, level1Background, level2Background);
+            var theme = LevelThemeResolver.Resolve(currentLevelId, level1Background, level2Background, level3Background);
             ApplyTheme(theme);
             progressStore = new JsonProgressStore();
             var progress = progressStore.Load(); 

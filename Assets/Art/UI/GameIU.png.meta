@@ -294,7 +294,7 @@ TextureImporter:
         width: 216
         height: 69
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -302,6 +302,90 @@ TextureImporter:
       bones: []
       spriteID: 2942d48fc0dfc2147b91fc19e1c89d45
       internalID: -738402981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GameIU_5
+      rect:
+        serializedVersion: 2
+        x: 1454
+        y: 509
+        width: 71
+        height: 86
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10e489624167ef84da1624fb4aa8244e
+      internalID: -1233171348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GameIU_6
+      rect:
+        serializedVersion: 2
+        x: 250
+        y: 537
+        width: 216
+        height: 69
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25746c34c24bb7544804cab3d49f10cf
+      internalID: -2123975409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GameIU_7
+      rect:
+        serializedVersion: 2
+        x: 482
+        y: 538
+        width: 193
+        height: 69
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a3f4b396fe3249458dd566a72a7f6dc
+      internalID: -607617167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GameIU_8
+      rect:
+        serializedVersion: 2
+        x: 687
+        y: 514
+        width: 89
+        height: 87
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 077c824f7231663498f1d9d80809bed0
+      internalID: 662211002
       vertices: []
       indices: 
       edges: []
@@ -322,6 +406,10 @@ TextureImporter:
       GameIU_2: 1742834805
       GameIU_3: -921864378
       GameIU_4: -738402981
+      GameIU_5: -1233171348
+      GameIU_6: -2123975409
+      GameIU_7: -607617167
+      GameIU_8: 662211002
       LevelSelectPanel: -1117933539
       "\u043E\u0441\u043D\u043E\u0432\u0438\u0439 UI_0": 362497508
       "\u043E\u0441\u043D\u043E\u0432\u0438\u0439 UI_1": 673360278

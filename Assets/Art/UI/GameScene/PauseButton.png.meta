@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 9f1412ae4d0bcb64a92bc58a2e0e9768
+guid: 27f0dca758c383646a7841698efeefeb
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,13 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PausePanel_0
+      name: PauseButton_0
       rect:
         serializedVersion: 2
-        x: 653
-        y: 47
-        width: 1606
-        height: 2082
+        x: 268
+        y: 719
+        width: 1002
+        height: 227
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -111,8 +111,71 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 685faed4135543047959a7738ab4e4f5
-      internalID: 137436476
+      spriteID: 997fa43cc5dae1f4f958f5176d5e1b9a
+      internalID: -1432899516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PauseButton_1
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 482
+        width: 1002
+        height: 224
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98094608c755e38449741f77419a947f
+      internalID: -1403185543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PauseButton_2
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 246
+        width: 1002
+        height: 225
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1f16935b42f783479fcf2f016c84316
+      internalID: 181334296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PauseButton_3
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 29
+        width: 991
+        height: 202
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: befd4f17903faeb4bbc85c196c398955
+      internalID: 1246197463
       vertices: []
       indices: 
       edges: []
@@ -128,7 +191,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      PausePanel_0: 137436476
+      PauseButton_0: -1432899516
+      PauseButton_1: -1403185543
+      PauseButton_2: 181334296
+      PauseButton_3: 1246197463
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

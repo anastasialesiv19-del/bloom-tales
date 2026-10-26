@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6c613ead552a6294bad351658ccf5ae0
+guid: 4ed0e4aabc2194f40b399032b858ac30
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,13 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DefeatPanelShort_0
+      name: Fantasy-Pergamentrahmen mit Blumenranken_0
       rect:
         serializedVersion: 2
-        x: 760
-        y: 424
-        width: 1373
-        height: 1333
+        x: 15
+        y: 37
+        width: 1506
+        height: 971
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -111,8 +111,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b3b74d1dee86c29418246d4c1e0d64bc
-      internalID: -1308326323
+      spriteID: 3bb971c2daf0a6945b302253a31640a5
+      internalID: 1144597537
       vertices: []
       indices: 
       edges: []
@@ -128,7 +128,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      DefeatPanelShort_0: -1308326323
+      Fantasy-Pergamentrahmen mit Blumenranken_0: 1144597537
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
