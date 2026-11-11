@@ -36,6 +36,7 @@ namespace Match3.Unity
         [SerializeField] private PausePanel pausePanel;
         [SerializeField] private GameObject victoryPanel;
         [SerializeField] private GameObject defeatPanel;
+        [SerializeField] private TMP_Text levelTitleText;
         [SerializeField] private TMP_Text scoreText;
         [SerializeField] private Transform goalsRoot;
         [SerializeField] private GoalItemView goalItemPrefab;

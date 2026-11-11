@@ -15,6 +15,8 @@ namespace Match3.Unity
             if (config == null)
                 config = LevelConfigFactory.Create(LevelId.Level1);
             currentLevelId = config.LevelId;
+            if (levelTitleText != null)
+                levelTitleText.text = config.LevelName;
             currentObstacles = config.Obstacles;
             currentGoalDefinitions = config.Goals;
             
