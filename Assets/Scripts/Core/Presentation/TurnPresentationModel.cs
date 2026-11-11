@@ -25,11 +25,12 @@ namespace Core.Presentation
         public IReadOnlyList<BoardSnapshot> CascadeBoards { get; }
         public ClearResolutionStats ClearStats { get; }
         public IReadOnlyList<TurnPhaseTrace> Phases { get; }
+        public Move? Move { get; }
 
         public TurnPresentationModel(BoardSnapshot initialBoard, BoardSnapshot finalBoard, bool wasApplied, bool wasShuffled,
             bool createdMatch, int totalClearedCells, ClearResolutionStats clearStats, BoardSnapshot swapBoard, BoardSnapshot directActivationBoard,
             BoardSnapshot primaryResolveBoard, BoardSnapshot gravityBoard, BoardSnapshot refillBoard, BoardSnapshot shuffleBoard, 
-            IReadOnlyList<BoardSnapshot> cascadeBoards, IReadOnlyList<TurnPhaseTrace> phases)
+            IReadOnlyList<BoardSnapshot> cascadeBoards, IReadOnlyList<TurnPhaseTrace> phases, Move? move = null)
         {
             InitialBoard = initialBoard ?? throw new ArgumentNullException("initialBoard", "InitialBoard is null");
             FinalBoard = finalBoard ?? throw new ArgumentNullException("finalBoard", "FinalBoard is null");
@@ -46,6 +47,7 @@ namespace Core.Presentation
             ShuffleBoard = shuffleBoard;
             CascadeBoards = cascadeBoards ?? throw new ArgumentNullException("cascadeBoards", "CascadeBoards is null");
             Phases = phases != null ? new List<TurnPhaseTrace>(phases).AsReadOnly() : throw new ArgumentNullException(nameof(phases));
+            Move = move;
         }
     }
 }

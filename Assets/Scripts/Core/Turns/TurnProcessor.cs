@@ -80,19 +80,18 @@ namespace Core.Turns
             
             var initialFalls = BoardResolver.ApplyGravity(board);
             var gravitySnapshot = BoardSnapshotFactory.Capture(board);
-            tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.GravityApplied, boardAfterPhase: gravitySnapshot));
+            tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.GravityApplied, boardAfterPhase: gravitySnapshot, falls: initialFalls));
             
             var initialRefills = BoardResolver.Refill(board, provider);
             var refillSnapshot = BoardSnapshotFactory.Capture(board);
             tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.RefillApplied, boardAfterPhase: refillSnapshot));
             
             var cascadeResult = CascadeResolver.Resolve(board, provider,
-                (cascadeIndex, clearedCells, waveSnapshot, waveSpawns, waveActivations) =>
+                (cascadeIndex, clearedCells, waveSnapshot, waveSpawns, waveActivations, waveActivation) =>
                 {
                     tracePhases.Add(
-                        new TurnPhaseTrace(
-                            TurnPhaseType.CascadeWaveResolved, clearedCells: clearedCells, cascadeIndex: cascadeIndex,
-                            boardAfterPhase: waveSnapshot, spawnedSpecials: waveSpawns.Count, specialSpawns: waveSpawns, specialActivations: waveActivations));
+                        new TurnPhaseTrace(TurnPhaseType.CascadeWaveResolved, clearedCells: clearedCells, cascadeIndex: cascadeIndex,
+                            boardAfterPhase: waveSnapshot, spawnedSpecials: waveSpawns.Count, specialSpawns: waveSpawns, specialActivations: waveActivations, cascadeAnimation: waveActivation));
                 }, initialFalls, initialRefills);
             totalClearStats = totalClearStats.Add(cascadeResult.ClearStats);
             totalCleared = totalClearStats.TotalClearedCells;

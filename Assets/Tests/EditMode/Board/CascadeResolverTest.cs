@@ -124,11 +124,11 @@ namespace Tests.EditMode.Board
                 { PieceColor.Yellow, PieceColor.Blue, PieceColor.Green, PieceColor.Red }
             };
             foreach (var pos in board.AllPositions())
-                board.Set(pos.Row, pos.Col, Piece.Normal(colors[pos.Row, pos.Col]));
+                board.Set(pos.Row, pos.Col, Piece.Normal(colors[pos.Row, pos.Col]));    
             board.Set(1, 2, Piece.AreaBomb(PieceColor.Green));
             var provider = new SequenceRandomProvider(new[] { 0, 1, 2, 1, 2, 4, 2, 4, 0 });
             int callbacks = 0;
-            var result = CascadeResolver.Resolve(board, provider, (index, cleared, snapshot, spawns, activations) =>
+            var result = CascadeResolver.Resolve(board, provider, (index, cleared, snapshot, spawns, activations, animation) =>
             {
                 callbacks++;
                 Assert.AreEqual(1, index);

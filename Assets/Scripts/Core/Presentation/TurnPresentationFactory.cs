@@ -38,7 +38,7 @@ namespace Core.Presentation
                                                                    throw new InvalidOperationException("Cascade snapshots are null")).ToList();
             return new TurnPresentationModel(turnResult.InitialBoardSnapshot, turnResult.FinalBoardSnapshot, turnResult.WasApplied,
                 turnResult.WasShuffled, turnResult.CreatedMatch, turnResult.TotalClearedCells, turnResult.ClearStats, swapBoard, directActivationBoard, 
-                primaryResolveBoard, gravityBoard, refillBoard, shuffleBoard, cascadeBoards, turnResult.Trace.Phases);
+                primaryResolveBoard, gravityBoard, refillBoard, shuffleBoard, cascadeBoards, turnResult.Trace.Phases, move: turnResult.Move);
         }
     }
 }

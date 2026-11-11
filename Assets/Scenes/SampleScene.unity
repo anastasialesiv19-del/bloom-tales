@@ -6604,8 +6604,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boardRenderer: {fileID: 1736815587}
-  stepDelaySeconds: 0.5
+  stepDelaySeconds: 0.4
   activationChainDelaySeconds: 0.1
+  pieceFadeSeconds: 0.2
+  swapDurationSeconds: 0.3
+  fallDurationSeconds: 0.35
 --- !u!4 &1826962651
 Transform:
   m_ObjectHideFlags: 0
