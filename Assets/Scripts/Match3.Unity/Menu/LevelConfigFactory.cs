@@ -14,64 +14,71 @@ namespace Match3.Unity.Menu
             {
                 case LevelId.Level1:
                     return new LevelConfig(levelId, 
-                        "Level 1", 
+                        "Morning Dew", 
                         GameModeType.Moves, 
-                        10, 
+                        20, 
                         0f,
                         new List<GoalDefinition>
                         {
-                            new GoalDefinition(GoalType.Score, 3),
-                            new GoalDefinition(GoalType.Color, 5, PieceColor.Red),
-                            new GoalDefinition(GoalType.Color, 6, PieceColor.Cyan),
-                            new GoalDefinition(GoalType.Color, 7, PieceColor.Yellow),
-                            new GoalDefinition(GoalType.Obstacle, 2, obstacleKind: ObstacleKind.Box)
+                            new GoalDefinition(GoalType.Score, 70),
+                            new GoalDefinition(GoalType.Color, 12, PieceColor.Red),
+                            new GoalDefinition(GoalType.Color, 12, PieceColor.Cyan),
+                            new GoalDefinition(GoalType.Obstacle, 4, obstacleKind: ObstacleKind.Box)
                         },
                         new List<ObstacleDefinition>
                         {
                             new ObstacleDefinition(new Pos(2, 2), ObstacleKind.Box, 1),
-                            new ObstacleDefinition(new Pos(3, 4), ObstacleKind.Box, 1)
+                            new ObstacleDefinition(new Pos(2, 3), ObstacleKind.Box, 1),
+                            new ObstacleDefinition(new Pos(5, 4), ObstacleKind.Box, 1),
+                            new ObstacleDefinition(new Pos(5, 5), ObstacleKind.Box, 1)
                         });
 
                 case LevelId.Level2:
                     return new LevelConfig(levelId, 
-                        "Level 2", 
+                        "Golden Garden", 
                         GameModeType.Timer, 
                         0, 
                         150f,
                         new List<GoalDefinition>
                         {
-                            new GoalDefinition(GoalType.Score, 3),
-                            new GoalDefinition(GoalType.Color, 7, PieceColor.Red),
-                            new GoalDefinition(GoalType.Color, 5, PieceColor.Blue),
-                            new GoalDefinition(GoalType.Color, 8, PieceColor.Green),
-                            new GoalDefinition(GoalType.Obstacle, 2, obstacleKind: ObstacleKind.Box)
+                            new GoalDefinition(GoalType.Score, 100),
+                            new GoalDefinition(GoalType.Color, 15, PieceColor.Yellow),
+                            new GoalDefinition(GoalType.Color, 15, PieceColor.Green),
+                            new GoalDefinition(GoalType.Obstacle, 6, obstacleKind: ObstacleKind.Box)
                         },
                         new List<ObstacleDefinition>
                         {
-                            new ObstacleDefinition(new Pos(2, 3), ObstacleKind.Box, 1),
+                            new ObstacleDefinition(new Pos(2, 2), ObstacleKind.Box, 1),
+                            new ObstacleDefinition(new Pos(3, 2), ObstacleKind.Box, 1),
+                            new ObstacleDefinition(new Pos(4, 2), ObstacleKind.Box, 1),
+                            new ObstacleDefinition(new Pos(2, 5), ObstacleKind.Box, 1),
                             new ObstacleDefinition(new Pos(3, 5), ObstacleKind.Box, 1),
-                            new ObstacleDefinition(new Pos(4, 4), ObstacleKind.Box, 1)
+                            new ObstacleDefinition(new Pos(4, 5), ObstacleKind.Box, 1)
                         });
 
                 case LevelId.Level3:
                     return new LevelConfig(levelId, 
-                        "Level 3", 
+                        "Moonlit Magic", 
                         GameModeType.Moves, 
-                        15, 
+                        24, 
                         0f, 
                         new List<GoalDefinition>
                         {
-                            new GoalDefinition(GoalType.Score, 10),
-                            new GoalDefinition(GoalType.Color, 8, PieceColor.Red),
-                            new GoalDefinition(GoalType.Color, 9, PieceColor.Blue),
-                            new GoalDefinition(GoalType.Color, 7, PieceColor.Green),
-                            new GoalDefinition(GoalType.Obstacle, 3, obstacleKind: ObstacleKind.Box)
+                            new GoalDefinition(GoalType.Score, 130),
+                            new GoalDefinition(GoalType.Color, 18, PieceColor.Blue),
+                            new GoalDefinition(GoalType.Color, 18, PieceColor.Purple),
+                            new GoalDefinition(GoalType.Obstacle, 8, obstacleKind: ObstacleKind.Box)
                         },
                         new List<ObstacleDefinition>
                         {
                             new ObstacleDefinition(new Pos(2, 2), ObstacleKind.Box, 1),
                             new ObstacleDefinition(new Pos(2, 3), ObstacleKind.Box, 1),
-                            new ObstacleDefinition(new Pos(3, 2), ObstacleKind.Box, 1)
+                            new ObstacleDefinition(new Pos(3, 2), ObstacleKind.Box, 1),
+                            new ObstacleDefinition(new Pos(3, 3), ObstacleKind.Box, 1),
+                            new ObstacleDefinition(new Pos(4, 4), ObstacleKind.Box, 1),
+                            new ObstacleDefinition(new Pos(4, 5), ObstacleKind.Box, 1),
+                            new ObstacleDefinition(new Pos(5, 4), ObstacleKind.Box, 1),
+                            new ObstacleDefinition(new Pos(5, 5), ObstacleKind.Box, 1)
                         });
 
                 default:
