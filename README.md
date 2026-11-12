@@ -2,6 +2,12 @@
 
 A 2D Match-3 game built with Unity and C#, featuring an adaptive hint system and heuristic move search. Developed as a bachelor's diploma project on **Match-3 game development with a hint system and a search algorithm**.
 
+## Download and play
+
+Download the Windows build from the [latest release](https://github.com/anastasialesiv19-del/bloom-tales/releases/latest).
+
+Extract the entire ZIP archive and run `Bloom Tales.exe`. Unity is not required to play.
+
 ## Features
 
 - Three levels: **Morning Dew**, **Golden Garden**, and **Moonlit Magic**.
