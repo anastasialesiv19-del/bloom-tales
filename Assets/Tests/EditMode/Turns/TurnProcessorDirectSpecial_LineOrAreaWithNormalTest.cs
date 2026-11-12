@@ -2,7 +2,7 @@ using Tests.EditMode.TestDoubles;
 using Core.Contracts;
 using System;
 using System.Linq;
-using Core.Matching;
+using Core.Board;
 using Core.Turns;
 using NUnit.Framework;
 
@@ -175,26 +175,29 @@ namespace Tests.EditMode.Turns
 
         private static void AssertEffect(BoardSnapshot before, TurnPhaseTrace phase, Func<int, int, bool> cleared)
         {
-            int count = 0;
-            for (int row = 0; row < before.Height; row++)
-            for (int col = 0; col < before.Width; col++)
+            var count = 0;
+            for (var row = 0; row < before.Height; row++)
             {
-                if (cleared(row, col))
+                for (var col = 0; col < before.Width; col++)
                 {
-                    count++;
-                    Assert.IsTrue(phase.BoardAfterPhase.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
+                    if (cleared(row, col))
+                    {
+                        count++;
+                        Assert.IsTrue(phase.BoardAfterPhase.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
+                    }
+                    else
+                    {
+                        Assert.AreEqual(before.Get(row, col), phase.BoardAfterPhase.Get(row, col), $"({row}, {col}) must stay");
+                    }
                 }
-                else
-                    Assert.AreEqual(before.Get(row, col), phase.BoardAfterPhase.Get(row, col), $"({row}, {col}) must stay");
             }
+
             Assert.AreEqual(count, phase.ClearedCells);
         }
 
         private static void AssertPhaseOrder(TurnResult result, TurnPhaseType first, TurnPhaseType second)
         {
-            var phases = result.Trace.Phases
-                .Select(phase => phase.Type)
-                .ToList();
+            var phases = result.Trace.Phases.Select(phase => phase.Type).ToList();
 
             var firstIndex = phases.IndexOf(first);
             var secondIndex = phases.IndexOf(second);
@@ -207,7 +210,9 @@ namespace Tests.EditMode.Turns
         private static void Fill(BoardModel board, PieceColor color)
         {
             foreach (var pos in board.AllPositions())
+            {
                 board.Set(pos.Row, pos.Col, Piece.Normal(color));
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Core.Board;
 using Core.Matching;
 
 namespace Core.Specials

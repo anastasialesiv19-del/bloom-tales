@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Core.Board;
 using Core.Hint;
 using Core.Matching;
 using NUnit.Framework;
@@ -13,7 +14,6 @@ namespace Tests.EditMode.Hint
         {
             var board = CreateBoardWithRedMove();
             var move = new Move(new Pos(0, 1), new Pos(1, 1));
-
             var scoreWithoutGoal = HintScorer.ScoreMove(board, move);
 
             var context = new HintGoalContext(
@@ -33,7 +33,6 @@ namespace Tests.EditMode.Hint
         {
             var board = CreateBoardWithRedMove();
             var move = new Move(new Pos(0, 1), new Pos(1, 1));
-
             var scoreWithoutGoal = HintScorer.ScoreMove(board, move);
 
             var context = new HintGoalContext(
@@ -71,8 +70,8 @@ namespace Tests.EditMode.Hint
         {
             var board = CreateBoardWithRedMove();
             var move = new Move(new Pos(0, 1), new Pos(1, 1));
-            
             var estimate = HintMoveOutcomeEstimator.Estimate(board, move);
+            
             Assert.AreEqual(3, estimate.ClearedByColor[PieceColor.Red]);
             
             var scoreWithoutGoal = HintScorer.ScoreMove(board, move);

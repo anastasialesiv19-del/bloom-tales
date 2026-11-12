@@ -12,17 +12,10 @@ namespace Tests.EditMode.Obstacles
             var board = new BoardModel(3, 3);
             Fill(board, PieceColor.Red);
 
-            board.SetObstacle(1, 1, new ObstacleModel
-            {
-                Kind = ObstacleKind.Box,
-                Health = 1
-            });
+            board.SetObstacle(1, 1, new ObstacleModel { Kind = ObstacleKind.Box, Health = 1 });
             board.Set(1, 1, Piece.Empty());
 
-            var result = MoveValidator.IsValidSwap(
-                board,
-                new Pos(1, 1),
-                new Pos(1, 2));
+            var result = MoveValidator.IsValidSwap(board, new Pos(1, 1), new Pos(1, 2));
 
             Assert.IsFalse(result);
         }
@@ -37,11 +30,7 @@ namespace Tests.EditMode.Obstacles
             board.Set(0, 2, Piece.Empty());
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
 
-            board.SetObstacle(0, 2, new ObstacleModel
-            {
-                Kind = ObstacleKind.Box,
-                Health = 1
-            });
+            board.SetObstacle(0, 2, new ObstacleModel { Kind = ObstacleKind.Box, Health = 1 });
 
             var matches = MatchFinder.FindMatches(board);
 
@@ -54,17 +43,10 @@ namespace Tests.EditMode.Obstacles
             var board = new BoardModel(3, 3);
             Fill(board, PieceColor.Blue);
 
-            board.SetObstacle(1, 1, new ObstacleModel
-            {
-                Kind = ObstacleKind.Box,
-                Health = 1
-            });
+            board.SetObstacle(1, 1, new ObstacleModel { Kind = ObstacleKind.Box, Health = 1 });
             board.Set(1, 1, Piece.Empty());
 
-            BoardResolver.ClearCells(board, new[]
-            {
-                new Pos(1, 0)
-            });
+            BoardResolver.ClearCells(board, new[] { new Pos(1, 0) });
 
             Assert.IsTrue(board.GetObstacle(1, 1).IsEmpty);
         }
@@ -75,18 +57,10 @@ namespace Tests.EditMode.Obstacles
             var board = new BoardModel(3, 3);
             Fill(board, PieceColor.Blue);
 
-            board.SetObstacle(1, 1, new ObstacleModel
-            {
-                Kind = ObstacleKind.Box,
-                Health = 2
-            });
+            board.SetObstacle(1, 1, new ObstacleModel { Kind = ObstacleKind.Box, Health = 2 });
             board.Set(1, 1, Piece.Empty());
 
-            BoardResolver.ClearCells(board, new[]
-            {
-                new Pos(1, 0),
-                new Pos(0, 1)
-            });
+            BoardResolver.ClearCells(board, new[] { new Pos(1, 0), new Pos(0, 1) });
 
             Assert.AreEqual(1, board.GetObstacle(1, 1).Health);
         }
@@ -101,11 +75,7 @@ namespace Tests.EditMode.Obstacles
             board.Set(2, 0, Piece.Empty());
             board.Set(3, 0, Piece.Empty());
 
-            board.SetObstacle(2, 0, new ObstacleModel
-            {
-                Kind = ObstacleKind.Box,
-                Health = 1
-            });
+            board.SetObstacle(2, 0, new ObstacleModel { Kind = ObstacleKind.Box, Health = 1 });
 
             BoardResolver.ApplyGravity(board);
 

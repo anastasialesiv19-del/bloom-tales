@@ -1,6 +1,5 @@
 using System.Linq;
-using Core.Generation;
-using Core.Matching;
+using Core.Board;
 using Core.Turns;
 using NUnit.Framework;
 using Tests.EditMode.TestDoubles;
@@ -134,8 +133,7 @@ namespace Tests.EditMode.Turns
             var move = new Move(new Pos(2, 2), new Pos(1, 2));
             var turnResult = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
 
-            var primaryPhase = turnResult.Trace.Phases
-                .Single(p => p.Type == TurnPhaseType.PrimaryMatchResolved);
+            var primaryPhase = turnResult.Trace.Phases.Single(p => p.Type == TurnPhaseType.PrimaryMatchResolved);
 
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
@@ -182,12 +180,16 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_WithCascade_TraceContainsOnePhasePerCascadeWave()
         {
             var result = CascadeTestScenario.ResolveTwoWaves();
+            
             Assert.IsTrue(result.WasApplied);
             Assert.IsTrue(result.CreatedMatch);
             Assert.AreEqual(2, result.CascadeCount);
+            
             var phases = TurnTraceQueries.GetCascadePhases(result.Trace);
+            
             Assert.AreEqual(2, phases.Count);
-            for (int i = 0; i < 2; i++)
+            
+            for (var i = 0; i < 2; i++)
             {
                 Assert.AreEqual(i + 1, phases[i].CascadeIndex);
                 Assert.AreEqual(3, phases[i].ClearedCells);
@@ -217,8 +219,7 @@ namespace Tests.EditMode.Turns
             var turnResult = TurnProcessor.TryProcessMove(board, move, provider);
 
             Assert.AreEqual(turnResult.Trace.Phases.Count(p => p.Type == TurnPhaseType.ShuffleApplied), 1);
-            Assert.IsNotNull(turnResult.Trace.Phases.First(p => p.Type == TurnPhaseType.ShuffleApplied)
-                .BoardAfterPhase);
+            Assert.IsNotNull(turnResult.Trace.Phases.First(p => p.Type == TurnPhaseType.ShuffleApplied).BoardAfterPhase);
         }
     }
 }

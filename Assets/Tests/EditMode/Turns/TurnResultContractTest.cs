@@ -1,6 +1,5 @@
 using Tests.EditMode.TestDoubles;
-using System.Linq;
-using Core.Matching;
+using Core.Board;
 using Core.Turns;
 using NUnit.Framework;
 
@@ -42,6 +41,7 @@ namespace Tests.EditMode.Turns
             Assert.AreEqual(TurnPhaseType.InvalidSwap, turnResult.Trace.Phases[0].Type);
 
             var board2 = new BoardModel(3, 4);
+            
             board2.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board2.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board2.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -134,9 +134,12 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_CascadeTrace_UsesSequentialCascadeIndexes()
         {
             var result = CascadeTestScenario.ResolveTwoWaves();
+            
             Assert.IsTrue(result.WasApplied);
             Assert.AreEqual(2, result.CascadeCount);
+            
             var phases = TurnTraceQueries.GetCascadePhases(result.Trace);
+            
             Assert.AreEqual(2, phases.Count);
             Assert.AreEqual(1, phases[0].CascadeIndex);
             Assert.AreEqual(2, phases[1].CascadeIndex);

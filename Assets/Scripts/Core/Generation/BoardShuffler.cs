@@ -11,16 +11,13 @@ namespace Core.Generation
     {
         public static void Shuffle(BoardModel board, IRandomProvider provider = null)
         {
-            if(BoardResolver.HasEmptyCells(board)) throw new InvalidOperationException("Shuffle only works on a full board without empty cells.");
+            if (BoardResolver.HasEmptyCells(board))
+            {
+                throw new InvalidOperationException("Shuffle only works on a full board without empty cells.");
+            }
             
-            var movablePositions = board.AllPositions()
-                .Where(pos => !board.HasObstacle(pos.Row, pos.Col))
-                .ToList();
-
-            var allPieces = movablePositions
-                .Select(pos => board.Get(pos.Row, pos.Col))
-                .ToList();
-            
+            var movablePositions = board.AllPositions().Where(pos => !board.HasObstacle(pos.Row, pos.Col)).ToList();
+            var allPieces = movablePositions.Select(pos => board.Get(pos.Row, pos.Col)).ToList();
             var rng = provider ?? new SystemRandomProvider();
             
             var maxAttempts = 100;
@@ -36,14 +33,16 @@ namespace Core.Generation
                 }
 
                 var index = 0;
-
                 foreach (var pos in movablePositions)
                 {
                     board.Set(pos.Row, pos.Col, shuffledPieces[index]);
                     index++;
                 }
 
-                if (IsPlayableBoard(board)) return;
+                if (IsPlayableBoard(board))
+                {
+                    return;
+                }
                 maxAttempts--;
             }
             throw new InvalidOperationException("Max attempts reached");
@@ -51,9 +50,9 @@ namespace Core.Generation
         
         public static bool IsPlayableBoard(BoardModel board)
         {
-            bool noMatches = MatchFinder.FindMatches(board).Count == 0;
-            bool hasAnyPossibleMove = MoveFinder.HasAnyPossibleMove(board);
-            bool hasAnyEmptyPiece = BoardResolver.HasEmptyCells(board);
+            var noMatches = MatchFinder.FindMatches(board).Count == 0;
+            var hasAnyPossibleMove = MoveFinder.HasAnyPossibleMove(board);
+            var hasAnyEmptyPiece = BoardResolver.HasEmptyCells(board);
             return noMatches && hasAnyPossibleMove && !hasAnyEmptyPiece;
         }
     }

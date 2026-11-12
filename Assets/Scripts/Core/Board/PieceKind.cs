@@ -1,4 +1,4 @@
-namespace Core.Matching
+namespace Core.Board
 {
     public enum PieceKind
     {

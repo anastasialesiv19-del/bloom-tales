@@ -1,5 +1,4 @@
 using Match3.Unity.Audio;
-using Match3.Unity.Save;
 using Match3.Unity.Settings;
 using Match3.Unity.Stats;
 using UnityEngine;
@@ -11,8 +10,8 @@ namespace Match3.Unity.Menu
     {
         [SerializeField] private StatsPanelController statsPanel;
         [SerializeField] private SettingsPanelView settingsPanel;
-        private JsonSettingsStore settingsStore;
-        private GameSettings gameSettings;
+        private JsonSettingsStore _settingsStore;
+        private GameSettings _gameSettings;
 
         private void Start()
         {
@@ -21,8 +20,8 @@ namespace Match3.Unity.Menu
 
         private void Awake()
         {
-            settingsStore = new JsonSettingsStore();
-            gameSettings = settingsStore.Load();
+            _settingsStore = new JsonSettingsStore();
+            _gameSettings = _settingsStore.Load();
         }
         
         public void OnPlayClicked()
@@ -38,18 +37,22 @@ namespace Match3.Unity.Menu
         public void OnStatsClicked()
         {
             if (statsPanel != null)
+            {
                 statsPanel.Show();
+            }
         }
 
         public void OnSettingsClicked()
         {
             if (settingsPanel != null)
-                settingsPanel.Show(gameSettings);
+            {
+                settingsPanel.Show(_gameSettings);
+            }
         }
 
         public void OnSettingsBackClicked()
         {
-            settingsStore.Save(gameSettings);
+            _settingsStore.Save(_gameSettings);
             settingsPanel.Hide();
         }
     }

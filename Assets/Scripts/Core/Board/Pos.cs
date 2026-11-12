@@ -1,12 +1,13 @@
 ﻿using System;
 using JetBrains.Annotations;
 
-namespace Core.Matching
+namespace Core.Board
 {
     public readonly struct Pos
     {
         public int Row { get; }
         public int Col { get; }
+        
         public Pos(int row, int col)
         {
             Row = row;
@@ -20,10 +21,11 @@ namespace Core.Matching
 
         public override bool Equals([CanBeNull] object obj)
         {
-            if(obj is Pos)
+            if (obj is Pos)
+            {
                 return Equals((Pos) obj);
+            }
             return false;
-            
         }
 
         public override int GetHashCode()

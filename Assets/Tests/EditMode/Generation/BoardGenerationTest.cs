@@ -11,6 +11,7 @@ namespace Tests.EditMode.Generation
         {
             var board = BoardGenerator.Generate(5, 4);
             var matches = MatchFinder.FindMatches(board);
+            
             Assert.AreEqual(0, matches.Count, board.ToDebugString());
         }
         
@@ -18,7 +19,8 @@ namespace Tests.EditMode.Generation
         public void GeneratedBoard_IsPlayable()
         {
             var board = BoardGenerator.Generate(5, 5);
-            bool isPlayable = BoardShuffler.IsPlayableBoard(board);
+            var isPlayable = BoardShuffler.IsPlayableBoard(board);
+            
             Assert.IsTrue(isPlayable,  board.ToDebugString());
         }
     }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Board;
@@ -20,10 +19,10 @@ namespace Core.Turns
         public static TurnResult TryProcessMove(BoardModel board, Move move, IRandomProvider provider)
         {
             var initialBoardSnapshot = BoardSnapshotFactory.Capture(board);
-            
             var tracePhases = new List<TurnPhaseTrace>();
             var totalClearStats = ClearResolutionStats.Empty;
-            bool isPlayable = BoardShuffler.IsPlayableBoard(board);
+            var isPlayable = BoardShuffler.IsPlayableBoard(board);
+            
             if (!MoveValidator.IsValidSwap(board, move.From, move.To))
             {
                 tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.InvalidSwap));
@@ -32,25 +31,16 @@ namespace Core.Turns
             
             var totalCleared = 0;
             var specialApplied = TryResolveDirectSpecialActivation(board, move, out var directClearStats, out var directSwapSnapshot, out var directActivations);
-            
             if (specialApplied)
             {
                 if (directSwapSnapshot != null)
                 {
-                    tracePhases.Add(new TurnPhaseTrace(
-                        TurnPhaseType.SwapApplied,
-                        boardAfterPhase: directSwapSnapshot));
+                    tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.SwapApplied, boardAfterPhase: directSwapSnapshot));
                 }
 
                 totalClearStats = totalClearStats.Add(directClearStats);
-                totalCleared = totalClearStats.TotalClearedCells;
-
                 var directSnapshot = BoardSnapshotFactory.Capture(board);
-
-                tracePhases.Add(new TurnPhaseTrace(
-                    TurnPhaseType.DirectSpecialActivation,
-                    directClearStats.TotalClearedCells,
-                    boardAfterPhase: directSnapshot, specialActivations: directActivations));
+                tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.DirectSpecialActivation, directClearStats.TotalClearedCells, boardAfterPhase: directSnapshot, specialActivations: directActivations));
             }
             
             bool createdMatch = false;
@@ -59,12 +49,12 @@ namespace Core.Turns
                 if (!MoveFinder.CreatesMatch(board, move.From, move.To))
                 {
                     tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.NoMatchCreated));
-                    return  CreateFailureResult(tracePhases, move, isPlayable, FailureReason.NoMatchCreated, true,
-                        false, initialBoardSnapshot,  initialBoardSnapshot);
+                    return  CreateFailureResult(tracePhases, move, isPlayable, FailureReason.NoMatchCreated, true, false, initialBoardSnapshot,  initialBoardSnapshot);
                 }
                 
                 createdMatch = true;
                 board.Swap(move.From, move.To);
+                
                 var directSnapshot = BoardSnapshotFactory.Capture(board);
                 tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.SwapApplied,  boardAfterPhase: directSnapshot));
                 
@@ -72,10 +62,8 @@ namespace Core.Turns
                 var spawns = SpecialSpawnResolver.BuildDecisions(board, primaryMatches, move);
                 var primaryStats = BoardResolver.ClearMatchesAndSpawnSpecials(board, primaryMatches, spawns, out var primaryActivations);
                 totalClearStats = totalClearStats.Add(primaryStats);
-                totalCleared = totalClearStats.TotalClearedCells;
                 directSnapshot = BoardSnapshotFactory.Capture(board);
-                tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.PrimaryMatchResolved, primaryStats.TotalClearedCells, 
-                    spawns.Count, boardAfterPhase: directSnapshot, specialSpawns: spawns, specialActivations: primaryActivations));
+                tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.PrimaryMatchResolved, primaryStats.TotalClearedCells, spawns.Count, boardAfterPhase: directSnapshot, specialSpawns: spawns, specialActivations: primaryActivations));
             }
             
             var initialFalls = BoardResolver.ApplyGravity(board);
@@ -86,17 +74,16 @@ namespace Core.Turns
             var refillSnapshot = BoardSnapshotFactory.Capture(board);
             tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.RefillApplied, boardAfterPhase: refillSnapshot));
             
-            var cascadeResult = CascadeResolver.Resolve(board, provider,
-                (cascadeIndex, clearedCells, waveSnapshot, waveSpawns, waveActivations, waveActivation) =>
+            var cascadeResult = CascadeResolver.Resolve(board, provider, (cascadeIndex, clearedCells, waveSnapshot, waveSpawns, waveActivations, waveActivation) =>
                 {
-                    tracePhases.Add(
-                        new TurnPhaseTrace(TurnPhaseType.CascadeWaveResolved, clearedCells: clearedCells, cascadeIndex: cascadeIndex,
-                            boardAfterPhase: waveSnapshot, spawnedSpecials: waveSpawns.Count, specialSpawns: waveSpawns, specialActivations: waveActivations, cascadeAnimation: waveActivation));
+                    tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.CascadeWaveResolved, clearedCells: clearedCells, cascadeIndex: cascadeIndex, boardAfterPhase: waveSnapshot, 
+                            spawnedSpecials: waveSpawns.Count, specialSpawns: waveSpawns, specialActivations: waveActivations, cascadeAnimation: waveActivation));
                 }, initialFalls, initialRefills);
+            
             totalClearStats = totalClearStats.Add(cascadeResult.ClearStats);
             totalCleared = totalClearStats.TotalClearedCells;
 
-            bool wasShuffled = false;
+            var wasShuffled = false;
             if (!BoardShuffler.IsPlayableBoard(board))
             {
                 BoardShuffler.Shuffle(board, provider);
@@ -107,9 +94,9 @@ namespace Core.Turns
             
             var finalBoardSnapshot = BoardSnapshotFactory.Capture(board);
             tracePhases.Add(new TurnPhaseTrace(TurnPhaseType.TurnCompleted));
-                        return new TurnResult(true, true, wasShuffled, createdMatch, isPlayable,
-                cascadeResult.CascadeCount, totalCleared, move, FailureReason.None, new TurnTrace(tracePhases), 
-                initialBoardSnapshot, finalBoardSnapshot, totalClearStats);
+                        
+            return new TurnResult(true, true, wasShuffled, createdMatch, isPlayable, cascadeResult.CascadeCount, totalCleared, move, 
+                FailureReason.None, new TurnTrace(tracePhases), initialBoardSnapshot, finalBoardSnapshot, totalClearStats);
         }
         
         private static TurnResult CreateFailureResult(List<TurnPhaseTrace> tracePhases, Move move, bool boardWasPlayableBeforeMove, 
@@ -124,6 +111,7 @@ namespace Core.Turns
             activations = new List<SpecialActivationEvent>();
             swapSnapshot = null;
             clearStats = ClearResolutionStats.Empty;
+            
             var pieceA = board.Get(move.From.Row, move.From.Col);
             var pieceB = board.Get(move.To.Row, move.To.Col);
 
@@ -133,7 +121,10 @@ namespace Core.Turns
             var bIsColorBomb = IsDirectColorBomb(pieceB.Kind);
 
             var hasAnySupportedDirectSpecial = aIsLineOrArea || bIsLineOrArea || aIsColorBomb || bIsColorBomb;
-            if (!hasAnySupportedDirectSpecial) return false;
+            if (!hasAnySupportedDirectSpecial)
+            {
+                return false;
+            }
             
             if (aIsColorBomb || bIsColorBomb)
             {
@@ -165,14 +156,22 @@ namespace Core.Turns
                     otherPiece = pieceA;
                 }
 
-                if (otherPiece.IsEmpty) return false;
-                if (otherPiece.Color == null) return false;
+                if (otherPiece.IsEmpty)
+                {
+                    return false;
+                }
+                if (otherPiece.Color == null)
+                {
+                    return false;
+                }
                 
                 return ClearDirectActivation(board, specialCell, otherCell, out clearStats, out activations);
             }
 
             if (aIsLineOrArea && bIsLineOrArea)
+            {
                 return ClearDirectSpecialCombo(board, move, out clearStats, out activations);
+            }
             
             Pos lineOrAreaCell, otherLineOrAreaCell;
             Piece otherLineOrAreaPiece;
@@ -191,10 +190,13 @@ namespace Core.Turns
             }
 
             if (otherLineOrAreaPiece.IsEmpty)
+            {
                 return false;
-
+            }
             if (otherLineOrAreaPiece.IsSpecial)
+            {
                 return false;
+            }
 
             return ClearLineOrAreaWithNormalAfterSwap(board, move, lineOrAreaCell, out clearStats, out swapSnapshot, out activations);
         }
@@ -221,7 +223,7 @@ namespace Core.Turns
             return true;
         }
         
-        private static bool ClearLineOrAreaWithNormalAfterSwap(BoardModel board, Move move, Pos specialCellBeforeSwap,
+        private static bool ClearLineOrAreaWithNormalAfterSwap(BoardModel board, Move move, Pos specialCellBeforeSwap, 
             out ClearResolutionStats clearStats, out BoardSnapshot swapSnapshot, out IReadOnlyList<SpecialActivationEvent> activations)
         {
             clearStats = ClearResolutionStats.Empty;
@@ -232,7 +234,7 @@ namespace Core.Turns
             var specialFinalCell = specialCellBeforeSwap.Equals(move.From) ? move.To : move.From;
             var initialCells = new HashSet<Pos> { specialFinalCell };
             var finalCells = SpecialEffectResolver.CollectTriggeredCells(board, initialCells, out activations);
-
+            
             clearStats = BoardResolver.ClearCells(board, finalCells);
             return true;
         }

@@ -9,28 +9,32 @@ namespace Match3.Unity.Goals
         [SerializeField] private Image goalIcon;
         [SerializeField] private TMP_Text goalText;
         [SerializeField] private Image completedIcon;
-
-        private IGoal boundGoal;
+        private IGoal _boundGoal;
 
         public void Bind(IGoal goal, Sprite iconSprite)
         {
-            boundGoal = goal;
-
+            _boundGoal = goal;
+            
             if (goalIcon != null)
+            {
                 goalIcon.sprite = iconSprite;
-
+            }
             Refresh();
         }
 
         public void Refresh()
         {
-            if (boundGoal == null)
+            if (_boundGoal == null)
+            {
                 return;
+            }
 
-            goalText.text = $"{Mathf.Min(GetCurrent(boundGoal), GetTarget(boundGoal))} / {GetTarget(boundGoal)}";
-            
-            if(boundGoal.IsCompleted)
+            goalText.text = $"{Mathf.Min(GetCurrent(_boundGoal), GetTarget(_boundGoal))} / {GetTarget(_boundGoal)}";
+
+            if (_boundGoal.IsCompleted)
+            {
                 completedIcon.gameObject.SetActive(true);
+            }
         }
         
         private static int GetCurrent(IGoal goal)

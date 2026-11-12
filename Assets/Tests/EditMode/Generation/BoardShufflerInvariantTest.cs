@@ -41,8 +41,12 @@ namespace Tests.EditMode.Generation
                 { PieceColor.Blue, PieceColor.Green, PieceColor.Blue },
                 { PieceColor.Green, PieceColor.Blue, PieceColor.Yellow }
             };
+            
             foreach (var pos in board.AllPositions())
+            {
                 board.Set(pos.Row, pos.Col, Piece.Normal(colors[pos.Row, pos.Col]));
+            }
+            
             Assert.IsFalse(BoardResolver.HasEmptyCells(board));
             Assert.Greater(MatchFinder.FindMatches(board).Count, 0);
             Assert.IsTrue(MoveFinder.HasAnyPossibleMove(board));
@@ -69,8 +73,8 @@ namespace Tests.EditMode.Generation
             board.Set(2, 2, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 3, Piece.Normal(PieceColor.Blue));
 
-            bool isPlayable = BoardShuffler.IsPlayableBoard(board);
-            bool deadlock = MoveFinder.IsDeadlocked(board);
+            var isPlayable = BoardShuffler.IsPlayableBoard(board);
+            var deadlock = MoveFinder.IsDeadlocked(board);
 
             Assert.IsFalse(isPlayable);
             Assert.IsTrue(deadlock);

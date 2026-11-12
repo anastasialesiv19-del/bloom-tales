@@ -12,6 +12,7 @@ namespace Tests.EditMode.Board
         public void ClearMatches_WithTriggeredRowClear_ClearsExpandedSet()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -32,14 +33,21 @@ namespace Tests.EditMode.Board
             var spawns = SpecialSpawnResolver.BuildDecisions(board, matches);
             BoardResolver.ClearMatchesAndSpawnSpecials(board,  matches, spawns);
 
-            for (int row = 0; row < board.Height; row++)
-            for (int col = 0; col < board.Width; col++)
+            for (var row = 0; row < board.Height; row++)
             {
-                if (row == 1 || col == 2)
-                    Assert.IsTrue(board.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
-                else
-                    Assert.AreEqual(before.Get(row, col), board.Get(row, col), $"({row}, {col}) must stay");
+                for (var col = 0; col < board.Width; col++)
+                {
+                    if (row == 1 || col == 2)
+                    {
+                        Assert.IsTrue(board.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
+                    }
+                    else
+                    {
+                        Assert.AreEqual(before.Get(row, col), board.Get(row, col), $"({row}, {col}) must stay");
+                    }
+                }
             }
+
             Assert.IsTrue(board.Get(0,2).IsEmpty, board.ToDebugString());
             Assert.IsTrue(board.Get(1,0).IsEmpty, board.ToDebugString());
             Assert.IsTrue(board.Get(1,1).IsEmpty, board.ToDebugString());
@@ -52,6 +60,7 @@ namespace Tests.EditMode.Board
         public void ClearMatches_WithTriggeredAreaBomb_ClearsExpandedSet()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Red));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -72,14 +81,21 @@ namespace Tests.EditMode.Board
             var spawns = SpecialSpawnResolver.BuildDecisions(board, matches);
             BoardResolver.ClearMatchesAndSpawnSpecials(board,  matches, spawns);
 
-            for (int row = 0; row < board.Height; row++)
-            for (int col = 0; col < board.Width; col++)
+            for (var row = 0; row < board.Height; row++)
             {
-                if (col >= 1)
-                    Assert.IsTrue(board.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
-                else
-                    Assert.AreEqual(before.Get(row, col), board.Get(row, col), $"({row}, {col}) must stay");
+                for (var col = 0; col < board.Width; col++)
+                {
+                    if (col >= 1)
+                    {
+                        Assert.IsTrue(board.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
+                    }
+                    else
+                    {
+                        Assert.AreEqual(before.Get(row, col), board.Get(row, col), $"({row}, {col}) must stay");
+                    }
+                }
             }
+
             Assert.IsTrue(board.Get(0,1).IsEmpty, board.ToDebugString());
             Assert.IsTrue(board.Get(0,2).IsEmpty, board.ToDebugString());
             Assert.IsTrue(board.Get(0,3).IsEmpty, board.ToDebugString());
@@ -95,6 +111,7 @@ namespace Tests.EditMode.Board
         public void ClearMatches_WithTriggeredColorBomb_ClearsExpandedSet()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Green));
             board.Set(0, 1, Piece.Normal(PieceColor.Red));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -115,14 +132,21 @@ namespace Tests.EditMode.Board
             var spawns = SpecialSpawnResolver.BuildDecisions(board, matches);
             BoardResolver.ClearMatchesAndSpawnSpecials(board,  matches, spawns);
 
-            for (int row = 0; row < board.Height; row++)
-            for (int col = 0; col < board.Width; col++)
+            for (var row = 0; row < board.Height; row++)
             {
-                if (before.Get(row, col).Color == PieceColor.Green || (row == 2 && col == 2))
-                    Assert.IsTrue(board.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
-                else
-                    Assert.AreEqual(before.Get(row, col), board.Get(row, col), $"({row}, {col}) must stay");
+                for (var col = 0; col < board.Width; col++)
+                {
+                    if (before.Get(row, col).Color == PieceColor.Green || (row == 2 && col == 2))
+                    {
+                        Assert.IsTrue(board.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
+                    }
+                    else
+                    {
+                        Assert.AreEqual(before.Get(row, col), board.Get(row, col), $"({row}, {col}) must stay");
+                    }
+                }
             }
+
             Assert.IsTrue(board.Get(0,0).IsEmpty, board.ToDebugString());
             Assert.IsTrue(board.Get(0,2).IsEmpty, board.ToDebugString());
             Assert.IsTrue(board.Get(1,1).IsEmpty, board.ToDebugString());
@@ -136,6 +160,7 @@ namespace Tests.EditMode.Board
         public void ClearMatches_WithColorBombAndColoredSpecialCombo_ClearsExpandedSet()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -156,14 +181,21 @@ namespace Tests.EditMode.Board
             var spawns = SpecialSpawnResolver.BuildDecisions(board, matches);
             BoardResolver.ClearMatchesAndSpawnSpecials(board,  matches, spawns);
 
-            for (int row = 0; row < board.Height; row++)
-            for (int col = 0; col < board.Width; col++)
+            for (var row = 0; row < board.Height; row++)
             {
-                if (!(row == 1 && col == 0))
-                    Assert.IsTrue(board.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
-                else
-                    Assert.AreEqual(before.Get(row, col), board.Get(row, col), $"({row}, {col}) must stay");
+                for (var col = 0; col < board.Width; col++)
+                {
+                    if (!(row == 1 && col == 0))
+                    {
+                        Assert.IsTrue(board.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
+                    }
+                    else
+                    {
+                        Assert.AreEqual(before.Get(row, col), board.Get(row, col), $"({row}, {col}) must stay");
+                    }
+                }
             }
+            
             Assert.IsTrue(board.Get(0,0).IsEmpty, board.ToDebugString());
             Assert.IsTrue(board.Get(0,1).IsEmpty, board.ToDebugString());
             Assert.IsTrue(board.Get(0,2).IsEmpty, board.ToDebugString());

@@ -10,6 +10,7 @@ namespace Tests.EditMode.Hint
         {
             var context = new HintContext(2, 0);
             var strength = HintPolicy.GetStrength(context, 0);
+            
             Assert.AreEqual(HintStrength.None, strength);
         }
 
@@ -18,6 +19,7 @@ namespace Tests.EditMode.Hint
         {
             var context = new HintContext(5, 0);
             var strength = HintPolicy.GetStrength(context, 0);
+            
             Assert.AreEqual(HintStrength.Soft, strength);
         }
 
@@ -26,6 +28,7 @@ namespace Tests.EditMode.Hint
         {
             var context = new HintContext(9, 0);
             var strength = HintPolicy.GetStrength(context, 0);
+            
             Assert.AreEqual(HintStrength.Strong, strength);
         }
         
@@ -34,6 +37,7 @@ namespace Tests.EditMode.Hint
         {
             var context = new HintContext(5, 0);
             var strength = HintPolicy.GetStrength(context, 5);
+            
             Assert.AreEqual(HintStrength.Strong, strength);
         }
         
@@ -42,6 +46,7 @@ namespace Tests.EditMode.Hint
         {
             var context = new HintContext(5, 0);
             var strength = HintPolicy.GetStrength(context, 3);
+            
             Assert.AreEqual(HintStrength.Soft, strength);
         }
         
@@ -50,6 +55,7 @@ namespace Tests.EditMode.Hint
         {
             var context = new HintContext(2, 0);
             var strength = HintPolicy.GetStrength(context, 999);
+            
             Assert.AreEqual(HintStrength.None, strength);
         }
     }

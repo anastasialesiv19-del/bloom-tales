@@ -1,8 +1,6 @@
 using Core.Board;
-using Core.Matching;
-using Match3.Unity.Goals;
 
-namespace Match3.Unity.Menu
+namespace Match3.Unity.Goals
 {
     public sealed class GoalDefinition
     {

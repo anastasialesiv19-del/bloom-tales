@@ -1,15 +1,12 @@
-using System.Collections.Generic;
-using Core.Matching;
 using Match3.Unity.Audio;
 using Match3.Unity.GameFlow;
 using Match3.Unity.GameMode;
-using Match3.Unity.Goals;
+using Match3.Unity.Levels;
 using Match3.Unity.Menu;
 using Match3.Unity.Save;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Match3.Unity
+namespace Match3.Unity.Bootstrap
 {
     public partial class GameBootstrap
     {
@@ -17,11 +14,12 @@ namespace Match3.Unity
         {
             GameAudioController.Instance.StopResultEffects();
             
-            if (isPaused)
+            if (_isPaused)
             {
                 pausePanel.Hide();
-                isPaused = false;
+                _isPaused = false;
             }
+            
             StartNewGameFlow();
         }
 
@@ -29,11 +27,12 @@ namespace Match3.Unity
         {
             GameAudioController.Instance.StopResultEffects();
             
-            if (!LevelProgression.TryGetNext(currentLevelId, out var nextLevel))
+            if (!LevelProgression.TryGetNext(_currentLevelId, out var nextLevel))
             {
                 OnBackToMenuClicked();
                 return;
             }
+            
             var config = LevelConfigFactory.Create(nextLevel);;
             SelectedLevelState.Set(config);
             SceneManager.LoadScene("SampleScene");
@@ -43,12 +42,12 @@ namespace Match3.Unity
         {
             GameAudioController.Instance.StopResultEffects();
             
-            hintController.ClearHint();
-            inputController.ClearSelection();
+            _hintController.ClearHint();
+            _inputController.ClearSelection();
             pausePanel.Hide();
-            isPaused = false;
-            idleTracker.ResetIdle();
-            hintShownForCurrentIdle = false;
+            _isPaused = false;
+            _idleTracker.ResetIdle();
+            _hintShownForCurrentIdle = false;
 
             SelectedLevelState.Clear();
             SceneManager.LoadScene("MainMenuScene");
@@ -58,48 +57,52 @@ namespace Match3.Unity
         {
             GameAudioController.Instance.SetMusicDucked(false);
             
-            hintController.ClearHint();
-            inputController.ClearSelection();
-            idleTracker.ResetIdle();
-            hintShownForCurrentIdle = false;
-            consecutiveHintsShown = 0;
+            _hintController.ClearHint();
+            _inputController.ClearSelection();
+            _idleTracker.ResetIdle();
+            _hintShownForCurrentIdle = false;
+            _consecutiveHintsShown = 0;
             
             ResetRunStats();
             RebuildGoals();
             RebuildGoalViews();
             RefreshGoalHud();
             
-            var snapshot = session.StartNewGame(startHeight, startWidth, currentObstacles);
+            var snapshot = _session.StartNewGame(startHeight, startWidth, _currentObstacles);
             boardRenderer.RebuildAndRender(snapshot);
             
             if (gameMode == GameModeType.Timer)
             {
-                timerController.StartTimer(totalGameSeconds);
+                _timerController.StartTimer(totalGameSeconds);
             }
             else
             {
-                moveLimitController.ResetMoves(totalMoves);
+                _moveLimitController.ResetMoves(totalMoves);
             }
 
             RefreshResourceText();
             
             victoryPanel.SetActive(false);
             defeatPanel.SetActive(false);
-            gameOverShown = false;
+            _gameOverShown = false;
         }
         
         private void HandleGameResult(GameResultType result)
         {
             GameAudioController.Instance.SetMusicDucked(true);
+            
             SaveLevelResult(result);
-            hintController.ClearHint();
-            inputController.ClearSelection();
+            _hintController.ClearHint();
+            _inputController.ClearSelection();
 
             if (victoryPanel != null)
+            {
                 victoryPanel.SetActive(false);
-
+            }
             if (defeatPanel != null)
+            {
                 defeatPanel.SetActive(false);
+            }
 
             switch (result)
             {
@@ -117,39 +120,42 @@ namespace Match3.Unity
         
         private bool IsCurrentModeExpired()
         {
-            return gameMode == GameModeType.Timer ? timerController.IsExpired : moveLimitController.IsExpired;
+            return gameMode == GameModeType.Timer ? _timerController.IsExpired : _moveLimitController.IsExpired;
         }
         
         private void ResetRunStats()
         {
-            manualHintsShownThisRun = 0;
-            idleHintsShownThisRun = 0;
-            hintsAppliedThisRun = 0;
+            _manualHintsShownThisRun = 0;
+            _idleHintsShownThisRun = 0;
+            _hintsAppliedThisRun = 0;
 
-            clearedCellsThisRun = 0;
-            destroyedObstaclesThisRun = 0;
-            scoreThisRun = 0;
-            turnsUsedThisRun = 0;
+            _clearedCellsThisRun = 0;
+            _destroyedObstaclesThisRun = 0;
+            _scoreThisRun = 0;
+            _turnsUsedThisRun = 0;
 
-            activeHintMove = null;
-            resultSavedForCurrentRun = false;
+            _activeHintMove = null;
+            _resultSavedForCurrentRun = false;
         }
+        
         private void SaveLevelResult(GameResultType result)
         {
-            if (resultSavedForCurrentRun) return;
-
-            resultSavedForCurrentRun = true;
-
-            levelResultStore.Append(new LevelRunResultDto
+            if (_resultSavedForCurrentRun)
             {
-                LevelId = currentLevelId.ToString(),
+                return;
+            }
+
+            _resultSavedForCurrentRun = true;
+            _levelResultStore.Append(new LevelRunResultDto
+            {
+                LevelId = _currentLevelId.ToString(),
                 Result = result.ToString(),
-                TurnsUsed = turnsUsedThisRun,
-                ManualHintsShown = manualHintsShownThisRun,
-                IdleHintsShown = idleHintsShownThisRun,
-                HintsApplied = hintsAppliedThisRun,
-                TotalClearedCells = clearedCellsThisRun,
-                DestroyedObstacles = destroyedObstaclesThisRun,
+                TurnsUsed = _turnsUsedThisRun,
+                ManualHintsShown = _manualHintsShownThisRun,
+                IdleHintsShown = _idleHintsShownThisRun,
+                HintsApplied = _hintsAppliedThisRun,
+                TotalClearedCells = _clearedCellsThisRun,
+                DestroyedObstacles = _destroyedObstaclesThisRun,
                 CompletedAtUtc = System.DateTime.UtcNow.ToString("O")
             });
         }

@@ -1,6 +1,5 @@
 using System;
 using Core.Board;
-using Core.Matching;
 
 namespace Core.Contracts
 {
@@ -8,8 +7,10 @@ namespace Core.Contracts
     {
         public static BoardSnapshot Capture(BoardModel board)
         {
-            if(board == null)
+            if (board == null)
+            {
                 throw new ArgumentNullException(nameof(board));
+            }
             
             var pieceStorage = new Piece [board.Height, board.Width];
             var obstacleStorage = new ObstacleModel[board.Height, board.Width];

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Core.Board;
 using Core.Contracts;
-using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
 
@@ -22,7 +22,8 @@ namespace Tests.EditMode.Turns
             var snapshot = BoardSnapshotFactory.Capture(board);
 
             var move = new Move(new Pos(0, 0), new Pos(0, 1));
-            var trace = new TurnTrace(new List<TurnPhaseTrace> { new TurnPhaseTrace(TurnPhaseType.TurnCompleted) });
+            var trace = new TurnTrace(new List<TurnPhaseTrace> { new (TurnPhaseType.TurnCompleted) });
+            
             Assert.Throws<ArgumentException>(() => new TurnResult(true, true, false,
                 false, true, 0, 0, move, FailureReason.NoMatchCreated, trace, snapshot, snapshot));
         }
@@ -40,7 +41,8 @@ namespace Tests.EditMode.Turns
             var snapshot = BoardSnapshotFactory.Capture(board);
 
             var move = new Move(new Pos(0, 0), new Pos(0, 1));
-            var trace = new TurnTrace(new List<TurnPhaseTrace> { new TurnPhaseTrace(TurnPhaseType.TurnCompleted) });
+            var trace = new TurnTrace(new List<TurnPhaseTrace> { new (TurnPhaseType.TurnCompleted) });
+            
             Assert.Throws<ArgumentException>(() => new TurnResult(true, false, true,
                 false, true, 0, 0, move, FailureReason.None, trace, snapshot, snapshot));
         }
@@ -58,7 +60,8 @@ namespace Tests.EditMode.Turns
             var snapshot = BoardSnapshotFactory.Capture(board);
 
             var move = new Move(new Pos(0, 0), new Pos(0, 1));
-            var trace = new TurnTrace(new List<TurnPhaseTrace> { new TurnPhaseTrace(TurnPhaseType.TurnCompleted) });
+            var trace = new TurnTrace(new List<TurnPhaseTrace> { new (TurnPhaseType.TurnCompleted) });
+            
             Assert.Throws<ArgumentException>(() => new TurnResult(true, false, false,
                 true, true, 0, 0, move, FailureReason.None, trace, snapshot, snapshot));
         }

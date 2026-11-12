@@ -1,7 +1,7 @@
 using Tests.EditMode.TestDoubles;
 using System.Linq;
 using System;
-using Core.Matching;
+using Core.Board;
 using Core.Turns;
 using NUnit.Framework;
 
@@ -14,6 +14,7 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_SwappedRowClearWithRowClear_ClearsBothRows()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Red));
@@ -41,6 +42,7 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_SwappedColumnClearWithColumnClear_ClearsBothColumns()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Red));
@@ -68,6 +70,7 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_SwappedRowClearWithColumnClear_ClearsRowAndColumn()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Red));
@@ -95,6 +98,7 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_SwappedAreaBombWithRowClear_ClearsAreaAndRow()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Red));
@@ -122,6 +126,7 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_SwappedAreaBombWithColumnClear_ClearsAreaAndColumn()
         {
             var board = new BoardModel(4, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Red));
@@ -154,6 +159,7 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_SwappedAreaBombWithAreaBomb_ClearsBothAreas()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Red));
@@ -176,22 +182,29 @@ namespace Tests.EditMode.Turns
             Assert.IsFalse(result.CreatedMatch);
             AssertDirectEffect(result, (row, col) => true);
         }
+        
         private static void AssertDirectEffect(TurnResult result, Func<int, int, bool> cleared)
         {
             var phase = result.Trace.Phases.Single(p => p.Type == TurnPhaseType.DirectSpecialActivation);
             var before = result.InitialBoardSnapshot;
-            int expectedCount = 0;
-            for (int row = 0; row < before.Height; row++)
-            for (int col = 0; col < before.Width; col++)
+            
+            var expectedCount = 0;
+            for (var row = 0; row < before.Height; row++)
             {
-                if (cleared(row, col))
+                for (var col = 0; col < before.Width; col++)
                 {
-                    expectedCount++;
-                    Assert.IsTrue(phase.BoardAfterPhase.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
+                    if (cleared(row, col))
+                    {
+                        expectedCount++;
+                        Assert.IsTrue(phase.BoardAfterPhase.Get(row, col).IsEmpty, $"({row}, {col}) must clear");
+                    }
+                    else
+                    {
+                        Assert.AreEqual(before.Get(row, col), phase.BoardAfterPhase.Get(row, col), $"({row}, {col}) must stay");
+                    }
                 }
-                else
-                    Assert.AreEqual(before.Get(row, col), phase.BoardAfterPhase.Get(row, col), $"({row}, {col}) must stay");
             }
+
             Assert.AreEqual(expectedCount, phase.ClearedCells);
         }
     }

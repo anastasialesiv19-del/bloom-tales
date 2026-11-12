@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Core.Board;
 using Tests.EditMode.TestDoubles;
-using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
 
@@ -13,6 +13,7 @@ namespace Tests.EditMode.Turns
         public void ProcessTurn_Line4PrimaryMatch_SpawnsSpecialPiece()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Blue));
@@ -33,10 +34,11 @@ namespace Tests.EditMode.Turns
 
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
-            Assert.IsTrue(TurnTraceQueries.TryGetPhase(turnResult.Trace,
-                TurnPhaseType.PrimaryMatchResolved, out var phase));
+            Assert.IsTrue(TurnTraceQueries.TryGetPhase(turnResult.Trace, TurnPhaseType.PrimaryMatchResolved, out var phase));
             Assert.AreEqual(1, phase.SpawnedSpecials);
+            
             var piece = phase.BoardAfterPhase.Get(1, 2);
+            
             Assert.AreEqual(PieceKind.RowClear, piece.Kind);
             Assert.AreEqual(PieceColor.Green, piece.Color);
         }
@@ -69,10 +71,11 @@ namespace Tests.EditMode.Turns
 
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
-            Assert.IsTrue(TurnTraceQueries.TryGetPhase(turnResult.Trace,
-                TurnPhaseType.PrimaryMatchResolved, out var phase));
+            Assert.IsTrue(TurnTraceQueries.TryGetPhase(turnResult.Trace, TurnPhaseType.PrimaryMatchResolved, out var phase));
             Assert.AreEqual(1, phase.SpawnedSpecials);
+            
             var piece = phase.BoardAfterPhase.Get(1, 2);
+            
             Assert.AreEqual(PieceKind.ColorBomb, piece.Kind);
             Assert.IsNull(piece.Color);
         }
@@ -102,10 +105,11 @@ namespace Tests.EditMode.Turns
 
             Assert.IsTrue(turnResult.WasApplied);
             Assert.IsTrue(turnResult.CreatedMatch);
-            Assert.IsTrue(TurnTraceQueries.TryGetPhase(turnResult.Trace,
-                TurnPhaseType.PrimaryMatchResolved, out var phase));
+            Assert.IsTrue(TurnTraceQueries.TryGetPhase(turnResult.Trace, TurnPhaseType.PrimaryMatchResolved, out var phase));
             Assert.AreEqual(1, phase.SpawnedSpecials);
+            
             var piece = phase.BoardAfterPhase.Get(1, 2);
+            
             Assert.AreEqual(PieceKind.AreaBomb, piece.Kind);
             Assert.AreEqual(PieceColor.Green, piece.Color);
         }
@@ -114,6 +118,7 @@ namespace Tests.EditMode.Turns
         public void ProcessTurn_PrimarySpecialSpawn_UsesMoveDestination()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Blue));
@@ -131,10 +136,9 @@ namespace Tests.EditMode.Turns
 
             var move = new Move(new Pos(2, 2), new Pos(1, 2));
             var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
+            
             Assert.IsTrue(result.WasApplied);
-
             Assert.IsTrue(TurnTraceQueries.TryGetPhase(result.Trace, TurnPhaseType.PrimaryMatchResolved, out var phase));
-
             Assert.AreEqual(1, phase.SpawnedSpecials);
 
             var spawnedPiece = phase.BoardAfterPhase.Get(1, 2);
@@ -147,6 +151,7 @@ namespace Tests.EditMode.Turns
         public void ProcessTurn_WhenGravityFormsLine4_CreatesRowClearInCascade()
         {
             var board = new BoardModel(4, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Green));
             board.Set(0, 2, Piece.Normal(PieceColor.Red));
@@ -192,16 +197,21 @@ namespace Tests.EditMode.Turns
             
             
             var boardAfterPhase = cascadePhase.BoardAfterPhase;
+            
             Assert.IsNotNull(boardAfterPhase);
+            
             var specialPieces = new List<Piece>();
-            for (int row = 0; row < boardAfterPhase.Height; row++)
+            for (var row = 0; row < boardAfterPhase.Height; row++)
             {
-                for (int col = 0; col < boardAfterPhase.Width; col++)
+                for (var col = 0; col < boardAfterPhase.Width; col++)
                 {
-                    if(boardAfterPhase.Get(row, col).IsSpecial)
+                    if (boardAfterPhase.Get(row, col).IsSpecial)
+                    {
                         specialPieces.Add(boardAfterPhase.Get(row, col));
+                    }
                 }
             }
+            
             Assert.AreEqual(1, specialPieces.Count);
             Assert.AreEqual(PieceKind.RowClear, specialPieces[0].Kind);
             Assert.AreEqual(PieceColor.Red, specialPieces[0].Color);

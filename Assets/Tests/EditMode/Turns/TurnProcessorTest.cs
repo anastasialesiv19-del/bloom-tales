@@ -1,5 +1,4 @@
 using Core.Board;
-using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
 
@@ -119,7 +118,7 @@ namespace Tests.EditMode.Turns
 
             var move = new Move(new Pos(1, 2), new Pos(1, 3));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
-            bool itHasEmpty = BoardResolver.HasEmptyCells(board);
+            var itHasEmpty = BoardResolver.HasEmptyCells(board);
 
             Assert.IsFalse(itHasEmpty, board.ToDebugString());
             Assert.IsTrue(turnResult.WasSwapValid, board.ToDebugString());

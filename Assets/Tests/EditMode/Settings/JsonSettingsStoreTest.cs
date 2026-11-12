@@ -13,15 +13,10 @@ namespace Tests.EditMode.Settings
         [Test]
         public void SaveThenLoad_PreservesSettings()
         {
-            string filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.json");
+            var filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.json");
             try
             {
-                var gameSettings = new GameSettings
-                {
-                    musicVolume = 0.2f,
-                    effectVolume = 0.8f,
-                    autoHintsEnabled = false
-                };
+                var gameSettings = new GameSettings { musicVolume = 0.2f, effectVolume = 0.8f, autoHintsEnabled = false };
 
                 var jsonSettingsStoreToSave = new JsonSettingsStore(filePath);
                 jsonSettingsStoreToSave.Save(gameSettings);
@@ -37,15 +32,17 @@ namespace Tests.EditMode.Settings
             }
             finally
             {
-                if(File.Exists(filePath))
+                if (File.Exists(filePath))
+                {
                     File.Delete(filePath);
+                }
             }
         }
 
         [Test]
         public void Load_WhenFieldsAreMissing_PreservesDefaults()
         {
-            string filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.json");
+            var filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.json");
             try
             {
                 File.WriteAllText(filePath, "{\"musicVolume\": 0.2}");
@@ -62,15 +59,17 @@ namespace Tests.EditMode.Settings
             }
             finally
             {
-                if(File.Exists(filePath))
+                if (File.Exists(filePath))
+                {
                     File.Delete(filePath);
+                }
             }
         }
         
         [Test]
         public void Load_WhenJsonIsInvalid_ReturnsDefault()
         {
-            string filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.json");
+            var filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.json");
             try
             {
                 File.WriteAllText(filePath, "{\"musicVolume\":}");
@@ -88,8 +87,10 @@ namespace Tests.EditMode.Settings
             }
             finally
             {
-                if(File.Exists(filePath))
+                if (File.Exists(filePath))
+                {
                     File.Delete(filePath);
+                }
             }
         }
     }

@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using Core.Board;
 using Match3.Unity.GameMode;
+using Match3.Unity.Goals;
+using Match3.Unity.Menu;
 
-namespace Match3.Unity.Menu
+namespace Match3.Unity.Levels
 {
     public sealed class LevelConfig
     {
@@ -15,11 +17,7 @@ namespace Match3.Unity.Menu
         public IReadOnlyList<GoalDefinition> Goals { get; }
         public IReadOnlyList<ObstacleDefinition> Obstacles { get; }
 
-        public LevelConfig(LevelId levelId, string levelName, 
-            GameModeType gameMode, int totalMoves, 
-            float totalGameSeconds,  
-            IReadOnlyList<GoalDefinition> goals, 
-            IReadOnlyList<ObstacleDefinition> obstacles)
+        public LevelConfig(LevelId levelId, string levelName, GameModeType gameMode, int totalMoves, float totalGameSeconds, IReadOnlyList<GoalDefinition> goals, IReadOnlyList<ObstacleDefinition> obstacles)
         {
             LevelId = levelId;
             LevelName = levelName;

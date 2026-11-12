@@ -9,11 +9,11 @@ namespace Match3.Unity.Settings
         [SerializeField] private GameObject panelRoot;
         [SerializeField] private Slider musicSlider, effectsSlider;
         [SerializeField] private Toggle autoHintsToggle;
-        private GameSettings settings;
+        private GameSettings _settings;
 
         public void Show(GameSettings settings)
         {
-            this.settings = settings;
+            _settings = settings;
             musicSlider.SetValueWithoutNotify(settings.musicVolume);
             effectsSlider.SetValueWithoutNotify(settings.effectVolume);
             autoHintsToggle.SetIsOnWithoutNotify(settings.autoHintsEnabled);
@@ -32,23 +32,32 @@ namespace Match3.Unity.Settings
 
         public void OnMusicVolumeChanged(float value)
         {
-            if (settings == null) return;
+            if (_settings == null)
+            {
+                return;
+            }
             
-            settings.musicVolume = Mathf.Clamp01(value);
-            GameAudioController.Instance.SetMusicVolume(settings.musicVolume);
+            _settings.musicVolume = Mathf.Clamp01(value);
+            GameAudioController.Instance.SetMusicVolume(_settings.musicVolume);
         }
 
         public void OnEffectsVolumeChanged(float value)
         {
-            if (settings == null) return;
+            if (_settings == null)
+            {
+                return;
+            }
             
-            settings.effectVolume = Mathf.Clamp01(value);
-            GameAudioController.Instance.SetEffectsVolume(settings.effectVolume);
+            _settings.effectVolume = Mathf.Clamp01(value);
+            GameAudioController.Instance.SetEffectsVolume(_settings.effectVolume);
         }
 
         public void OnAutoHintsChanged(bool value)
         {
-            if (settings != null) settings.autoHintsEnabled = value;
+            if (_settings != null)
+            {
+                _settings.autoHintsEnabled = value;
+            }
         }
     }
 }

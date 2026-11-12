@@ -1,6 +1,4 @@
-using UnityEngine;
-
-namespace Match3.Unity
+namespace Match3.Unity.Hint
 {
     public class IdleTracker
     {

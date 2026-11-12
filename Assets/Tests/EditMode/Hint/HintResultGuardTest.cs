@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Core.Board;
 using Core.Contracts;
 using Core.Hint;
-using Core.Matching;
-using Core.Turns;
 using NUnit.Framework;
 
 namespace Tests.EditMode.Hint
@@ -23,8 +22,7 @@ namespace Tests.EditMode.Hint
             var snapshot = BoardSnapshotFactory.Capture(board);
             var move = new Move(new Pos(0, 0), new Pos(0, 1));
             
-            Assert.Throws<ArgumentNullException>(() =>
-                new HintResult(move, HintStrength.Soft, null, snapshot));
+            Assert.Throws<ArgumentNullException>(() => new HintResult(move, HintStrength.Soft, null, snapshot));
         }
 
         [Test]
@@ -52,36 +50,37 @@ namespace Tests.EditMode.Hint
         [Test]
         public void Ctor_WhenSnapshotIsNull_Throws()
         {
-            Assert.Throws<ArgumentNullException>(() => 
-                new HintResult(null, HintStrength.None, null, null));
+            Assert.Throws<ArgumentNullException>(() => new HintResult(null, HintStrength.None, null, null));
             
-            Assert.Throws<ArgumentNullException>(() => 
-                new HintResult(null, null));
+            Assert.Throws<ArgumentNullException>(() => new HintResult(null, null));
             
             var reasons = new List<HintReasonType>{ HintReasonType.ActivatesSpecialDirectly };
             var explanation = new HintExplanation(reasons, 5);
             var move = new Move(new Pos(0, 0), new Pos(0, 1));
-            Assert.Throws<ArgumentNullException>(() =>
-                new HintResult(move, HintStrength.Soft, explanation, null));
             
+            Assert.Throws<ArgumentNullException>(() => new HintResult(move, HintStrength.Soft, explanation, null));
         }
         
          
         private bool AssertSnapshotsEqual(BoardSnapshot expectedSnapshot, BoardSnapshot actualSnapshot)
         {
             if (expectedSnapshot.Width != actualSnapshot.Width || expectedSnapshot.Height != actualSnapshot.Height)
-                throw new ArgumentException("Snapshot sizes do not match.");
-            for (int row = 0; row < expectedSnapshot.Height; row++)
-            for (int col = 0; col < expectedSnapshot.Width; col++)
             {
-                var expectedPiece = expectedSnapshot.Get(row, col);
-                var actualPiece = actualSnapshot.Get(row, col);
-                if (expectedPiece.Kind != actualPiece.Kind || expectedPiece.Color != actualPiece.Color)
-                    return false;
+                throw new ArgumentException("Snapshot sizes do not match.");
+            }
+
+            for (int row = 0; row < expectedSnapshot.Height; row++)
+            {
+                for (int col = 0; col < expectedSnapshot.Width; col++)
+                {
+                    var expectedPiece = expectedSnapshot.Get(row, col);
+                    var actualPiece = actualSnapshot.Get(row, col);
+                    if (expectedPiece.Kind != actualPiece.Kind || expectedPiece.Color != actualPiece.Color)
+                        return false;
+                }
             }
 
             return true;
         }
-
     }
 }

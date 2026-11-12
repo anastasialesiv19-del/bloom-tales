@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
+using Core.Board;
 using Core.Contracts;
-using Core.Generation;
-using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
 using Tests.EditMode.TestDoubles;
@@ -43,8 +42,7 @@ namespace Tests.EditMode.Turns
             Assert.AreEqual(FailureReason.InvalidSwap, turnResult.FailureReason);
             Assert.IsNotNull(initialSnapshot);
             Assert.IsNotNull(finalSnapshot);
-            Assert.IsTrue(AssertSnapshotsEqual(initialSnapshot, finalSnapshot), 
-                $"{initialSnapshot.ToDebugString()}/n {finalSnapshot.ToDebugString()}");
+            Assert.IsTrue(AssertSnapshotsEqual(initialSnapshot, finalSnapshot), $"{initialSnapshot.ToDebugString()}/n {finalSnapshot.ToDebugString()}");
             Assert.AreEqual(before, after, $"{before}/n {after}");
         }
 
@@ -184,8 +182,7 @@ namespace Tests.EditMode.Turns
             var move = new Move(new Pos(1, 2), new Pos(1, 3));
             var turnResult = TurnProcessor.TryProcessMove(board, move);
 
-            var mutatingSnapshot =
-                turnResult.Trace.Phases.SingleOrDefault(p => p.Type == TurnPhaseType.PrimaryMatchResolved);
+            var mutatingSnapshot = turnResult.Trace.Phases.SingleOrDefault(p => p.Type == TurnPhaseType.PrimaryMatchResolved);
             var beforeInitialPiece = turnResult.InitialBoardSnapshot.Get(0, 1);
             var beforeFinalPiece = turnResult.FinalBoardSnapshot.Get(1, 3);
             var beforeMutatingPiece = mutatingSnapshot.BoardAfterPhase.Get(2, 2);
@@ -209,32 +206,44 @@ namespace Tests.EditMode.Turns
         private bool AssertSnapshotsEqual(BoardSnapshot expectedSnapshot, BoardSnapshot actualSnapshot)
         {
             if (expectedSnapshot.Width != actualSnapshot.Width || expectedSnapshot.Height != actualSnapshot.Height)
-                throw new ArgumentException("Snapshot sizes do not match.");
-            for (int row = 0; row < expectedSnapshot.Height; row++)
-            for (int col = 0; col < expectedSnapshot.Width; col++)
             {
-                var expectedPiece = expectedSnapshot.Get(row, col);
-                var actualPiece = actualSnapshot.Get(row, col);
-                if (expectedPiece.Kind != actualPiece.Kind || expectedPiece.Color != actualPiece.Color)
-                    return false;
+                throw new ArgumentException("Snapshot sizes do not match.");
             }
 
+            for (var row = 0; row < expectedSnapshot.Height; row++)
+            {
+                for (var col = 0; col < expectedSnapshot.Width; col++)
+                {
+                    var expectedPiece = expectedSnapshot.Get(row, col);
+                    var actualPiece = actualSnapshot.Get(row, col);
+                    if (expectedPiece.Kind != actualPiece.Kind || expectedPiece.Color != actualPiece.Color)
+                    {
+                        return false;
+                    }
+                }
+            }
             return true;
         }
 
         private bool AssertBoardEqualsSnapshot(BoardModel board, BoardSnapshot snapshot)
         {
             if (board.Width != snapshot.Width || board.Height != snapshot.Height)
-                throw new ArgumentException("Snapshot sizes do not match.");
-            for (int row = 0; row < board.Height; row++)
-            for (int col = 0; col < board.Width; col++)
             {
-                var boardPiece = board.Get(row, col);
-                var snapshotPiece = snapshot.Get(row, col);
-                if (boardPiece.Kind != snapshotPiece.Kind || boardPiece.Color != snapshotPiece.Color)
-                    return false;
+                throw new ArgumentException("Snapshot sizes do not match.");
             }
 
+            for (var row = 0; row < board.Height; row++)
+            {
+                for (var col = 0; col < board.Width; col++)
+                {
+                    var boardPiece = board.Get(row, col);
+                    var snapshotPiece = snapshot.Get(row, col);
+                    if (boardPiece.Kind != snapshotPiece.Kind || boardPiece.Color != snapshotPiece.Color)
+                    {
+                        return false;
+                    }
+                }
+            }
             return true;
         }
     }

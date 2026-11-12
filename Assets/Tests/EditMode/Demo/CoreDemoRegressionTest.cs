@@ -3,7 +3,6 @@ using Core.Board;
 using Core.Contracts;
 using Core.Generation;
 using Core.Hint;
-using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
 using Tests.EditMode.TestDoubles;
@@ -70,8 +69,7 @@ namespace Tests.EditMode.Demo
 
             var move = new Move(new Pos(0, 2), new Pos(1, 2));
             var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
-            var hasPrimaryMatchPhase =
-                TurnTraceQueries.TryGetPhase(result.Trace, TurnPhaseType.PrimaryMatchResolved, out var phase);
+            var hasPrimaryMatchPhase = TurnTraceQueries.TryGetPhase(result.Trace, TurnPhaseType.PrimaryMatchResolved, out var phase);
 
             Assert.IsTrue(result.WasApplied);
             Assert.IsTrue(result.CreatedMatch);
@@ -80,14 +78,9 @@ namespace Tests.EditMode.Demo
             Assert.IsTrue(phase.SpawnedSpecials > 0);
             Assert.IsNotNull(phase.BoardAfterPhase);
 
-            var hasAnySpecial =
-                Enumerable.Range(0, phase.BoardAfterPhase.Height)
-                    .SelectMany(row => Enumerable.Range(0, phase.BoardAfterPhase.Width)
-                        .Select(col => phase.BoardAfterPhase.Get(row, col)))
-                    .Any(piece => piece.Kind is PieceKind.RowClear
-                        or PieceKind.ColumnClear
-                        or PieceKind.AreaBomb
-                        or PieceKind.ColorBomb);
+            var hasAnySpecial = Enumerable.Range(0, phase.BoardAfterPhase.Height).SelectMany(row => Enumerable.Range(0, phase.BoardAfterPhase.Width)
+                    .Select(col => phase.BoardAfterPhase.Get(row, col)))
+                    .Any(piece => piece.Kind is PieceKind.RowClear or PieceKind.ColumnClear or PieceKind.AreaBomb or PieceKind.ColorBomb);
 
             Assert.IsTrue(hasAnySpecial);
         }
@@ -114,8 +107,7 @@ namespace Tests.EditMode.Demo
 
             var move = new Move(new Pos(0, 2), new Pos(1, 2));
             var result = TurnProcessor.TryProcessMove(board, move, new SeededRandomProvider());
-            var hasDirectActivationPhase =
-                TurnTraceQueries.TryGetPhase(result.Trace, TurnPhaseType.DirectSpecialActivation, out var phase);
+            var hasDirectActivationPhase = TurnTraceQueries.TryGetPhase(result.Trace, TurnPhaseType.DirectSpecialActivation, out var phase);
 
             Assert.IsTrue(result.WasApplied);
             Assert.IsFalse(result.CreatedMatch);
@@ -132,12 +124,16 @@ namespace Tests.EditMode.Demo
         public void Demo_CascadeTurn_RemainsStable()
         {
             var result = CascadeTestScenario.ResolveTwoWaves();
+            
             Assert.IsTrue(result.WasApplied);
             Assert.IsTrue(result.CreatedMatch);
             Assert.AreEqual(2, result.CascadeCount);
+            
             var phases = TurnTraceQueries.GetCascadePhases(result.Trace);
+            
             Assert.AreEqual(2, phases.Count);
-            for (int i = 0; i < 2; i++)
+            
+            for (var i = 0; i < 2; i++)
             {
                 Assert.AreEqual(i + 1, phases[i].CascadeIndex);
                 Assert.AreEqual(3, phases[i].ClearedCells);

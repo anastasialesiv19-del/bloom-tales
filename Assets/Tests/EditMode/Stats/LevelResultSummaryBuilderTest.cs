@@ -47,7 +47,9 @@ namespace Tests.EditMode.Stats
             var summaries = LevelResultSummaryBuilder.Build(results);
 
             Assert.AreEqual(2, summaries.Count);
+            
             var second = summaries.Single(summary => summary.LevelId == "Level2");
+            
             Assert.AreEqual(1, second.Attempts);
             Assert.AreEqual(1, second.Victories);
             Assert.AreEqual(0, second.Defeats);

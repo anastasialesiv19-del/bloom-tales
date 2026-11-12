@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Core.Board;
 using Core.Hint;
-using Core.Matching;
 using NUnit.Framework;
 
 namespace Tests.EditMode.Hint
@@ -12,6 +12,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_NormalMove_ExplanationContainsCreatesMatch()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Yellow));
@@ -39,6 +40,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_SpecialCreatingMove_ExplanationContainsCreatesSpecial()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -66,6 +68,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_DirectSpecialMove_ExplanationContainsActivatesSpecialDirectly()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -109,6 +112,7 @@ namespace Tests.EditMode.Hint
 
             var context = new HintContext(9, 0);
             var result = HintFinder.FindAdaptiveHint(board, context);
+            
             var expectedScore = 0;
             if (result.Move != null)
             {
@@ -123,6 +127,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_ReturnsExplanation_WithSelectedMoveScore()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -151,6 +156,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_DirectActivationWithPotentialMatch_DoesNotClaimMatchOrSpecialCreation()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Green));
             board.Set(0, 2, Piece.RowClear(PieceColor.Red));
@@ -171,8 +177,7 @@ namespace Tests.EditMode.Hint
                 new Dictionary<PieceColor, int>()
                 {
                     { PieceColor.Red, 4 }
-                }, 
-                0);
+                }, 0);
            
             Assert.IsTrue(HintMoveEvaluator.IsDirectSpecialActivation(board, move));
             Assert.IsTrue(MoveFinder.CreatesMatch(board, move.From,  move.To));
@@ -181,13 +186,11 @@ namespace Tests.EditMode.Hint
             
             Assert.IsNotNull(hint.Move);
             Assert.IsNotNull(hint.Explanation);
-            
             Assert.AreEqual(move.From, hint.Move.Value.From);
             Assert.AreEqual(move.To, hint.Move.Value.To);
             
             Assert.IsTrue(hint.Explanation.Reasons.Contains(HintReasonType.ActivatesSpecialDirectly));
             Assert.IsTrue(hint.Explanation.Reasons.Contains(HintReasonType.ProgressesColorGoal));
-            
             Assert.IsFalse(hint.Explanation.Reasons.Contains(HintReasonType.CreatesMatch));
             Assert.IsFalse(hint.Explanation.Reasons.Contains(HintReasonType.CreatesSpecial));
         }

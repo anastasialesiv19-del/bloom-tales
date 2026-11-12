@@ -1,7 +1,7 @@
 using System;
 using Core.Board;
 using Core.Generation;
-using Core.Matching;
+
 using NUnit.Framework;
 using Tests.EditMode.TestDoubles;
 
@@ -30,16 +30,18 @@ namespace Tests.EditMode.Generation
             var before = board.ToDebugString();
             BoardShuffler.Shuffle(board, provider);
             var after = board.ToDebugString();
-
-            // Fisher-Yates with eight index values equal to one.
+            
             var expected = new[,]
             {
                 { PieceColor.Red, PieceColor.Blue, PieceColor.Green },
                 { PieceColor.Blue, PieceColor.Red, PieceColor.Blue },
                 { PieceColor.Red, PieceColor.Green, PieceColor.Green }
             };
+
             foreach (var pos in board.AllPositions())
+            {
                 Assert.AreEqual(Piece.Normal(expected[pos.Row, pos.Col]), board.Get(pos.Row, pos.Col));
+            }
             Assert.AreNotEqual(before, after);
             Assert.IsFalse(BoardResolver.HasEmptyCells(board));
             Assert.IsTrue(BoardShuffler.IsPlayableBoard(board));
@@ -59,6 +61,7 @@ namespace Tests.EditMode.Generation
             board.Set(1, 2, Piece.Normal(PieceColor.Green));
 
             var provider = new SequenceRandomProvider(new[] {2, 0, 3});
+            
             Assert.Throws<InvalidOperationException>(() => BoardShuffler.Shuffle(board, provider));
         }
     }

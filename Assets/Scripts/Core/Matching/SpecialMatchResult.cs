@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Core.Matching;
+using Core.Board;
 
 namespace Core.Matching
 {

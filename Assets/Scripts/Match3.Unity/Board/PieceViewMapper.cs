@@ -1,7 +1,7 @@
-using Core.Matching;
+using Core.Board;
 using UnityEngine;
 
-namespace Match3.Unity
+namespace Match3.Unity.Board
 {
     public static class PieceViewMapper
     {

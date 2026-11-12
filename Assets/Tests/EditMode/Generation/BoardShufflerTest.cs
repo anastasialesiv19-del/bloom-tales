@@ -1,3 +1,4 @@
+using Core.Board;
 using Core.Generation;
 using Core.Matching;
 using NUnit.Framework;
@@ -10,6 +11,7 @@ namespace Tests.EditMode.Generation
         public void IsPlayableBoard_ReturnsTrue_ForPlayableBoard()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -25,7 +27,7 @@ namespace Tests.EditMode.Generation
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
-            bool isPlayable = BoardShuffler.IsPlayableBoard(board);
+            var isPlayable = BoardShuffler.IsPlayableBoard(board);
             
             Assert.IsTrue(isPlayable);
         }
@@ -34,6 +36,7 @@ namespace Tests.EditMode.Generation
         public void IsPlayableBoard_ReturnsFalse_ForDeadlockedBoard()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -49,8 +52,8 @@ namespace Tests.EditMode.Generation
             board.Set(2, 2, Piece.Normal(PieceColor.Yellow));
             board.Set(2, 3, Piece.Normal(PieceColor.Blue));
 
-            bool isPlayable = BoardShuffler.IsPlayableBoard(board);
-             bool deadlock = MoveFinder.IsDeadlocked(board);
+            var isPlayable = BoardShuffler.IsPlayableBoard(board);
+            var deadlock = MoveFinder.IsDeadlocked(board);
             
             Assert.IsFalse(isPlayable);
             Assert.IsTrue(deadlock);
@@ -60,6 +63,7 @@ namespace Tests.EditMode.Generation
         public void Shuffle_RemovesDeadlock()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -76,8 +80,7 @@ namespace Tests.EditMode.Generation
             board.Set(2, 3, Piece.Normal(PieceColor.Blue));
 
             BoardShuffler.Shuffle(board);
-            
-            bool isPlayable = BoardShuffler.IsPlayableBoard(board);
+            var isPlayable = BoardShuffler.IsPlayableBoard(board);
             
             Assert.IsTrue(isPlayable);
         }
@@ -86,6 +89,7 @@ namespace Tests.EditMode.Generation
         public void Shuffle_LeavesBoardWithoutMatches()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -102,8 +106,8 @@ namespace Tests.EditMode.Generation
             board.Set(2, 3, Piece.Normal(PieceColor.Blue));
 
             BoardShuffler.Shuffle(board);
-
             var matches = MatchFinder.FindMatches(board);
+            
             Assert.AreEqual(0, matches.Count);
         }
 
@@ -111,6 +115,7 @@ namespace Tests.EditMode.Generation
         public void Shuffle_PreservesPieceCount()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -127,35 +132,46 @@ namespace Tests.EditMode.Generation
             board.Set(2, 3, Piece.Normal(PieceColor.Blue));
 
             int yellowCount = 0, blueCount = 0,  greenCount = 0 , redCount = 0;
-
             foreach (var pos in board.AllPositions())
             {
                 var type = board.Get(pos.Row, pos.Col);
-                if (type.Color == PieceColor.Yellow)
-                    yellowCount++;
-                else if (type.Color == PieceColor.Green)
-                    greenCount++;
-                else if (type.Color == PieceColor.Red)
-                    redCount++;
-                else if (type.Color == PieceColor.Blue)
-                    blueCount++;
+                switch (type.Color)
+                {
+                    case PieceColor.Yellow:
+                        yellowCount++;
+                        break;
+                    case PieceColor.Green:
+                        greenCount++;
+                        break;
+                    case PieceColor.Red:
+                        redCount++;
+                        break;
+                    case PieceColor.Blue:
+                        blueCount++;
+                        break;
+                }
             }
-            
             BoardShuffler.Shuffle(board);
             
             int newYellowCount = 0, newBlueCount = 0,  newGreenCount = 0 , newRedCount = 0;
-
             foreach (var pos in board.AllPositions())
             {
                 var type = board.Get(pos.Row, pos.Col);
-                if (type.Color == PieceColor.Yellow)
-                    newYellowCount++;
-                else if (type.Color == PieceColor.Green)
-                    newGreenCount++;
-                else if (type.Color == PieceColor.Red)
-                    newRedCount++;
-                else if (type.Color == PieceColor.Blue)
-                    newBlueCount++;
+                switch (type.Color)
+                {
+                    case PieceColor.Yellow:
+                        newYellowCount++;
+                        break;
+                    case PieceColor.Green:
+                        newGreenCount++;
+                        break;
+                    case PieceColor.Red:
+                        newRedCount++;
+                        break;
+                    case PieceColor.Blue:
+                        newBlueCount++;
+                        break;
+                }
             }
             
             Assert.AreEqual(yellowCount, newYellowCount);
@@ -168,6 +184,7 @@ namespace Tests.EditMode.Generation
         public void Shuffle_PreservesSpecialPiecesOnBoard()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.ColumnClear(PieceColor.Yellow));
             board.Set(0, 1, Piece.RowClear(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -184,36 +201,48 @@ namespace Tests.EditMode.Generation
             board.Set(2, 3, Piece.Normal(PieceColor.Blue));
 
             int rowClear = 0, columnClear = 0,  areaBomb = 0 , colorBomb = 0;
-
             foreach (var pos in board.AllPositions())
             {
                 var type = board.Get(pos.Row, pos.Col);
-                if (type.Kind == PieceKind.RowClear)
-                    rowClear++;
-                else if (type.Kind == PieceKind.ColumnClear)
-                    columnClear++;
-                else if (type.Kind == PieceKind.AreaBomb)
-                    areaBomb++;
-                else if (type.Kind == PieceKind.ColorBomb)
-                    colorBomb++;
+                switch (type.Kind)
+                {
+                    case PieceKind.RowClear:
+                        rowClear++;
+                        break;
+                    case PieceKind.ColumnClear:
+                        columnClear++;
+                        break;
+                    case PieceKind.AreaBomb:
+                        areaBomb++;
+                        break;
+                    case PieceKind.ColorBomb:
+                        colorBomb++;
+                        break;
+                }
             }
-            
             BoardShuffler.Shuffle(board);
             
             int newRowClear = 0, newColumnClear = 0,  newAreaBomb = 0 , newColorBomb = 0;
-            
             foreach (var pos in board.AllPositions())
             {
                 var type = board.Get(pos.Row, pos.Col);
-                if (type.Kind == PieceKind.RowClear)
-                    newRowClear++;
-                else if (type.Kind == PieceKind.ColumnClear)
-                    newColumnClear++;
-                else if (type.Kind == PieceKind.AreaBomb)
-                    newAreaBomb++;
-                else if (type.Kind == PieceKind.ColorBomb)
-                    newColorBomb++;
+                switch (type.Kind)
+                {
+                    case PieceKind.RowClear:
+                        newRowClear++;
+                        break;
+                    case PieceKind.ColumnClear:
+                        newColumnClear++;
+                        break;
+                    case PieceKind.AreaBomb:
+                        newAreaBomb++;
+                        break;
+                    case PieceKind.ColorBomb:
+                        newColorBomb++;
+                        break;
+                }
             }
+            
             Assert.AreEqual(colorBomb, newColorBomb);
             Assert.AreEqual(areaBomb, newAreaBomb);
             Assert.AreEqual(columnClear, newColumnClear);

@@ -1,6 +1,7 @@
 using System;
+using Core.Matching;
 
-namespace Core.Matching
+namespace Core.Board
 {
     public readonly struct Move : IEquatable<Move>
     {

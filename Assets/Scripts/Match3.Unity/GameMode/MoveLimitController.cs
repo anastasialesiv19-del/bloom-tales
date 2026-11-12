@@ -15,9 +15,17 @@ namespace Match3.Unity.GameMode
 
         public void ConsumeMove()
         {
-            if (IsExpired) return;
+            if (IsExpired)
+            {
+                return;
+            }
+            
             RemainingMoves--;
-            if (RemainingMoves > 0) return;
+            if (RemainingMoves > 0)
+            {
+                return;
+            }
+            
             RemainingMoves = 0;
             IsExpired = true;
         }

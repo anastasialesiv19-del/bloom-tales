@@ -1,5 +1,4 @@
 using System;
-using Match3.Unity.Menu;
 
 namespace Match3.Unity.Goals
 {

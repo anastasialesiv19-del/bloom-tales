@@ -6,23 +6,25 @@ namespace Match3.Unity.Settings
 {
     public class JsonSettingsStore
     {
-        private readonly string filePath;
+        private readonly string _filePath;
 
         public JsonSettingsStore()
         {
-            filePath = Path.Combine(Application.persistentDataPath, "settings.json");
+            _filePath = Path.Combine(Application.persistentDataPath, "settings.json");
         }
 
         public JsonSettingsStore(string filePath)
         {
-            if(string.IsNullOrWhiteSpace(filePath))
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
                 throw new ArgumentException(nameof(filePath));
-            this.filePath = filePath;
+            }
+            _filePath = filePath;
         }
         
         public GameSettings Load()
         {
-            if (!File.Exists(filePath))
+            if (!File.Exists(_filePath))
             {
                 return new GameSettings();
             }
@@ -30,7 +32,7 @@ namespace Match3.Unity.Settings
             var settings = new GameSettings();
             try
             {
-                var content = File.ReadAllText(filePath);
+                var content = File.ReadAllText(_filePath);
                 if (string.IsNullOrEmpty(content))
                 {
                     return new GameSettings();
@@ -60,14 +62,16 @@ namespace Match3.Unity.Settings
 
         public void Save(GameSettings settings)
         {
-            if (settings == null) throw new ArgumentNullException(nameof(settings));
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
             
             settings.Normalize();
             var settingsToJson = JsonUtility.ToJson(settings, true);
-            
             try
             {
-                File.WriteAllText(filePath, settingsToJson);
+                File.WriteAllText(_filePath, settingsToJson);
             }
             catch (IOException e)
             {

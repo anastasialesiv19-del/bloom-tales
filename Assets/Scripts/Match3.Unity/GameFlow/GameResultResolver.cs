@@ -6,9 +6,7 @@ namespace Match3.Unity.GameFlow
     {
         public static GameResultType Resolve(GameModeType mode, bool isExpired)
         {
-            if (!isExpired)
-                return GameResultType.None;
-            return GameResultType.Defeat;
+            return !isExpired ? GameResultType.None : GameResultType.Defeat;
         }
     }
 }

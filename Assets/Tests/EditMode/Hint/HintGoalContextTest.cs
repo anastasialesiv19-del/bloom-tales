@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using Core.Board;
 using Core.Hint;
-using Core.Matching;
 using NUnit.Framework;
 
 namespace Tests.EditMode.Hint
@@ -13,6 +12,7 @@ namespace Tests.EditMode.Hint
         public void Constructor_WhenRemainingScoreProvided_StoresValue()
         {
             var context = new HintGoalContext(new Dictionary<PieceColor, int>(), 0, 12);
+            
             Assert.AreEqual(12, context.RemainingScore);
         }
         
@@ -20,6 +20,7 @@ namespace Tests.EditMode.Hint
         public void Constructor_WhenRemainingScoreOmitted_DefaultsToZero()
         {
             var context = new HintGoalContext(new Dictionary<PieceColor, int>(), 0);
+            
             Assert.AreEqual(0, context.RemainingScore);
         }
 
@@ -32,8 +33,7 @@ namespace Tests.EditMode.Hint
         [Test]
         public void Constructor_WhenRemainingScoreNegative_Throws()
         {
-                Assert.Throws<ArgumentOutOfRangeException>(() => 
-                    new HintGoalContext(new Dictionary<PieceColor, int>(), 0, -1));
+                Assert.Throws<ArgumentOutOfRangeException>(() => new HintGoalContext(new Dictionary<PieceColor, int>(), 0, -1));
         }
     }
 }

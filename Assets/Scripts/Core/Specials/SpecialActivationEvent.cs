@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Core.Matching;
+using Core.Board;
 
 namespace Core.Specials
 {
@@ -13,9 +13,18 @@ namespace Core.Specials
 
         public SpecialActivationEvent(Pos position, Piece piece, int chainDepth, IReadOnlyList<Pos> affectedCells)
         {
-            if (chainDepth < 0) throw new ArgumentException(nameof(chainDepth));
-            if (!piece.IsSpecial) throw new ArgumentException(nameof(piece));
-            if (affectedCells == null) throw new ArgumentNullException(nameof(affectedCells));
+            if (chainDepth < 0)
+            {
+                throw new ArgumentException(nameof(chainDepth));
+            }
+            if (!piece.IsSpecial)
+            {
+                throw new ArgumentException(nameof(piece));
+            }
+            if (affectedCells == null)
+            {
+                throw new ArgumentNullException(nameof(affectedCells));
+            }
             
             Position = position;
             Piece = piece;

@@ -1,6 +1,6 @@
 using Tests.EditMode.TestDoubles;
 using System.Linq;
-using Core.Matching;
+using Core.Board;
 using Core.Turns;
 using NUnit.Framework;
 
@@ -12,6 +12,7 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_InvalidSwap_DoesNotChangeBoard()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -41,6 +42,7 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_NoMatch_DoesNotChangeBoard()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -70,6 +72,7 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_SuccessfulTurn_LeavesBoardWithoutEmptyCells()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -97,6 +100,7 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_TraceClearedCellsSum_MatchesTotalClearedCells()
         {
             var result = CascadeTestScenario.ResolveTwoWaves();
+            
             Assert.IsTrue(result.WasApplied);
             Assert.AreEqual(2, result.CascadeCount);
             Assert.AreEqual(9, result.TotalClearedCells);

@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Board;
 using Core.Contracts;
-using Core.Matching;
 using Core.Presentation;
 using Core.Turns;
 using Match3.Unity.Audio;
 using UnityEngine;
 
-namespace Match3.Unity
+namespace Match3.Unity.Board
 {
     public class TurnPlaybackController : MonoBehaviour
     {
@@ -24,7 +23,10 @@ namespace Match3.Unity
 
         public void Play(TurnPresentationModel presentation)
         {
-            if (presentation == null) throw new ArgumentNullException(nameof(presentation));
+            if (presentation == null)
+            {
+                throw new ArgumentNullException(nameof(presentation));
+            }
             StartCoroutine(PlayRoutine(presentation));
         }
 
@@ -34,12 +36,15 @@ namespace Match3.Unity
 
             foreach (var phase in presentation.Phases)
             {
-                if (phase.BoardAfterPhase == null) continue;
+                if (phase.BoardAfterPhase == null)
+                {
+                    continue;
+                }
                 
                 var soundsCompleted = false;
-
                 StartCoroutine(PlayPhaseSounds(phase.Type, phase.ClearedCells, phase.SpecialSpawns.Count,
                     phase.SpecialActivations.Select(activation => activation.ChainDepth), () => soundsCompleted = true));
+                
                 if (phase.Type == TurnPhaseType.SwapApplied && presentation.Move.HasValue)
                 {
                     yield return boardRenderer.RenderSwap(phase.BoardAfterPhase, presentation.Move.Value, swapDurationSeconds);
@@ -50,16 +55,17 @@ namespace Match3.Unity
                 }
                 else if (phase.Type == TurnPhaseType.CascadeWaveResolved && phase.CascadeAnimation != null)
                 {
-                    var animation = phase.CascadeAnimation;
+                    var animations = phase.CascadeAnimation;
 
-                    yield return boardRenderer.RenderAnimated(animation.AfterClear, pieceFadeSeconds);
-                    yield return boardRenderer.RenderGravity(animation.AfterGravity, animation.Falls, fallDurationSeconds);
+                    yield return boardRenderer.RenderAnimated(animations.AfterClear, pieceFadeSeconds);
+                    yield return boardRenderer.RenderGravity(animations.AfterGravity, animations.Falls, fallDurationSeconds);
                     yield return boardRenderer.RenderAnimated(phase.BoardAfterPhase, pieceFadeSeconds);
                 }
                 else
                 {
                     yield return boardRenderer.RenderAnimated(phase.BoardAfterPhase, pieceFadeSeconds);
                 }
+                
                 while (!soundsCompleted)
                 {
                     yield return null;
@@ -76,35 +82,39 @@ namespace Match3.Unity
             {
                 var audio = GameAudioController.Instance;
                 if (audio == null)
+                {
                     yield break;
+                }
 
-                if ((phaseType == TurnPhaseType.PrimaryMatchResolved ||
-                     phaseType == TurnPhaseType.CascadeWaveResolved) &&
-                    clearedCells > 0)
+                if ((phaseType == TurnPhaseType.PrimaryMatchResolved || phaseType == TurnPhaseType.CascadeWaveResolved) && clearedCells > 0)
                 {
                     audio.PlayMatchSound();
                 }
 
                 foreach (var unused in Enumerable.Range(0, spawnCount))
+                {
                     audio.PlaySpecialSpawnSound();
+                }
 
-                var groups = activationDepths
-                    .GroupBy(depth => depth)
-                    .OrderBy(group => group.Key);
-
-                bool firstGroup = true;
-
+                var groups = activationDepths.GroupBy(depth => depth).OrderBy(group => group.Key);
+                var firstGroup = true;
                 foreach (var group in groups)
                 {
                     if (!firstGroup)
+                    {
                         yield return new WaitForSeconds(activationChainDelaySeconds);
+                    }
 
                     if (audio == null)
+                    {
                         yield break;
+                    }
 
                     foreach (var unused in group)
+                    {
                         audio.PlaySpecialActivationSound();
-
+                    }
+                    
                     firstGroup = false;
                 }
             }
@@ -112,30 +122,6 @@ namespace Match3.Unity
             {
                 onCompleted();
             }
-        }
-
-        private void AddIfNotNull(List<BoardSnapshot> snapshots, BoardSnapshot snapshot)
-        {
-            if (snapshot != null)
-            {
-                snapshots.Add(snapshot);
-            }
-        }
-        
-        private static int CountPieces(BoardSnapshot snapshot)
-        {
-            int count = 0;
-
-            for (int row = 0; row < snapshot.Height; row++)
-            {
-                for (int col = 0; col < snapshot.Width; col++)
-                {
-                    if (snapshot.Get(row, col).Kind != PieceKind.Empty)
-                        count++;
-                }
-            }
-
-            return count;
         }
     }
 }

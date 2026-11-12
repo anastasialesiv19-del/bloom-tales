@@ -1,3 +1,4 @@
+using Core.Board;
 using Core.Matching;
 using NUnit.Framework;
 
@@ -9,6 +10,7 @@ namespace Tests.EditMode.Matching
         public void Detect_ReturnsNoSpecialMatch_ForSimpleThreeInRow()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Yellow));
@@ -33,6 +35,7 @@ namespace Tests.EditMode.Matching
         public void Detect_ReturnsLine4_ForFourInRow()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Blue));
@@ -59,6 +62,7 @@ namespace Tests.EditMode.Matching
         public void Detect_ReturnsLine5_ForFiveInRow()
         {
             var board = new BoardModel(3, 5);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Blue));
@@ -88,6 +92,7 @@ namespace Tests.EditMode.Matching
         public void Detect_ReturnsTShape_ForTMatch()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -114,6 +119,7 @@ namespace Tests.EditMode.Matching
         public void Detect_ReturnsLShape_ForLMatch()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Green));
             board.Set(0, 1, Piece.Normal(PieceColor.Green));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));

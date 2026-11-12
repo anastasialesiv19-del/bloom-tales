@@ -1,5 +1,4 @@
 using Core.Board;
-using Core.Matching;
 
 namespace Match3.Unity.Goals
 {
@@ -17,6 +16,7 @@ namespace Match3.Unity.Goals
         }
 
         public bool IsCompleted =>  Current >= Target;
+        
         public GoalType Type => GoalType.Color;
 
         public void Apply(ClearResolutionStats stats)

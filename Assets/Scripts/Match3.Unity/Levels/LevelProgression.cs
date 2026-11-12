@@ -1,4 +1,4 @@
-namespace Match3.Unity.Menu
+namespace Match3.Unity.Levels
 {
     public static class LevelProgression
     {

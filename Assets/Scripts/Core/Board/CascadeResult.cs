@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Core.Board;
 
-namespace Core.Matching
+namespace Core.Board
 {
     public  class CascadeResult
     {

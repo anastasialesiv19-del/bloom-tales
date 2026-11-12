@@ -1,3 +1,4 @@
+using Core.Board;
 using Core.Specials;
 using Core.Hint;
 using Core.Matching;
@@ -55,7 +56,9 @@ namespace Tests.EditMode.Hint
             board.Set(2, 3, Piece.Normal(PieceColor.Yellow));
 
             var before = board.ToDebugString();
+            
             Assert.Greater(HintScorer.ScoreMove(board, new Move(new Pos(1,2), new Pos(1,3))), 0);
+            
             var after = board.ToDebugString();
 
             Assert.That(before, Is.EqualTo(after));
@@ -83,13 +86,20 @@ namespace Tests.EditMode.Hint
 
             var probe = new BoardModel(board.Height, board.Width);
             foreach (var pos in board.AllPositions())
+            {
                 probe.Set(pos.Row, pos.Col, board.Get(pos.Row, pos.Col));
+            }
+            
             probe.Swap(new Pos(1, 2), new Pos(1, 3));
             var decisions = SpecialSpawnResolver.BuildDecisions(probe, MatchFinder.FindMatches(probe));
+            
             Assert.AreEqual(1, decisions.Count);
             Assert.AreEqual(PieceKind.AreaBomb, decisions[0].SpawnPiece.Kind);
+            
             var before = board.ToDebugString();
+            
             Assert.Greater(HintScorer.ScoreMove(board, new Move(new Pos(1,2), new Pos(1,3))), 0);
+            
             var after = board.ToDebugString();
 
             Assert.That(before, Is.EqualTo(after));

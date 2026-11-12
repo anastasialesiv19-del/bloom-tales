@@ -1,4 +1,5 @@
 using System;
+using Core.Board;
 using Core.Matching;
 
 namespace Core.Specials
@@ -10,13 +11,10 @@ namespace Core.Specials
             switch (matchType)
             {
                 case SpecialMatchType.Line4:
-                    if (preferHorizontal)
-                        return Piece.RowClear(color);
-                    return Piece.ColumnClear(color);
+                    return preferHorizontal ? Piece.RowClear(color) : Piece.ColumnClear(color);
                 case SpecialMatchType.Line5:
                     return Piece.ColorBomb();
                 case SpecialMatchType.TShape:
-                    return Piece.AreaBomb(color);
                 case SpecialMatchType.LShape:
                     return Piece.AreaBomb(color);
                 default:

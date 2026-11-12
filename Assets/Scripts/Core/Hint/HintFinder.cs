@@ -21,7 +21,9 @@ namespace Core.Hint
             var possibleMoves = HintMoveCollector.Collect(board);
 
             if (possibleMoves.Count == 0)
+            {
                 return new HintResult(null, snapshot);
+            }
 
             var bestMove = possibleMoves[0];
             var bestScore = HintScorer.ScoreMove(board, bestMove, goalContext);
@@ -48,23 +50,20 @@ namespace Core.Hint
                 else
                 {
                     if (score <= bestScore)
+                    {
                         continue;
-
+                    }
                     bestScore = score;
                     bestMove = move;
                     bestCompletesGoals = completesGoals;
                 }
             }
-
             var explanation = BuildExplanation(board, bestMove, bestScore, goalContext);
-
             return new HintResult(bestMove, HintStrength.None, explanation, snapshot);
-
         }
 
         public static HintResult FindAdaptiveHint(BoardModel board, HintContext context)
         {
-            
             return FindAdaptiveHint(board, context, HintGoalContext.Empty);
         }
 
@@ -73,11 +72,17 @@ namespace Core.Hint
             goalContext ??= HintGoalContext.Empty;
 
             var bestHint = FindBestHint(board, goalContext);
-            if (bestHint.Move == null) return new HintResult(null, bestHint.BoardSnapshot);
+            if (bestHint.Move == null)
+            {
+                return new HintResult(null, bestHint.BoardSnapshot);
+            }
             
             var bestScore = bestHint.Explanation.Score;
             var strength = HintPolicy.GetStrength(context, bestScore);
-            if(strength ==  HintStrength.None) return new HintResult(null, bestHint.BoardSnapshot);
+            if (strength == HintStrength.None)
+            {
+                return new HintResult(null, bestHint.BoardSnapshot);
+            }
             
             return new HintResult(bestHint.Move, strength, bestHint.Explanation, bestHint.BoardSnapshot);
         }
@@ -85,20 +90,25 @@ namespace Core.Hint
         private static HintExplanation BuildExplanation(BoardModel board, Move move, int bestScore, HintGoalContext goalContext)
         {
             var reasons = new List<HintReasonType>();
-            if(HintMoveEvaluator.IsDirectSpecialActivation(board, move))
+            if (HintMoveEvaluator.IsDirectSpecialActivation(board, move))
+            {
                 reasons.Add(HintReasonType.ActivatesSpecialDirectly);
+            }
             else if (MoveFinder.CreatesMatch(board, move.From, move.To))
             {
                 reasons.Add(HintReasonType.CreatesMatch);
                 if (CreatesSpecial(board, move))
+                {
                     reasons.Add(HintReasonType.CreatesSpecial);
+                }
             }
-            
+
             if (HintScorer.EstimateObstacleDamageCount(board, move) > 0)
+            {
                 reasons.Add(HintReasonType.DamagesObstacle);
+            }
 
             var outcome = HintMoveOutcomeEstimator.Estimate(board, move);
-
             foreach (var pair in outcome.ClearedByColor)
             {
                 if (goalContext.GetRemainingColor(pair.Key) > 0)
@@ -107,14 +117,15 @@ namespace Core.Hint
                     break;
                 }
             }
-
             return new HintExplanation(reasons, bestScore);
         }
 
         private static bool CreatesSpecial(BoardModel board, Move move)
         {
             if (!MoveFinder.CreatesMatch(board, move.From, move.To))
+            {
                 return false;
+            }
             
             return BoardSimulation.WithTemporarySwap(board, move, () =>
             {
@@ -127,20 +138,27 @@ namespace Core.Hint
         private static bool CompletesRemainingGoals(HintMoveOutcome outcome, HintGoalContext goalContext)
         {
             if (goalContext.RemainingScore == 0 && goalContext.RemainingObstacles == 0 && goalContext.RemainingByColor.Count == 0)
+            {
                 return false;
+            }
 
             foreach (var color in goalContext.RemainingByColor)
             {
                 outcome.ClearedByColor.TryGetValue(color.Key, out  var predicted);
                 if (predicted < color.Value)
+                {
                     return false;
+                }
             }
 
             if (outcome.EstimatedClearedPieces < goalContext.RemainingScore)
+            {
                 return false;
-
+            }
             if (goalContext.RemainingObstacles > 0)
+            {
                 return false;
+            }
             
             return true;
         }

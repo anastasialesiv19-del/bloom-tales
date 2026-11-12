@@ -1,79 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Core.Board;
+using Core.Matching;
 
-namespace Core.Matching
+namespace Core.Board
 {
     public class BoardModel
     {
         public int Width { get; }
         public int Height { get; }
 
-        private readonly Piece[,] grid;
-        private readonly ObstacleModel[,] obstacles;
+        private readonly Piece[,] _grid;
+        private readonly ObstacleModel[,] _obstacles;
 
         public BoardModel(int height, int width)
         {
             if (width <= 0 || height <= 0)
             {
-                throw new  ArgumentOutOfRangeException("Спроба введення некоректних меж дошки.");
-
+                throw new ArgumentOutOfRangeException("Attempt to enter incorrect board boundaries."); 
             }
+            
             Width = width;
             Height = height;
-            grid = new Piece[height, width];
-            obstacles =  new ObstacleModel[height, width];
+            _grid = new Piece[height, width];
+            _obstacles = new ObstacleModel[height, width];
         }
 
         public Piece Get(int row, int col)
         {
-            if (InBounds(row, col))
-            {
-                return grid[row, col];
-            }
-            else{
-                throw new IndexOutOfRangeException("Спроба доступу до не існуючого елемента.");
-            }
-            
+            return InBounds(row, col) ? _grid[row, col] : throw new IndexOutOfRangeException("Attempt to access a non-existent element.");
         }
-
-        public bool TryGet(int row, int col, out Piece piece)
-        {
-            if (InBounds(row, col))
-            {
-                piece = grid[row, col];
-                return true;
-            }
-            else
-            {
-                 piece = Piece.Empty();
-                 return false;
-            }
-        }
-
-        public bool TrySet(int row, int col, Piece value)
-        {
-            if (InBounds(row, col))
-            {
-                grid[row, col] = value;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
+        
         public void Set(int row, int col, Piece piece)
         {
             if (InBounds(row, col))
             {
-                grid[row, col] = piece;
+                _grid[row, col] = piece;
             }
             else
             {
-                throw new IndexOutOfRangeException("Спроба запису за межами дошки.");
+                throw new IndexOutOfRangeException("Attempt to write outside the board."); 
             }
         }
 
@@ -86,19 +52,19 @@ namespace Core.Matching
         {
             if (InBounds(a.Row, a.Col) && InBounds(b.Row, b.Col))
             {
-                (grid[a.Row, a.Col], grid[b.Row, b.Col]) = (grid[b.Row, b.Col], grid[a.Row, a.Col]);
+                (_grid[a.Row, a.Col], _grid[b.Row, b.Col]) = (_grid[b.Row, b.Col], _grid[a.Row, a.Col]); 
             }
             else
-            { 
-                throw new IndexOutOfRangeException("Спроба спроба свопу з не існуючим елементом.");
+            {
+                throw new IndexOutOfRangeException("Attempt to perform a swap with a non-existent element.");
             }
         }
 
-       public IEnumerable<Pos> AllPositions()
+        public IEnumerable<Pos> AllPositions()
         {
-            for (int row = 0; row < Height; row++)
+            for (var row = 0; row < Height; row++)
             {
-                for (int col = 0; col < Width; col++)
+                for (var col = 0; col < Width; col++)
                 {
                     yield return new Pos(row, col);
                 }
@@ -107,20 +73,35 @@ namespace Core.Matching
 
         public string ToDebugString()
         {
-            StringBuilder str = new StringBuilder();
-            for (int row = 0; row < Height; row++)
+            var str = new StringBuilder();
+            
+            for (var row = 0; row < Height; row++)
             {
-                for (int col = 0; col < Width; col++)
+                for (var col = 0; col < Width; col++)
                 {
-                   str.Append(PieceTypeMapping(grid[row, col]));
-                   str.Append(' ');
+                    str.Append(PieceTypeMapping(_grid[row, col]));
+                    str.Append(' ');
                 }
                 str.AppendLine();
             }
-
             return str.ToString();
         }
+        
+        public ObstacleModel GetObstacle(int row, int col)
+        {
+            return _obstacles[row, col];
+        }
 
+        public void SetObstacle(int row, int col, ObstacleModel obstacle)
+        {
+            _obstacles[row, col] = obstacle;
+        }
+
+        public bool HasObstacle(int row, int col)
+        {
+            return !GetObstacle(row, col).IsEmpty;
+        }
+        
         private static string PieceTypeMapping(Piece piece)
         {
             switch (piece.Kind)
@@ -130,61 +111,45 @@ namespace Core.Matching
                 case PieceKind.ColorBomb:
                     return "CB";
                 case PieceKind.RowClear:
-                    if (piece.Color == null) throw new ArgumentException("Piece kind requires color.");
+                    if (piece.Color == null)
+                    {
+                        throw new ArgumentException("Piece kind requires color.");
+                    }
                     var color = PieceColorMapping(piece.Color.Value);
                     return "H" + color;
                 case PieceKind.ColumnClear:
-                    if (piece.Color == null) throw new ArgumentException("Piece kind requires color.");
+                    if (piece.Color == null)
+                    {
+                        throw new ArgumentException("Piece kind requires color.");
+                    }
                     color = PieceColorMapping(piece.Color.Value);
                     return "V" + color;
                 case PieceKind.AreaBomb:
-                    if (piece.Color == null) throw new ArgumentException("Piece kind requires color.");
+                    if (piece.Color == null)
+                    {
+                        throw new ArgumentException("Piece kind requires color.");
+                    }
                     color = PieceColorMapping(piece.Color.Value);
                     return "A" + color;
                 case PieceKind.Normal:
-                    return piece.Color == null ? throw new ArgumentException("Piece kind requires color.") : 
-                        PieceColorMapping(piece.Color.Value);
+                    return piece.Color == null ? throw new ArgumentException("Piece kind requires color.") : PieceColorMapping(piece.Color.Value);
                 default:
                     throw new InvalidOperationException();
             }
-            
         }
 
         private static string PieceColorMapping(PieceColor color)
         {
-            switch (color)
+            return color switch
             {
-                case PieceColor.Red:
-                    return "R";
-                case PieceColor.Yellow:
-                    return "Y";
-                case PieceColor.Green:
-                    return "G";
-                case PieceColor.Cyan:
-                    return "C";
-                case PieceColor.Blue:
-                    return "B";
-                case PieceColor.Purple:
-                    return "P";
-                default:
-                    throw new InvalidOperationException();
-            }
+                PieceColor.Red => "R",
+                PieceColor.Yellow => "Y",
+                PieceColor.Green => "G",
+                PieceColor.Cyan => "C",
+                PieceColor.Blue => "B",
+                PieceColor.Purple => "P",
+                _ => throw new InvalidOperationException()
+            };
         }
-
-        public ObstacleModel GetObstacle(int row , int col)
-        {
-            return obstacles[row, col];
-        }
-
-        public void SetObstacle(int row, int col, ObstacleModel obstacle)
-        {
-            obstacles[row, col] = obstacle;
-        }
-
-        public bool HasObstacle(int row, int col)
-        {
-            return !GetObstacle(row, col).IsEmpty;
-        }
-
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Match3.Unity
+namespace Match3.Unity.Board
 {
     public class BoardCellView : MonoBehaviour, IPointerClickHandler
     {
@@ -15,6 +15,11 @@ namespace Match3.Unity
         [SerializeField] private Image obstacleImage;
         [SerializeField] private Sprite boxObstacleSprite;
         
+        public int Row { get; private set; }
+        public int Col { get; private set; }
+        public Vector3 PieceWorldPosition => pieceImage.rectTransform.position;
+        public event Action<int, int> Clicked;
+        
         private PieceSpriteLibrary _spriteLibrary;
         private Vector3 _initialPieceScale;
         private Vector3 _initialOverlayScale;
@@ -24,11 +29,6 @@ namespace Match3.Unity
         private bool _isSelected;
         private bool _isHinted;
         
-        public int Row { get; private set; }
-        public int Col { get; private set; }
-        public Vector3 PieceWorldPosition => pieceImage.rectTransform.position;
-        public event Action<int, int> Clicked;
-
         public void Initialize(int row, int col, PieceSpriteLibrary spriteLibrary)
         {
             Row = row;
@@ -38,6 +38,7 @@ namespace Match3.Unity
             _initialOverlayScale = specialOverlay.rectTransform.localScale;
             _initialPiecePosition = pieceImage.rectTransform.localPosition;
             _initialOverlayPosition = specialOverlay.rectTransform.localPosition;
+            
             if (obstacleImage != null)
             {
                 _initialObstacleScale = obstacleImage.rectTransform.localScale;
@@ -54,10 +55,8 @@ namespace Match3.Unity
             SetPieceOpacity(1f);
 
             var viewData = PieceViewMapper.Map(piece, _spriteLibrary);
-
             pieceImage.sprite = viewData.Sprite;
             pieceImage.enabled = viewData.Sprite != null;
-
             specialOverlay.sprite = viewData.OverlaySprite;
             specialOverlay.enabled = viewData.Sprite != null && viewData.OverlaySprite != null;
         }
@@ -65,8 +64,9 @@ namespace Match3.Unity
         public void SetObstacle(ObstacleModel obstacle)
         {
             if (obstacleImage == null)
+            {
                 return;
-
+            }
             SetObstacleOpacity(1f);
 
             if (obstacle.IsEmpty)
@@ -115,12 +115,10 @@ namespace Match3.Unity
         public void SetPieceOpacity(float opacity)
         {
             opacity = Mathf.Clamp01(opacity);
-
             SetImageOpacity(pieceImage, opacity);
             SetImageOpacity(specialOverlay, opacity);
 
             var scale = Mathf.Lerp(0.75f, 1f, opacity);
-
             pieceImage.rectTransform.localScale = _initialPieceScale * scale;
             specialOverlay.rectTransform.localScale = _initialOverlayScale * scale;
         }
@@ -135,7 +133,7 @@ namespace Match3.Unity
             opacity = Mathf.Clamp01(opacity);
             SetImageOpacity(obstacleImage, opacity);
 
-            float scale = Mathf.Lerp(0.75f, 1f, opacity);
+            var scale = Mathf.Lerp(0.75f, 1f, opacity);
             obstacleImage.rectTransform.localScale = _initialObstacleScale * scale;
         }
         
@@ -144,11 +142,8 @@ namespace Match3.Unity
             var pieceTransform = pieceImage.rectTransform;
             var overlayTransform = specialOverlay.rectTransform;
 
-            pieceTransform.position =
-                pieceTransform.parent.TransformPoint(_initialPiecePosition) + offset;
-
-            overlayTransform.position =
-                overlayTransform.parent.TransformPoint(_initialOverlayPosition) + offset;
+            pieceTransform.position = pieceTransform.parent.TransformPoint(_initialPiecePosition) + offset;
+            overlayTransform.position = overlayTransform.parent.TransformPoint(_initialOverlayPosition) + offset;
         }
 
         public void ResetPiecePosition()

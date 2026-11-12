@@ -1,5 +1,5 @@
+using Core.Board;
 using Core.Hint;
-using Core.Matching;
 using NUnit.Framework;
 
 namespace Tests.EditMode.Hint
@@ -10,6 +10,7 @@ namespace Tests.EditMode.Hint
         public void FindAdaptiveHint_ReturnsNoHint_WhenPolicyReturnsNone()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -37,6 +38,7 @@ namespace Tests.EditMode.Hint
         public void FindAdaptiveHint_ReturnsSoftHint_WhenBoardHasMoveAndIdleIsMedium()
         {
             var board = new BoardModel(2, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Yellow));
@@ -53,7 +55,7 @@ namespace Tests.EditMode.Hint
             Assert.IsTrue(result.Move.HasValue);
             Assert.AreEqual(HintStrength.Soft, result.Strength);
             
-            bool matchCreated = MoveFinder.CreatesMatch(board, result.Move.Value.From, result.Move.Value.To);
+            var matchCreated = MoveFinder.CreatesMatch(board, result.Move.Value.From, result.Move.Value.To);
             
             Assert.IsTrue(matchCreated);
         }
@@ -62,6 +64,7 @@ namespace Tests.EditMode.Hint
         public void FindAdaptiveHint_ReturnsStrongHint_WhenBoardHasMoveAndIdleIsLong()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -83,7 +86,7 @@ namespace Tests.EditMode.Hint
             Assert.IsTrue(result.Move.HasValue);
             Assert.AreEqual(HintStrength.Strong, result.Strength);
             
-            bool matchCreated = MoveFinder.CreatesMatch(board, result.Move.Value.From, result.Move.Value.To);
+            var matchCreated = MoveFinder.CreatesMatch(board, result.Move.Value.From, result.Move.Value.To);
             
             Assert.IsTrue(matchCreated);
         }
@@ -92,6 +95,7 @@ namespace Tests.EditMode.Hint
         public void FindAdaptiveHint_WhenBestMoveScoreIsHigh_UpgradesSoftToStrong()
         {
             var board = new BoardModel(2, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.RowClear(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -115,6 +119,7 @@ namespace Tests.EditMode.Hint
         public void FindAdaptiveHint_WhenBestMoveScoreIsLow_KeepsSoft()
         {
             var board = new BoardModel(2, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Green));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -138,6 +143,7 @@ namespace Tests.EditMode.Hint
         public void FindAdaptiveHint_AppliesPolicyStrength_OnTopOfBestHint()
         {
             var board = new BoardModel(2, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Green));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -157,7 +163,6 @@ namespace Tests.EditMode.Hint
             Assert.IsNotNull(adaptiveHint.Move);
             Assert.IsNotNull(bestHint.Explanation);
             Assert.IsNotNull(adaptiveHint.Explanation);
-
             Assert.AreEqual(bestHint.Move.Value, adaptiveHint.Move.Value);
             Assert.AreEqual(bestHint.Explanation.Score, adaptiveHint.Explanation.Score);
             Assert.AreEqual(expectedStrength, adaptiveHint.Strength);

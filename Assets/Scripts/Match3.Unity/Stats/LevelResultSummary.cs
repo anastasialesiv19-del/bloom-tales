@@ -14,18 +14,8 @@ namespace Match3.Unity.Stats
         public int DestroyedObstacles { get; }
         public string LastResult { get; }
 
-        public LevelResultSummary(
-            string levelId,
-            int attempts,
-            int victories,
-            int defeats,
-            int bestTurnsToVictory,
-            int manualHintsShown,
-            int idleHintsShown,
-            int hintsApplied,
-            int totalClearedCells,
-            int destroyedObstacles,
-            string lastResult)
+        public LevelResultSummary(string levelId, int attempts, int victories, int defeats, int bestTurnsToVictory, int manualHintsShown,
+            int idleHintsShown, int hintsApplied, int totalClearedCells, int destroyedObstacles, string lastResult)
         {
             LevelId = levelId;
             Attempts = attempts;

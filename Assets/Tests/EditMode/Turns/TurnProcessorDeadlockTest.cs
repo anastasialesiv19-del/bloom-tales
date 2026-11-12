@@ -1,6 +1,5 @@
-using System.Linq;
+using Core.Board;
 using Core.Generation;
-using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
 using Tests.EditMode.TestDoubles;
@@ -38,6 +37,7 @@ namespace Tests.EditMode.Turns
         public void TryProcessMove_DoesNotShuffle_WhenBoardRemainsPlayable()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Yellow));

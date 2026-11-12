@@ -16,7 +16,10 @@ namespace Core.Turns
         {
             foreach (var currentPhase in trace.Phases)
             {
-                if (currentPhase.Type != type) continue;
+                if (currentPhase.Type != type)
+                {
+                    continue;
+                }
                 phase = currentPhase;
                 return true;
             }
@@ -34,8 +37,10 @@ namespace Core.Turns
              var cascadePhases = trace.Phases.Where(phase => phase.Type == TurnPhaseType.CascadeWaveResolved).ToArray();
              for (int i = 0; i < cascadePhases.Length; i++)
              {
-                 if(cascadePhases[i].CascadeIndex != i + 1)
+                 if (cascadePhases[i].CascadeIndex != i + 1)
+                 {
                      throw  new InvalidOperationException("Cascade phases must be ordered by CascadeIndex starting from 1.");
+                 }
              }
              return cascadePhases;
         }
@@ -56,8 +61,7 @@ namespace Core.Turns
         
         public static BoardSnapshot GetLatestBoardSnapshot(TurnTrace trace)
         {
-            return TryGetLatestBoardSnapshot(trace, out var boardSnapshot) ? boardSnapshot : 
-                throw new InvalidOperationException("No board snapshot found.");
+            return TryGetLatestBoardSnapshot(trace, out var boardSnapshot) ? boardSnapshot : throw new InvalidOperationException("No board snapshot found.");
         }
     }
 }

@@ -9,10 +9,8 @@ namespace Core.Progress
 
         public AdaptiveHintState(int consecutiveHintsShown, int totalHintsShown)
         {
-            ConsecutiveHintsShown = consecutiveHintsShown >= 0 ? consecutiveHintsShown : 
-                throw new ArgumentOutOfRangeException(nameof(consecutiveHintsShown),"Invalid consecutive hints shown");
-            TotalHintsShown = totalHintsShown >= 0 ? totalHintsShown : 
-                throw new ArgumentOutOfRangeException(nameof(totalHintsShown), "Invalid total hints shown");
+            ConsecutiveHintsShown = consecutiveHintsShown >= 0 ? consecutiveHintsShown : throw new ArgumentOutOfRangeException(nameof(consecutiveHintsShown),"Invalid consecutive hints shown");
+            TotalHintsShown = totalHintsShown >= 0 ? totalHintsShown : throw new ArgumentOutOfRangeException(nameof(totalHintsShown), "Invalid total hints shown");
         }
     }
 }

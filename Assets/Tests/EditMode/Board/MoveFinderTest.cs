@@ -1,4 +1,5 @@
 using System.Linq;
+using Core.Board;
 using Core.Matching;
 using NUnit.Framework;
 
@@ -9,18 +10,22 @@ namespace Tests.EditMode.Board
         [Test]
         public void AreAdjacent_ReturnsTrue_ForHorizontalNeighbors()
         {
-            Pos a = new Pos(1, 1);
-            Pos b = new Pos(1, 2);
-            bool isNeighbors = MoveValidator.AreAdjacent(a, b);
+            var a = new Pos(1, 1);
+            var b = new Pos(1, 2);
+            
+            var isNeighbors = MoveValidator.AreAdjacent(a, b);
+            
             Assert.IsTrue(isNeighbors);
         }
 
         [Test]
         public void AreAdjacent_ReturnsFalse_ForDiagonalCells()
         {
-            Pos a = new Pos(1, 1);
-            Pos b = new Pos(2, 2);
-            bool isNeighbors = MoveValidator.AreAdjacent(a, b);
+            var a = new Pos(1, 1);
+            var b = new Pos(2, 2);
+            
+            var isNeighbors = MoveValidator.AreAdjacent(a, b);
+            
             Assert.IsFalse(isNeighbors);
         }
 
@@ -44,11 +49,11 @@ namespace Tests.EditMode.Board
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
-            Pos a = new Pos(1, 2);
-            Pos b = new Pos(1, 3);
+            var a = new Pos(1, 2);
+            var b = new Pos(1, 3);
 
             var before = board.ToDebugString();
-            bool isCreated = MoveFinder.CreatesMatch(board, a, b);
+            var isCreated = MoveFinder.CreatesMatch(board, a, b);
             var after = board.ToDebugString();
 
             Assert.IsTrue(isCreated);
@@ -75,15 +80,11 @@ namespace Tests.EditMode.Board
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
-            Pos a = new Pos(1, 2);
-            Pos b = new Pos(1, 3);
+            var a = new Pos(1, 2);
+            var b = new Pos(1, 3);
 
             var moves = MoveFinder.FindAllPossibleMoves(board);
-
-            bool containsExpected = moves.Any(m =>
-                (m.From.Equals(a) && m.To.Equals(b)) ||
-                (m.From.Equals(b) && m.To.Equals(a))
-            );
+            var containsExpected = moves.Any(m => (m.From.Equals(a) && m.To.Equals(b)) || (m.From.Equals(b) && m.To.Equals(a)));
 
             Assert.IsTrue(moves.Count >= 1);
             Assert.IsTrue(containsExpected, board.ToDebugString());
@@ -93,6 +94,7 @@ namespace Tests.EditMode.Board
         public void HasAnyPossibleMove_ReturnsFalse_ForDeadlockedBoard()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -110,7 +112,8 @@ namespace Tests.EditMode.Board
 
 
             var moves = MoveFinder.FindAllPossibleMoves(board);
-            bool deadlock = MoveFinder.IsDeadlocked(board);
+            var deadlock = MoveFinder.IsDeadlocked(board);
+            
             Assert.IsTrue(moves.Count == 0);
             Assert.IsTrue(deadlock, board.ToDebugString());
         }

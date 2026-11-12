@@ -1,33 +1,33 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Core.Board;
 using Core.Hint;
-using Core.Matching;
 using Match3.Unity.Goals;
 using UnityEngine;
 
-namespace Match3.Unity
+namespace Match3.Unity.Bootstrap
 {
     public partial class GameBootstrap
     {
         private void RebuildGoals()
         {
-            goals = new List<IGoal>();
-            foreach (var def in currentGoalDefinitions)
-                goals.Add(GoalFactory.Create(def));
+            _goals = new List<IGoal>();
+            foreach (var def in _currentGoalDefinitions)
+            {
+                _goals.Add(GoalFactory.Create(def));
+            }
         }
 
         private void RebuildGoalViews()
         {
             foreach (Transform child in goalsRoot)
+            {
                 Destroy(child.gameObject);
+            }
             
-            goalViews.Clear();
-            foreach (var goal in goals)
+            _goalViews.Clear();
+            foreach (var goal in _goals)
             {
                 Sprite icon = null;
-
                 switch (goal)
                 {
                     case ColorGoalProgress colorGoal:
@@ -48,15 +48,14 @@ namespace Match3.Unity
                 }
                 var view = Instantiate(goalItemPrefab, goalsRoot);
                 view.Bind(goal, icon);
-                goalViews.Add(view);
+                _goalViews.Add(view);
             }
         }
 
         private void RefreshGoalHud()
         {
-            scoreText.text = $"Score: {scoreThisRun}";
-            
-            foreach (var view in goalViews)
+            scoreText.text = $"Score: {_scoreThisRun}";
+            foreach (var view in _goalViews)
             {
                 view.Refresh();
             }
@@ -67,14 +66,18 @@ namespace Match3.Unity
             var remainingByColor = new Dictionary<PieceColor, int>();
             var remainingObstacles = 0;
             var remainingScore = 0;
-            foreach (var goal in goals)
+            
+            foreach (var goal in _goals)
             {
                 switch (goal)
                 {
                     case ColorGoalProgress colorGoal:
                     {
                         var remaining = Mathf.Max(0, colorGoal.Target - colorGoal.Current);
-                        if (remaining > 0) remainingByColor[colorGoal.Color] = remaining;
+                        if (remaining > 0)
+                        {
+                            remainingByColor[colorGoal.Color] = remaining;
+                        }
                         break;
                     }
                     case ObstacleGoalProgress obstacleGoal:

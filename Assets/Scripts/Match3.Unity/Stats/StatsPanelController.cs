@@ -13,26 +13,29 @@ namespace Match3.Unity.Stats
         [SerializeField] private TMP_Dropdown levelDropdown;
         [SerializeField] private ScrollRect statsScrollRect;
 
-        private LevelResultStore store;
+        private LevelResultStore _store;
 
         private void Awake()
         {
-            store = new LevelResultStore();
+            _store = new LevelResultStore();
             Hide();
         }
 
         public void Show()
         {
             if (root != null)
+            {
                 root.SetActive(true);
-
+            }
             Render();
         }
 
         public void Hide()
         {
             if (root != null)
+            {
                 root.SetActive(false);
+            }
         }
 
         public void Refresh()
@@ -42,18 +45,26 @@ namespace Match3.Unity.Stats
 
         public void ClearResults()
         {
-            store.Clear();
+            _store.Clear();
             Render();
+        }
+        
+        public void OnLevelChanged(int index)
+        {
+            Render();
+            Canvas.ForceUpdateCanvases();
+            statsScrollRect.verticalNormalizedPosition = 1f;
         }
 
         private void Render()
         {
             if (statsText == null)
+            {
                 return;
+            }
 
-            var data = store.LoadAll();
+            var data = _store.LoadAll();
             var summaries = LevelResultSummaryBuilder.Build(data.Results);
-
             var selectedLevelId = $"Level{levelDropdown.value + 1}";
             
             statsText.text = "No attempts yet.";
@@ -62,31 +73,20 @@ namespace Match3.Unity.Stats
             foreach (var summary in summaries)
             {
                 if (summary.LevelId != selectedLevelId)
+                {
                     continue;
+                }
+                
                 builder.AppendLine($"Attempts: {summary.Attempts}");
                 builder.AppendLine($"Victories: {summary.Victories}");
                 builder.AppendLine($"Defeats: {summary.Defeats}");
-
-                if (summary.BestTurnsToVictory >= 0)
-                    builder.AppendLine($"Best victory turns: {summary.BestTurnsToVictory}");
-                else
-                    builder.AppendLine("Best victory turns: -");
-
+                builder.AppendLine(summary.BestTurnsToVictory >= 0 ? $"Best victory turns: {summary.BestTurnsToVictory}" : "Best victory turns: -");
                 builder.AppendLine($"Hints applied: {summary.HintsApplied}");
                 builder.AppendLine($"Last result: {summary.LastResult}");
-                builder.AppendLine();
                 
                 statsText.text = builder.ToString();
                 break;
             }
-            
-        }
-
-        public void OnLevelChanged(int index)
-        {
-            Render();
-            Canvas.ForceUpdateCanvases();
-            statsScrollRect.verticalNormalizedPosition = 1f;
         }
     }
 }

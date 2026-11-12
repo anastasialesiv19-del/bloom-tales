@@ -7,7 +7,6 @@ namespace Match3.Unity.Save
     {
         public string LevelId;
         public string Result;
-
         public int TurnsUsed;
 
         public int ManualHintsShown;
@@ -16,7 +15,6 @@ namespace Match3.Unity.Save
 
         public int TotalClearedCells;
         public int DestroyedObstacles;
-
         public string CompletedAtUtc;
     }
 }

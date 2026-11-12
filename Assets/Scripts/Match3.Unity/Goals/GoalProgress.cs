@@ -12,18 +12,19 @@ namespace Match3.Unity.Goals
             Target = target;
             Current = 0;
         }
-
-        public void Add(int amount)
-        {
-            Current += amount;
-        }
-
+        
         public bool IsCompleted => Current >= Target;
+        
         public GoalType Type => GoalType.Score;
 
         public void Apply(ClearResolutionStats stats)
         {
             Add(stats.TotalClearedCells);
+        }
+        
+        private void Add(int amount)
+        {
+            Current += amount;
         }
     }
 }

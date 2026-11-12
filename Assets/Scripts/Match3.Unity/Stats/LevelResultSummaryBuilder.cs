@@ -6,36 +6,22 @@ namespace Match3.Unity.Stats
 {
     public static class LevelResultSummaryBuilder
     {
-        public static IReadOnlyList<LevelResultSummary> Build(
-            IReadOnlyList<LevelRunResultDto> results)
+        public static IReadOnlyList<LevelResultSummary> Build(IReadOnlyList<LevelRunResultDto> results)
         {
             if (results == null || results.Count == 0)
+            {
                 return new List<LevelResultSummary>();
-
-            return results
-                .GroupBy(result => result.LevelId)
-                .OrderBy(group => group.Key)
-                .Select(BuildForLevel)
-                .ToList();
+            }
+            return results.GroupBy(result => result.LevelId).OrderBy(group => group.Key).Select(BuildForLevel).ToList();
         }
 
-        private static LevelResultSummary BuildForLevel(
-            IGrouping<string, LevelRunResultDto> group)
+        private static LevelResultSummary BuildForLevel(IGrouping<string, LevelRunResultDto> group)
         {
             var items = group.ToList();
-
             var victories = items.Count(IsVictory);
             var defeats = items.Count(IsDefeat);
-
-            var bestTurns = items
-                .Where(IsVictory)
-                .Select(item => item.TurnsUsed)
-                .DefaultIfEmpty(-1)
-                .Min();
-
-            var last = items
-                .OrderBy(item => item.CompletedAtUtc)
-                .LastOrDefault();
+            var bestTurns = items.Where(IsVictory).Select(item => item.TurnsUsed).DefaultIfEmpty(-1).Min();
+            var last = items.OrderBy(item => item.CompletedAtUtc).LastOrDefault();
 
             return new LevelResultSummary(
                 group.Key,

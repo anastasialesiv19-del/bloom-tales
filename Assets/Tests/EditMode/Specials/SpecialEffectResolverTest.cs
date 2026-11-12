@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Matching;
+using Core.Board;
 using Core.Specials;
 using NUnit.Framework;
 
@@ -13,6 +13,7 @@ namespace Tests.EditMode.Specials
         public void RowClear_AddsWholeRowToClearedCells()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -28,7 +29,7 @@ namespace Tests.EditMode.Specials
             board.Set(2, 2, Piece.RowClear(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
             
-            List<Pos> initiallyClearedCells = new List<Pos>();
+            var initiallyClearedCells = new List<Pos>();
             initiallyClearedCells.Add(new Pos(2, 2));
             var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells);
             
@@ -43,6 +44,7 @@ namespace Tests.EditMode.Specials
         public void ColumnClear_AddsWholeColumnToClearedCells()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -58,7 +60,7 @@ namespace Tests.EditMode.Specials
             board.Set(2, 2, Piece.ColumnClear(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Green));
             
-            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(2, 2) };
+            var initiallyClearedCells = new List<Pos> { new (2, 2) };
             var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells);
             
             Assert.AreEqual(3, result.Count);
@@ -71,6 +73,7 @@ namespace Tests.EditMode.Specials
         public void AreaBomb_AddsNeighborAreaToClearedCells()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -86,7 +89,7 @@ namespace Tests.EditMode.Specials
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
             
-            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(1, 2) };
+            var initiallyClearedCells = new List<Pos> { new (1, 2) };
             var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells);
             
             Assert.AreEqual(9, result.Count);
@@ -105,6 +108,7 @@ namespace Tests.EditMode.Specials
         public void TriggeredSpecials_CanChainIntoOtherSpecials()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -120,7 +124,7 @@ namespace Tests.EditMode.Specials
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
             
-            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(1, 2) };
+            var initiallyClearedCells = new List<Pos> { new (1, 2) };
             var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells);
             
             Assert.AreEqual(8, result.Count);
@@ -138,6 +142,7 @@ namespace Tests.EditMode.Specials
         public void ColorBomb_AddsAllCellsOfTargetColor()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -153,7 +158,7 @@ namespace Tests.EditMode.Specials
             board.Set(2, 2, Piece.ColorBomb());
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
             
-            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(2, 2) , new Pos(2,1)};
+            var initiallyClearedCells = new List<Pos> { new (2, 2) , new (2,1)};
             var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells);
             
             Assert.AreEqual(5, result.Count);
@@ -168,6 +173,7 @@ namespace Tests.EditMode.Specials
         public void ColorBomb_CanTriggerColoredSpecialsOfThatColor()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.RowClear(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -183,7 +189,7 @@ namespace Tests.EditMode.Specials
             board.Set(2, 2, Piece.ColorBomb());
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
             
-            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(2, 2) , new Pos(2,1)};
+            var initiallyClearedCells = new List<Pos> { new (2, 2) , new (2,1)};
             var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells);
             
             Assert.AreEqual(8, result.Count);
@@ -201,21 +207,22 @@ namespace Tests.EditMode.Specials
         public void ColorBomb_Throws_WhenNoTargetColorCanBeResolved()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.ColorBomb());
             board.Set(0, 3, Piece.Normal(PieceColor.Red));
             
-            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(0, 2) };
-            Assert.Throws<InvalidOperationException>(() =>
-            SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells));
-
+            var initiallyClearedCells = new List<Pos> { new (0, 2) };
+            
+            Assert.Throws<InvalidOperationException>(() => SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells));
         }
 
         [Test]
         public void ColorBomb_UsesAdjacentColoredPieceFromInitialClearSet()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -231,7 +238,7 @@ namespace Tests.EditMode.Specials
             board.Set(2, 2, Piece.ColorBomb());
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
             
-            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(2, 2) , new Pos(2,3)};
+            var initiallyClearedCells = new List<Pos> { new (2, 2) , new (2,3)};
             var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells);
 
             Assert.AreEqual(5, result.Count);
@@ -248,6 +255,7 @@ namespace Tests.EditMode.Specials
         public void ColorBomb_WithAdjacentRowClear_TargetsItsColorAndTriggersSameColorSpecials()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.RowClear(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -263,7 +271,7 @@ namespace Tests.EditMode.Specials
             board.Set(2, 2, Piece.ColorBomb());
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
             
-            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(2, 2) , new Pos(2,1)};
+            var initiallyClearedCells = new List<Pos> { new (2, 2) , new (2,1)};
             var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells);
 
             Assert.AreEqual(10, result.Count);
@@ -286,6 +294,7 @@ namespace Tests.EditMode.Specials
         public void ColorBomb_WithAdjacentColumnClear_TargetsItsColorAndTriggersSameColorSpecials()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -301,7 +310,7 @@ namespace Tests.EditMode.Specials
             board.Set(2, 2, Piece.ColorBomb());
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
             
-            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(2, 2) , new Pos(2,1)};
+            var initiallyClearedCells = new List<Pos> { new (2, 2) , new (2,1)};
             var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells);
 
             Assert.AreEqual(9, result.Count);
@@ -325,6 +334,7 @@ namespace Tests.EditMode.Specials
         public void ColorBomb_WithAdjacentAreaBomb_TargetsItsColorAndTriggersSameColorSpecials()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -340,7 +350,7 @@ namespace Tests.EditMode.Specials
             board.Set(2, 2, Piece.ColorBomb());
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
             
-            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(2, 2) , new Pos(2,1)};
+            var initiallyClearedCells = new List<Pos> { new (2, 2) , new (2,1)};
             var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells);
 
             Assert.AreEqual(9, result.Count);
@@ -365,6 +375,7 @@ namespace Tests.EditMode.Specials
         public void CollectTriggeredCells_WhenSpecialsTriggersAnother_RecordsChainDepths()
         {
             var board = new BoardModel(4, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -385,7 +396,7 @@ namespace Tests.EditMode.Specials
             board.Set(3, 2, Piece.Normal(PieceColor.Blue));
             board.Set(3, 3, Piece.Normal(PieceColor.Red));
             
-            List<Pos> initiallyClearedCells = new List<Pos> { new Pos(1, 0)};
+            var initiallyClearedCells = new List<Pos> { new Pos(1, 0)};
             var result = SpecialEffectResolver.CollectTriggeredCells(board, initiallyClearedCells, out var activations);
             
             Assert.AreEqual(2, activations.Count);
@@ -397,19 +408,18 @@ namespace Tests.EditMode.Specials
             Assert.AreEqual(1, activations[1].ChainDepth);
             Assert.AreEqual(4, activations[0].AffectedCells.Count);
             CollectionAssert.AreEquivalent(new List<Pos>(){ 
-                    new Pos(1,0),
-                    new Pos(1,1),
-                    new Pos(1,2),
-                    new Pos(1,3)
+                    new (1,0),
+                    new (1,1),
+                    new (1,2),
+                    new (1,3)
             }, activations[0].AffectedCells);
             Assert.AreEqual(4, activations[1].AffectedCells.Count);
             CollectionAssert.AreEquivalent(new List<Pos>(){ 
-                    new Pos(0,2),
-                    new Pos(1,2),
-                    new Pos(2,2),
-                    new Pos(3,2)
-                }, activations[1].AffectedCells);
-
+                    new (0,2),
+                    new (1,2),
+                    new (2,2),
+                    new (3,2)
+            }, activations[1].AffectedCells);
             Assert.AreEqual(7, result.Count);
             CollectionAssert.AreEquivalent(activations[0].AffectedCells.Union(activations[1].AffectedCells).ToList(), result);
         }

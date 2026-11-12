@@ -1,6 +1,6 @@
 using System;
+using Core.Board;
 using Core.Contracts;
-using Core.Matching;
 using JetBrains.Annotations;
 
 namespace Core.Hint
@@ -24,7 +24,10 @@ namespace Core.Hint
         {
             Move = move;
             Strength = move == null ? HintStrength.None : strength;
-            if(move != null && explanation == null) throw new ArgumentNullException(nameof(explanation));
+            if (move != null && explanation == null)
+            {
+                throw new ArgumentNullException(nameof(explanation));
+            }
             Explanation = move == null ? null : explanation;
             BoardSnapshot = boardSnapshot ?? throw new ArgumentNullException(nameof(boardSnapshot));
         }

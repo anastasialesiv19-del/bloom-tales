@@ -1,8 +1,7 @@
-using System;
 using TMPro;
 using UnityEngine;
 
-namespace Match3.Unity
+namespace Match3.Unity.Hint
 {
     public class HintExplanationView : MonoBehaviour
     {
@@ -21,11 +20,13 @@ namespace Match3.Unity
                 panelRoot.SetActive(true);
             }
         }
+        
         public void Hide()
         {
             explanationText.text = null;
             panelRoot.SetActive(false);
         }
+        
         public void Awake()
         {
            Hide(); 

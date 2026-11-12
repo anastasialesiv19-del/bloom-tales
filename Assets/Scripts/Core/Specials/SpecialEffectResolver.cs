@@ -1,43 +1,51 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Matching;
+using Core.Board;
 
 namespace Core.Specials
 {
     public static class SpecialEffectResolver
     {
-        public static IReadOnlyCollection<Pos> CollectTriggeredCells(BoardModel board,
-            IReadOnlyCollection<Pos> initiallyClearedCells)
+        public static IReadOnlyCollection<Pos> CollectTriggeredCells(BoardModel board, IReadOnlyCollection<Pos> initiallyClearedCells)
         {
             return CollectTriggeredCells(board, initiallyClearedCells, out _);
         }
 
-        public static IReadOnlyCollection<Pos> CollectTriggeredCells(BoardModel board,
-            IReadOnlyCollection<Pos> initiallyClearedCells, out IReadOnlyList<SpecialActivationEvent> activations)
+        public static IReadOnlyCollection<Pos> CollectTriggeredCells(BoardModel board, IReadOnlyCollection<Pos> initiallyClearedCells, out IReadOnlyList<SpecialActivationEvent> activations)
         {
             var activationEvents = new List<SpecialActivationEvent>();
             var allCleared =  new HashSet<Pos>(initiallyClearedCells);
             var processedSpecials =  new HashSet<Pos>();
             var currentWave = new HashSet<Pos>(initiallyClearedCells);
             var chainDepth = 0;
+            
             while (currentWave.Count != 0)
             {
                 var nextWave = new HashSet<Pos>();
                 foreach (var cell in currentWave.OrderBy(pos => pos.Row).ThenBy(pos => pos.Col))
                 {
                     var piece = board.Get(cell.Row, cell.Col);
-                    
-                    if (!IsTriggerableSpecial(piece.Kind)) continue;
-                    if (processedSpecials.Contains(cell)) continue;
+                    if (!IsTriggerableSpecial(piece.Kind))
+                    {
+                        continue;
+                    }
+                    if (processedSpecials.Contains(cell))
+                    {
+                        continue;
+                    }
                     
                     var effectCells = GetEffectCells(board, cell, piece.Kind, initiallyClearedCells.ToList()).ToList();
                     activationEvents.Add(new SpecialActivationEvent(cell, piece, chainDepth, effectCells));
                     processedSpecials.Add(cell);
                     
                     foreach (var effectCell in effectCells)
+                    {
                         if (allCleared.Add(effectCell))
+                        {
                             nextWave.Add(effectCell);
+                        }
+                    }
                 }
                 currentWave = nextWave;
                 chainDepth++;
@@ -49,11 +57,7 @@ namespace Core.Specials
 
         private static bool IsTriggerableSpecial(PieceKind kind)
         {
-            if(kind is PieceKind.RowClear or 
-               PieceKind.ColumnClear or 
-               PieceKind.AreaBomb or 
-               PieceKind.ColorBomb) return true;
-            return false;
+            return kind is PieceKind.RowClear or PieceKind.ColumnClear or PieceKind.AreaBomb or PieceKind.ColorBomb;
         }
         
         private static IEnumerable<Pos> GetEffectCells(BoardModel board, Pos cell, PieceKind kind, List<Pos> initiallyClearedCells)
@@ -76,21 +80,25 @@ namespace Core.Specials
 
         private static IEnumerable<Pos> GetRowCells(BoardModel board, int cellRow)
         {
-            for(int col = 0;  col < board.Width; col++)
+            for (var col = 0; col < board.Width; col++)
+            {
                 yield return new Pos(cellRow, col);
+            }
         }
         
         private static IEnumerable<Pos> GetColumnCells(BoardModel board, int cellCol)
         {
-            for(int row = 0;  row < board.Height; row++)
+            for (var row = 0; row < board.Height; row++)
+            {
                 yield return new Pos(row, cellCol);
+            }
         }
         
         private static IEnumerable<Pos> GetAreaCells(BoardModel board, Pos cell)
         {
-            for (int row = cell.Row - 1; row <= cell.Row + 1; row++)
+            for (var row = cell.Row - 1; row <= cell.Row + 1; row++)
             {
-                for (int col = cell.Col - 1; col <= cell.Col + 1; col++)
+                for (var col = cell.Col - 1; col <= cell.Col + 1; col++)
                 {
                     if (board.InBounds(row, col))
                     {
@@ -108,17 +116,22 @@ namespace Core.Specials
                 {
                     var pieceColor = board.Get(pos.Row, pos.Col).Color;
                     if (pieceColor != null)
+                    {
                         return (PieceColor)pieceColor;
+                    }
                 }
             }
             throw new InvalidOperationException("At least one neighbor must have a color.");
         } 
+        
         private static IEnumerable<Pos> GetAllCellsOfColor(BoardModel board, PieceColor color)
         {
             foreach (var pos in board.AllPositions())
             {
-                if(board.Get(pos.Row, pos.Col).Color == color)
+                if (board.Get(pos.Row, pos.Col).Color == color)
+                {
                     yield return new Pos(pos.Row, pos.Col);
+                }
             }
         }
     }

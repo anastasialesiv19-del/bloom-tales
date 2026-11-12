@@ -6,13 +6,14 @@ namespace Match3.Unity.Save
 {
     public sealed class LevelResultStore
     {
-        private readonly string filePath;
+        private readonly string _filePath;
 
         public LevelResultStore()
         {
-            filePath = Path.Combine(Application.persistentDataPath, "level_results.json");
+            _filePath = Path.Combine(Application.persistentDataPath, "level_results.json");
         }
-        public string FilePath => filePath;
+        
+        public string FilePath => _filePath;
 
         public void Append(LevelRunResultDto result)
         {
@@ -20,27 +21,30 @@ namespace Match3.Unity.Save
             data.Results.Add(result);
 
             var json = JsonUtility.ToJson(data, true);
-            File.WriteAllText(filePath, json);
+            File.WriteAllText(_filePath, json);
         }
 
         public LevelResultCollectionDto LoadAll()
         {
-            if (!File.Exists(filePath))
+            if (!File.Exists(_filePath))
+            {
                 return new LevelResultCollectionDto();
+            }
 
-            var json = File.ReadAllText(filePath);
-
+            var json = File.ReadAllText(_filePath);
             if (string.IsNullOrWhiteSpace(json))
+            {
                 return new LevelResultCollectionDto();
+            }
 
-            return JsonUtility.FromJson<LevelResultCollectionDto>(json)
-                   ?? new LevelResultCollectionDto();
+            return JsonUtility.FromJson<LevelResultCollectionDto>(json) ?? new LevelResultCollectionDto();
         }
+        
         public void Clear()
         {
             var empty = new LevelResultCollectionDto();
             var json = JsonUtility.ToJson(empty, true);
-            File.WriteAllText(filePath, json);
+            File.WriteAllText(_filePath, json);
         }
     }
     

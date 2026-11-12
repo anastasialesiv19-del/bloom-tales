@@ -1,3 +1,4 @@
+using Core.Board;
 using Core.Matching;
 
 namespace Core.Hint
@@ -12,41 +13,62 @@ namespace Core.Hint
         public static DirectSpecialHintType GetDirectSpecialHintType(BoardModel board, Move move)
         {
             if (!MoveValidator.IsValidSwap(board, move.From, move.To))
+            {
                 return DirectSpecialHintType.None;
+            }
 
             var pieceA = board.Get(move.From.Row, move.From.Col);
             var pieceB = board.Get(move.To.Row, move.To.Col);
-            
-            if (pieceA.IsEmpty || pieceB.IsEmpty) return DirectSpecialHintType.None;
-            if(!IsSpecial(pieceA) &&  !IsSpecial(pieceB)) return DirectSpecialHintType.None;
+
+            if (pieceA.IsEmpty || pieceB.IsEmpty)
+            {
+                return DirectSpecialHintType.None;
+            }
+            if (!IsSpecial(pieceA) && !IsSpecial(pieceB))
+            {
+                return DirectSpecialHintType.None;
+            }
 
             if (IsColorBomb(pieceA.Kind) || IsColorBomb(pieceB.Kind))
             {
                 if (IsColorBomb(pieceA.Kind) && IsColorBomb(pieceB.Kind))
+                {
                     return DirectSpecialHintType.ColorBombWithColorBomb;
+                }
+                
                 if ((IsSpecial(pieceA) && !IsColorBomb(pieceA.Kind)) || (IsSpecial(pieceB) && !IsColorBomb(pieceB.Kind)))
+                {
                     return DirectSpecialHintType.ColorBombWithSpecial;
+                }
                 return DirectSpecialHintType.ColorBombWithNormal;
             }
 
             if (IsArea(pieceA.Kind) && IsArea(pieceB.Kind))
+            {
                 return DirectSpecialHintType.AreaWithArea;
-
+            }
+            
             if (IsLine(pieceA.Kind) && IsLine(pieceB.Kind))
+            {
                 return DirectSpecialHintType.LineWithLine;
+            }
             
             if ((IsLine(pieceA.Kind) && IsArea(pieceB.Kind)) || (IsArea(pieceA.Kind) && IsLine(pieceB.Kind)))
+            {
                 return DirectSpecialHintType.LineWithArea;
+            }
             
             if ((IsLineOrArea(pieceA.Kind) && !IsSpecial(pieceB)) || (IsLineOrArea(pieceB.Kind) && !IsSpecial(pieceA)))
+            {
                 return DirectSpecialHintType.LineOrAreaWithNormal;
+            }
             
             return DirectSpecialHintType.None;
         }
         
         private static bool IsColorBomb(PieceKind kind)
         {
-            return kind == PieceKind.ColorBomb;
+            return kind is PieceKind.ColorBomb;
         } 
         
         private static bool IsLine(PieceKind kind)
@@ -61,7 +83,7 @@ namespace Core.Hint
         
         private static bool IsArea(PieceKind kind)
         {
-            return kind == PieceKind.AreaBomb;
+            return kind is PieceKind.AreaBomb;
         }
         
         private static bool IsSpecial(Piece piece)

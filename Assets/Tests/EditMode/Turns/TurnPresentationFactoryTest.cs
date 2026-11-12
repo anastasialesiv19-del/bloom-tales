@@ -1,5 +1,4 @@
-using System.Linq;
-using Core.Matching;
+using Core.Board;
 using Core.Presentation;
 using Core.Turns;
 using NUnit.Framework;
@@ -104,16 +103,10 @@ namespace Tests.EditMode.Turns
 
             Assert.IsTrue(presentation.WasApplied);
             Assert.IsFalse(presentation.CreatedMatch);
-
             Assert.IsNotNull(presentation.SwapBoard);
 
-            Assert.AreEqual(
-                Piece.Normal(PieceColor.Yellow),
-                presentation.SwapBoard.Get(1, 1));
-
-            Assert.AreEqual(
-                Piece.RowClear(PieceColor.Blue),
-                presentation.SwapBoard.Get(1, 2));
+            Assert.AreEqual(Piece.Normal(PieceColor.Yellow), presentation.SwapBoard.Get(1, 1));
+            Assert.AreEqual(Piece.RowClear(PieceColor.Blue), presentation.SwapBoard.Get(1, 2));
 
             Assert.IsNull(presentation.PrimaryResolveBoard);
             Assert.IsNotNull(presentation.DirectActivationBoard);
@@ -146,7 +139,6 @@ namespace Tests.EditMode.Turns
 
             Assert.IsTrue(presentation.WasApplied);
             Assert.IsTrue(presentation.WasShuffled);
-
             Assert.IsNull(presentation.SwapBoard);
             Assert.IsNotNull(presentation.DirectActivationBoard);
             Assert.IsNotNull(presentation.ShuffleBoard);
@@ -157,16 +149,20 @@ namespace Tests.EditMode.Turns
         public void Create_FromCascadeResult_MapsCascadeSnapshotsInOrder()
         {
             var result = CascadeTestScenario.ResolveTwoWaves();
+            
             Assert.IsTrue(result.WasApplied);
             Assert.AreEqual(2, result.CascadeCount);
+            
             var presentation = TurnPresentationFactory.Create(result);
             var phases = TurnTraceQueries.GetCascadePhases(result.Trace);
+            
             Assert.AreEqual(2, presentation.CascadeBoards.Count);
-            Assert.AreNotEqual(phases[0].BoardAfterPhase.ToDebugString(),
-                phases[1].BoardAfterPhase.ToDebugString());
-            for (int i = 0; i < 2; i++)
-                Assert.AreEqual(phases[i].BoardAfterPhase.ToDebugString(),
-                    presentation.CascadeBoards[i].ToDebugString());
+            Assert.AreNotEqual(phases[0].BoardAfterPhase.ToDebugString(), phases[1].BoardAfterPhase.ToDebugString());
+
+            for (var i = 0; i < 2; i++)
+            {
+                Assert.AreEqual(phases[i].BoardAfterPhase.ToDebugString(), presentation.CascadeBoards[i].ToDebugString());
+            }
         }
     }
 }

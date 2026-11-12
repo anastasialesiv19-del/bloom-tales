@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Core.Board;
 using Core.Contracts;
 using Core.Turns;
@@ -27,10 +26,9 @@ namespace Core.Presentation
         public IReadOnlyList<TurnPhaseTrace> Phases { get; }
         public Move? Move { get; }
 
-        public TurnPresentationModel(BoardSnapshot initialBoard, BoardSnapshot finalBoard, bool wasApplied, bool wasShuffled,
-            bool createdMatch, int totalClearedCells, ClearResolutionStats clearStats, BoardSnapshot swapBoard, BoardSnapshot directActivationBoard,
-            BoardSnapshot primaryResolveBoard, BoardSnapshot gravityBoard, BoardSnapshot refillBoard, BoardSnapshot shuffleBoard, 
-            IReadOnlyList<BoardSnapshot> cascadeBoards, IReadOnlyList<TurnPhaseTrace> phases, Move? move = null)
+        public TurnPresentationModel(BoardSnapshot initialBoard, BoardSnapshot finalBoard, bool wasApplied, bool wasShuffled, bool createdMatch, int totalClearedCells,
+            ClearResolutionStats clearStats, BoardSnapshot swapBoard, BoardSnapshot directActivationBoard, BoardSnapshot primaryResolveBoard, BoardSnapshot gravityBoard, 
+            BoardSnapshot refillBoard, BoardSnapshot shuffleBoard, IReadOnlyList<BoardSnapshot> cascadeBoards, IReadOnlyList<TurnPhaseTrace> phases, Move? move = null)
         {
             InitialBoard = initialBoard ?? throw new ArgumentNullException("initialBoard", "InitialBoard is null");
             FinalBoard = finalBoard ?? throw new ArgumentNullException("finalBoard", "FinalBoard is null");

@@ -11,6 +11,7 @@ namespace Tests.EditMode.Specials
         public void ResolveSpecialMatch_Line4_SpawnsSpecialPieceOnBoard()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Blue));

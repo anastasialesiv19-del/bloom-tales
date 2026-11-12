@@ -1,6 +1,5 @@
+using Core.Board;
 using Core.Hint;
-using Core.Matching;
-using Core.Turns;
 using NUnit.Framework;
 
 namespace Tests.EditMode.Hint
@@ -66,6 +65,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_NoHint_ReturnsConsistentEmptyResult()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -92,6 +92,7 @@ namespace Tests.EditMode.Hint
         public void FindAdaptiveHint_NoHint_ReturnsConsistentEmptyResult()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));

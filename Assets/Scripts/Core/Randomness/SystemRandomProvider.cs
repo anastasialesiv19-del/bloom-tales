@@ -5,7 +5,7 @@ namespace Core.Randomness
      
     public class SystemRandomProvider : IRandomProvider
     {
-        private readonly Random _random = new Random();
+        private readonly Random _random = new();
         
         public int Next(int maxExclusive)
         {

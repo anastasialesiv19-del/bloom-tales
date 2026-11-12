@@ -1,11 +1,13 @@
 using System;
+using Core.Matching;
 
-namespace Core.Matching
+namespace Core.Board
 {
     public readonly struct Piece
     {
         public PieceKind Kind { get; }
         public PieceColor? Color { get; }
+        
         public bool IsEmpty => Kind == PieceKind.Empty;
 
         public bool IsSpecial => Kind is PieceKind.ColumnClear or PieceKind.RowClear or PieceKind.AreaBomb or PieceKind.ColorBomb;
@@ -13,19 +15,19 @@ namespace Core.Matching
         public Piece(PieceKind kind, PieceColor? color)
         {
             Kind = kind;
-            if (kind == PieceKind.Empty)
+            if (kind is PieceKind.Empty or PieceKind.ColorBomb)
             {
                 if(color != null) throw new ArgumentException("This piece kind not requires a color.");
                 Color = null;
             }
-            else if (kind == PieceKind.ColorBomb)
+            else if (color != null)
             {
-                if(color != null) throw new ArgumentException("This piece kind not requires a color.");
-                Color = null;
+                Color = color;
             }
-            else if (color != null) Color = color;
             else
+            {
                 throw new ArgumentException("This piece kind requires a color.");
+            }
         }
 
         public static Piece Empty()

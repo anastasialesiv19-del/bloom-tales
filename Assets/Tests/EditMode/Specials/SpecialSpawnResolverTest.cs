@@ -13,6 +13,7 @@ namespace Tests.EditMode.Specials
         public void BuildDecisions_Line4_CreatesSingleDecision()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Blue));
@@ -40,6 +41,7 @@ namespace Tests.EditMode.Specials
         public void BuildDecisions_Line5_CreatesColorBombDecision()
         {
             var board = new BoardModel(3, 5);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Blue));
@@ -71,6 +73,7 @@ namespace Tests.EditMode.Specials
         public void BuildDecisions_TShape_CreatesAreaBombDecision()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -98,6 +101,7 @@ namespace Tests.EditMode.Specials
         public void BuildDecisions_UsesMatchColorForColoredSpecials()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -125,6 +129,7 @@ namespace Tests.EditMode.Specials
         public void BuildDecisions_UsesDeterministicSpawnPosition_WhenMoveNotProvided()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -153,6 +158,7 @@ namespace Tests.EditMode.Specials
         public void BuildDecisions_PrefersMoveTarget_WhenMoveProvided()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -169,8 +175,8 @@ namespace Tests.EditMode.Specials
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
             var matches = MatchFinder.FindMatches(board);
-            Pos a = new Pos(1, 3);
-            Pos b = new Pos(1, 2);
+            var a = new Pos(1, 3);
+            var b = new Pos(1, 2);
             var move = new Move(a, b);
             var decisions = SpecialSpawnResolver.BuildDecisions(board, matches, move);
 
@@ -196,25 +202,12 @@ namespace Tests.EditMode.Specials
 
             var matches = new List<Match>
             {
-                new Match(new List<Pos>
-                {
-                    new Pos(1, 0),
-                    new Pos(1, 1),
-                    new Pos(1, 2),
-                    new Pos(1, 3)
-                }),
-                new Match(new List<Pos>
-                {
-                    new Pos(0, 2),
-                    new Pos(1, 2),
-                    new Pos(2, 2),
-                    new Pos(3, 2)
-                })
+                new (new List<Pos> { new (1, 0), new (1, 1), new (1, 2), new (1, 3) }),
+                new (new List<Pos> { new (0, 2), new (1, 2), new (2, 2), new (3, 2) })
             };
             var move = new Move(new Pos(0, 0), new Pos(1, 2));
 
-            Assert.Throws<InvalidOperationException>(() =>
-                SpecialSpawnResolver.BuildDecisions(board, matches, move));
+            Assert.Throws<InvalidOperationException>(() => SpecialSpawnResolver.BuildDecisions(board, matches, move));
         }
 
         [Test]
@@ -229,29 +222,14 @@ namespace Tests.EditMode.Specials
 
             var match = new List<Match>
             {
-                new Match(new List<Pos>
-                {
-                    new Pos(3, 0),
-                    new Pos(3, 1),
-                    new Pos(3, 2),
-                    new Pos(3, 3)
-                })
+                new (new List<Pos> { new (3, 0), new (3, 1), new (3, 2), new (3, 3) })
             };
             
             var fallsBeforeWave = new List<PieceFall>
             {
-                new PieceFall(
-                    new Pos(2,0),
-                    new Pos(3, 0)
-                ),
-                new PieceFall(
-                    new Pos(0,2),
-                    new Pos(3, 2)
-                ),
-                new PieceFall(
-                    new Pos(1,3),
-                    new Pos(3, 3)
-                )
+                new (new Pos(2,0), new Pos(3, 0)),
+                new (new Pos(0,2), new Pos(3, 2)),
+                new (new Pos(1,3), new Pos(3, 3))
             };
 
             var result = SpecialSpawnResolver.BuildDecisions(board, match, fallsBeforeWave: fallsBeforeWave);
@@ -272,25 +250,13 @@ namespace Tests.EditMode.Specials
 
             var match = new List<Match>
             {
-                new Match(new List<Pos>
-                {
-                    new Pos(3, 0),
-                    new Pos(3, 1),
-                    new Pos(3, 2),
-                    new Pos(3, 3)
-                })
+                new (new List<Pos> { new (3, 0), new (3, 1), new (3, 2), new (3, 3) })
             };
             
             var fallsBeforeWave1 = new List<PieceFall>
             {
-                new PieceFall(
-                    new Pos(1,3),
-                    new Pos(3, 3)
-                ),
-                new PieceFall(
-                    new Pos(1,1),
-                    new Pos(3, 1)
-                )
+                new (new Pos(1,3), new Pos(3, 3)),
+                new (new Pos(1,1), new Pos(3, 1))
             };
 
             var result1 = SpecialSpawnResolver.BuildDecisions(board, match, fallsBeforeWave: fallsBeforeWave1);
@@ -300,14 +266,8 @@ namespace Tests.EditMode.Specials
             
             var fallsBeforeWave2 = new List<PieceFall>
             {
-                new PieceFall(
-                    new Pos(1, 1),
-                    new Pos(3, 1)
-                ),
-                new PieceFall(
-                    new Pos(1, 3),
-                    new Pos(3, 3)
-                )
+                new (new Pos(1, 1), new Pos(3, 1)),
+                new (new Pos(1, 3), new Pos(3, 3))
             };
 
             var result2 = SpecialSpawnResolver.BuildDecisions(board, match, fallsBeforeWave: fallsBeforeWave2);
@@ -329,25 +289,13 @@ namespace Tests.EditMode.Specials
 
             var match = new List<Match>
             {
-                new Match(new List<Pos>
-                {
-                    new Pos(1, 2),
-                    new Pos(2, 2),
-                    new Pos(3, 2),
-                    new Pos(4, 2)
-                })
+                new (new List<Pos> { new (1, 2), new (2, 2), new (3, 2), new (4, 2) })
             };
             
             var fallsBeforeWave1 = new List<PieceFall>
             {
-                new PieceFall(
-                    new Pos(2, 2),
-                    new Pos(4, 2)
-                ),
-                new PieceFall(
-                    new Pos(0, 2),
-                    new Pos(2, 2)
-                )
+                new (new Pos(2, 2), new Pos(4, 2)),
+                new (new Pos(0, 2), new Pos(2, 2))
             };
 
             var result1 = SpecialSpawnResolver.BuildDecisions(board, match, fallsBeforeWave: fallsBeforeWave1);
@@ -357,14 +305,8 @@ namespace Tests.EditMode.Specials
             
             var fallsBeforeWave2 = new List<PieceFall>
             {
-                new PieceFall(
-                    new Pos(0, 2),
-                    new Pos(2, 2)
-                ),
-                new PieceFall(
-                    new Pos(2, 2),
-                    new Pos(4, 2)
-                )
+                new (new Pos(0, 2), new Pos(2, 2)),
+                new (new Pos(2, 2), new Pos(4, 2))
             };
 
             var result2 = SpecialSpawnResolver.BuildDecisions(board, match, fallsBeforeWave: fallsBeforeWave2);
@@ -387,28 +329,15 @@ namespace Tests.EditMode.Specials
 
             var match = new List<Match>
             {
-                new Match(new List<Pos>
-                {
-                    new Pos(3, 0),
-                    new Pos(3, 1),
-                    new Pos(3, 2),
-                    new Pos(3, 3)
-                })
+                new (new List<Pos> { new (3, 0), new (3, 1), new (3, 2), new (3, 3) })
             };
             
             var fallsBeforeWave = new List<PieceFall>
             {
-                new PieceFall(
-                    new Pos(0, 2),
-                    new Pos(3, 2)
-                )
+                new (new Pos(0, 2), new Pos(3, 2))
             };
             
-            var refillsBeforeWave = new List<Pos>
-            {
-               new Pos(0, 0),
-               new Pos(3, 3)
-            };
+            var refillsBeforeWave = new List<Pos> { new (0, 0), new (3, 3) };
 
             var result = SpecialSpawnResolver.BuildDecisions(board, match, fallsBeforeWave: fallsBeforeWave, refillsBeforeWave: refillsBeforeWave);
 
@@ -430,27 +359,15 @@ namespace Tests.EditMode.Specials
 
             var match = new List<Match>
             {
-                new Match(new List<Pos>
-                {
-                    new Pos(3, 0),
-                    new Pos(3, 1),
-                    new Pos(3, 2),
-                    new Pos(3, 3)
-                })
+                new (new List<Pos> { new (3, 0), new (3, 1), new (3, 2), new (3, 3) })
             };
             
             var fallsBeforeWave = new List<PieceFall>
             {
-                new PieceFall(
-                    new Pos(0, 2),
-                    new Pos(3, 2)
-                )
+                new (new Pos(0, 2), new Pos(3, 2))
             };
             
-            var refillsBeforeWave = new List<Pos>
-            {
-                new Pos(0, 0)
-            };
+            var refillsBeforeWave = new List<Pos> { new (0, 0) };
 
             var result = SpecialSpawnResolver.BuildDecisions(board, match, fallsBeforeWave: fallsBeforeWave, refillsBeforeWave: refillsBeforeWave);
 

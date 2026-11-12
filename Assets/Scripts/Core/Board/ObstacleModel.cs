@@ -4,13 +4,9 @@ namespace Core.Board
     {
         public ObstacleKind Kind;
         public int Health;
+        
         public bool IsEmpty => Kind == ObstacleKind.None;
         
-        public static ObstacleModel Empty => 
-            new ObstacleModel
-            {
-                Kind = ObstacleKind.None, 
-                Health = 0
-            };
+        public static ObstacleModel Empty => new() { Kind = ObstacleKind.None, Health = 0 };
     }
 }

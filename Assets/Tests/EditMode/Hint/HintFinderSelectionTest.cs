@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Core.Board;
 using Core.Hint;
-using Core.Matching;
 using NUnit.Framework;
 
 namespace Tests.EditMode.Hint
@@ -12,6 +12,7 @@ namespace Tests.EditMode.Hint
         public void FindHint_ReturnsHint_WhenBoardHasPossibleMove()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -36,6 +37,7 @@ namespace Tests.EditMode.Hint
         public void FindHint_ReturnsBestScoredMove_WhenSeveralMovesExist()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Blue));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -63,6 +65,7 @@ namespace Tests.EditMode.Hint
         public void FindHint_ReturnsNoHint_WhenBoardIsDeadlocked()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -87,6 +90,7 @@ namespace Tests.EditMode.Hint
         public void FindHint_ReturnsMoveThatCreatesMatch()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -106,7 +110,7 @@ namespace Tests.EditMode.Hint
 
             Assert.IsTrue(result.Move.HasValue);
             
-            bool matchCreated = MoveFinder.CreatesMatch(board, result.Move.Value.From, result.Move.Value.To);
+            var matchCreated = MoveFinder.CreatesMatch(board, result.Move.Value.From, result.Move.Value.To);
             
             Assert.IsTrue(matchCreated);
         }
@@ -115,6 +119,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_DirectSpecialMove_CanBeReturnedWithoutMatchCreation()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -145,6 +150,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_WhenDirectSpecialAndNormalMatchExist_SelectsHigherScoreMove()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -181,6 +187,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_ReturnsNeutralStrength_WhenBestMoveExists()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -207,6 +214,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_WhenMoveCompletesRemainingColorGoal_PrefersItOverHigherScoreSpecial()
         {
             var board = new BoardModel(3, 6);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Red));
@@ -263,6 +271,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_WhenColorGoalCompletedButScoreRemains_DoesNotPrioritizeCompletion()
         {
             var board = new BoardModel(3, 6);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Red));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Red));

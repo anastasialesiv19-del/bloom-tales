@@ -1,7 +1,7 @@
-using Core.Matching;
+using Core.Board;
 using UnityEngine;
 
-namespace Match3.Unity
+namespace Match3.Unity.Board
 {
     public class PieceSpriteLibrary : MonoBehaviour
     {
@@ -15,14 +15,23 @@ namespace Match3.Unity
         [SerializeField] private Sprite rowClearOverlay;
         [SerializeField] private Sprite columnClearOverlay;
         [SerializeField] private Sprite areaBombOverlay;
-        
         [SerializeField] private Sprite colorBomb;
 
         public Sprite GetSprite(Piece piece)
         {
-            if(piece.Kind == PieceKind.Empty) return null;
-            if (piece.Kind == PieceKind.ColorBomb) return colorBomb;
-            if (piece.Color == null) return null;
+            if (piece.Kind == PieceKind.Empty)
+            {
+                return null;
+            }
+            if (piece.Kind == PieceKind.ColorBomb)
+            {
+                return colorBomb;
+            }
+            if (piece.Color == null)
+            {
+                return null;
+            }
+            
             return piece.Kind switch
             {
                 PieceKind.Normal => GetNormalSprite(piece.Color.Value),

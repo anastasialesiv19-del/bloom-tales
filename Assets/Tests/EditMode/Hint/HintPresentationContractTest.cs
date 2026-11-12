@@ -1,7 +1,7 @@
 using System;
+using Core.Board;
 using Core.Contracts;
 using Core.Hint;
-using Core.Matching;
 using NUnit.Framework;
 
 namespace Tests.EditMode.Hint
@@ -41,6 +41,7 @@ namespace Tests.EditMode.Hint
         public void FindAdaptiveHint_ReturnsSnapshotMatchingInputBoard()
         {
             var board = new BoardModel(2, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.RowClear(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -94,7 +95,7 @@ namespace Tests.EditMode.Hint
         [Test]
         public void FindBestHint_ResultSnapshotIsImmutableAfterBoardMutation()
         {
-             var board = new BoardModel(3, 4);
+            var board = new BoardModel(3, 4);
 
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
@@ -139,15 +140,21 @@ namespace Tests.EditMode.Hint
         private bool AssertBoardEqualsSnapshot(BoardModel board, BoardSnapshot snapshot)
         {
             if (board.Width != snapshot.Width || board.Height != snapshot.Height)
-                throw new ArgumentException("Snapshot sizes do not match.");
-            for (int row = 0; row < board.Height; row++)
-            for (int col = 0; col < board.Width; col++)
             {
-                var boardPiece = board.Get(row, col);
-                var snapshotPiece = snapshot.Get(row, col);
-                if (boardPiece.Kind != snapshotPiece.Kind || boardPiece.Color != snapshotPiece.Color)
-                    return false;
+                throw new ArgumentException("Snapshot sizes do not match.");
             }
+
+            for (int row = 0; row < board.Height; row++)
+            {
+                for (int col = 0; col < board.Width; col++)
+                {
+                    var boardPiece = board.Get(row, col);
+                    var snapshotPiece = snapshot.Get(row, col);
+                    if (boardPiece.Kind != snapshotPiece.Kind || boardPiece.Color != snapshotPiece.Color)
+                        return false;
+                }
+            }
+            
             return true;
         }
     }

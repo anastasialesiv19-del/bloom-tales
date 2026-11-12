@@ -15,11 +15,17 @@ namespace Match3.Unity.GameMode
 
         public void Tick(float deltaTime)
         {
-            if (IsExpired) return;
+            if (IsExpired)
+            {
+                return;
+            }
             
             RemainingSeconds -= deltaTime;
+            if (!(RemainingSeconds <= 0f))
+            {
+                return;
+            }
             
-            if (!(RemainingSeconds <= 0f)) return;
             RemainingSeconds = 0f;
             IsExpired = true;
         }

@@ -1,7 +1,7 @@
 using Tests.EditMode.TestDoubles;
 using System.Linq;
+using Core.Board;
 using Core.Hint;
-using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
 
@@ -13,6 +13,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_WhenExplanationContainsCreatesMatch_ExecutingMoveProducesAppliedTurn()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -46,6 +47,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_WhenExplanationContainsCreatesSpecial_ExecutingMoveSpawnsSpecialInPrimaryResolution()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -66,8 +68,7 @@ namespace Tests.EditMode.Hint
             var boardCopy = CloneBoard(board);
             var turn = TurnProcessor.TryProcessMove(boardCopy, hint.Move.Value, new SeededRandomProvider());
 
-            var primaryPhase = turn.Trace.Phases
-                .Single(p => p.Type == TurnPhaseType.PrimaryMatchResolved);
+            var primaryPhase = turn.Trace.Phases.Single(p => p.Type == TurnPhaseType.PrimaryMatchResolved);
 
             Assert.IsNotNull(hint.Move);
             Assert.IsNotNull(hint.Explanation);
@@ -83,6 +84,7 @@ namespace Tests.EditMode.Hint
         public void FindBestHint_SelectedMoveExplanation_MatchesExecutionPath()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -109,23 +111,17 @@ namespace Tests.EditMode.Hint
             Assert.IsTrue(turn.WasApplied);
             Assert.AreEqual(FailureReason.None, turn.FailureReason);
 
-            bool predictsDirectActivation = hint.Explanation.Reasons.Contains(HintReasonType.ActivatesSpecialDirectly);
+            var predictsDirectActivation = hint.Explanation.Reasons.Contains(HintReasonType.ActivatesSpecialDirectly);
+            var executedDirectActivation = turn.Trace.Phases.Any(phase => phase.Type == TurnPhaseType.DirectSpecialActivation);
 
-            bool executedDirectActivation = turn.Trace.Phases.Any(phase => phase.Type == TurnPhaseType.DirectSpecialActivation);
-
-            Assert.AreEqual(
-                predictsDirectActivation,
-                executedDirectActivation,
-                "Hint explanation must match the actual execution path."
-            );
-
-
+            Assert.AreEqual(predictsDirectActivation, executedDirectActivation, "Hint explanation must match the actual execution path.");
         }
 
         [Test]
         public void DirectSpecialMove_ExecutesDirectActivationPath()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -141,10 +137,7 @@ namespace Tests.EditMode.Hint
             board.Set(2, 2, Piece.Normal(PieceColor.Green));
             board.Set(2, 3, Piece.Normal(PieceColor.Red));
 
-            var move = new Move(
-                new Pos(1, 2),
-                new Pos(1, 3));
-
+            var move = new Move(new Pos(1, 2), new Pos(1, 3));
             var outcome = HintMoveOutcomeEstimator.Estimate(board, move);
 
             Assert.AreEqual(1, outcome.ClearedByColor.Count);
@@ -152,22 +145,19 @@ namespace Tests.EditMode.Hint
             Assert.AreEqual(0, outcome.EstimatedObstacleDamage);
 
             var boardCopy = CloneBoard(board);
-
             var turn = TurnProcessor.TryProcessMove(boardCopy, move, new SeededRandomProvider());
 
             Assert.IsTrue(turn.WasApplied);
             Assert.IsFalse(turn.CreatedMatch);
             Assert.AreEqual(FailureReason.None, turn.FailureReason);
-
-            Assert.IsTrue(turn.Trace.Phases.Any(
-                phase => phase.Type ==
-                         TurnPhaseType.DirectSpecialActivation));
+            Assert.IsTrue(turn.Trace.Phases.Any(phase => phase.Type == TurnPhaseType.DirectSpecialActivation));
         }
 
         [Test]
         public void FindAdaptiveHint_DoesNotChangeSelectedMoveComparedToBestHint()
         {
             var board = new BoardModel(3, 4);
+            
             board.Set(0, 0, Piece.Normal(PieceColor.Yellow));
             board.Set(0, 1, Piece.Normal(PieceColor.Blue));
             board.Set(0, 2, Piece.Normal(PieceColor.Green));
@@ -221,49 +211,39 @@ namespace Tests.EditMode.Hint
 
             var move = new Move(new Pos(1, 2), new Pos(2, 2));
             var before = CloneBoard(board);
-
             var outcome = HintMoveOutcomeEstimator.Estimate(board, move);
 
             Assert.AreEqual(1, outcome.ClearedByColor.Count);
             Assert.AreEqual(4, outcome.ClearedByColor[PieceColor.Green]);
             Assert.AreEqual(0, outcome.EstimatedObstacleDamage);
 
-            for (int row = 0; row < board.Height; row++)
+            for (var row = 0; row < board.Height; row++)
             {
-                for (int col = 0; col < board.Width; col++)
+                for (var col = 0; col < board.Width; col++)
                 {
-                    Assert.AreEqual(
-                        before.Get(row, col),
-                        board.Get(row, col),
-                        $"Estimate changed cell ({row}, {col}).");
+                    Assert.AreEqual(before.Get(row, col), board.Get(row, col), $"Estimate changed cell ({row}, {col}).");
                 }
             }
 
             var turn = TurnProcessor.TryProcessMove(CloneBoard(before), move, new SeededRandomProvider());
-            var directPhase = turn.Trace.Phases.Single(
-                phase => phase.Type == TurnPhaseType.DirectSpecialActivation);
-
+            var directPhase = turn.Trace.Phases.Single(phase => phase.Type == TurnPhaseType.DirectSpecialActivation);
             var after = directPhase.BoardAfterPhase;
+            
             Assert.IsNotNull(after);
 
-            int clearedGreen = 0;
-
-            for (int row = 0; row < before.Height; row++)
+            var clearedGreen = 0;
+            for (var row = 0; row < before.Height; row++)
             {
-                for (int col = 0; col < before.Width; col++)
+                for (var col = 0; col < before.Width; col++)
                 {
-                    if (before.Get(row, col).Color == PieceColor.Green &&
-                        after.Get(row, col).IsEmpty)
+                    if (before.Get(row, col).Color == PieceColor.Green && after.Get(row, col).IsEmpty)
                     {
                         clearedGreen++;
                     }
                 }
             }
 
-            Assert.AreEqual(
-                outcome.ClearedByColor[PieceColor.Green],
-                clearedGreen,
-                "Estimated green clears must match the primary effect.");
+            Assert.AreEqual(outcome.ClearedByColor[PieceColor.Green], clearedGreen, "Estimated green clears must match the primary effect.");
         }
 
         [Test]
@@ -292,7 +272,6 @@ namespace Tests.EditMode.Hint
             board.Set(3, 3, Piece.Normal(PieceColor.Red));
 
             var move = new Move(new Pos(1, 1), new Pos(2, 1));
-
             var outcome = HintMoveOutcomeEstimator.Estimate(board, move);
             var turn = TurnProcessor.TryProcessMove(CloneBoard(board), move, new SeededRandomProvider());
 
@@ -303,9 +282,9 @@ namespace Tests.EditMode.Hint
 
             Assert.IsNotNull(directPhase.BoardAfterPhase);
 
-            for (int row = 0; row < board.Height; row++)
+            for (var row = 0; row < board.Height; row++)
             {
-                for (int col = 0; col < board.Width; col++)
+                for (var col = 0; col < board.Width; col++)
                 {
                     if (row == 1 || row == 2 || col == 3)
                     {
@@ -317,8 +296,7 @@ namespace Tests.EditMode.Hint
                     }
                 }
             }
-
-
+            
             Assert.AreEqual(4, outcome.ClearedByColor.Count);
             Assert.AreEqual(1, outcome.ClearedByColor[PieceColor.Green]);
             Assert.AreEqual(3, outcome.ClearedByColor[PieceColor.Yellow]);
@@ -331,16 +309,14 @@ namespace Tests.EditMode.Hint
         {
             var clone = new BoardModel(source.Height, source.Width);
 
-            for (int row = 0; row < source.Height; row++)
+            for (var row = 0; row < source.Height; row++)
             {
-                for (int col = 0; col < source.Width; col++)
+                for (var col = 0; col < source.Width; col++)
                 {
                     clone.Set(row, col, source.Get(row, col));
                 }
             }
-
             return clone;
         }
-
     }
 }

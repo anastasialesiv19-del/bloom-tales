@@ -1,55 +1,55 @@
 using System;
-using Core.Matching;
-using UnityEngine;
+using Core.Board;
 
-namespace Match3.Unity
+namespace Match3.Unity.Board
 {
     public class BoardInputController
     {
-        private Pos? selectedCell;
-
+        public Func<bool> CanAcceptInput { get; set; }
         public event Action<Move> MoveSubmitted;
         public event Action<Pos?> SelectionChanged;
-        public Func<bool> CanAcceptInput { get; set; }
+        private Pos? _selectedCell;
 
         public void OnCellClicked(int row, int col)
         {
             if (CanAcceptInput != null && !CanAcceptInput())
+            {
                 return;
+            }
             
             var clicked = new Pos(row, col);
-            if (!selectedCell.HasValue)
+            if (!_selectedCell.HasValue)
             {
-                selectedCell = clicked;
-                SelectionChanged?.Invoke(selectedCell);
+                _selectedCell = clicked;
+                SelectionChanged?.Invoke(_selectedCell);
                 return;
             }
 
-            if (selectedCell.Value.Equals(clicked))
+            if (_selectedCell.Value.Equals(clicked))
             {
-                selectedCell = null;
+                _selectedCell = null;
                 SelectionChanged?.Invoke(null);
                 return;
             }
             
-            int dx = Math.Abs(clicked.Row - selectedCell.Value.Row);
-            int dy = Math.Abs(clicked.Col - selectedCell.Value.Col);
+            var dx = Math.Abs(clicked.Row - _selectedCell.Value.Row);
+            var dy = Math.Abs(clicked.Col - _selectedCell.Value.Col);
             if (dx + dy != 1)
             {
-                selectedCell = clicked;
-                SelectionChanged?.Invoke(selectedCell);
+                _selectedCell = clicked;
+                SelectionChanged?.Invoke(_selectedCell);
                 return;
             }
 
-            var move = new Move(selectedCell.Value, clicked);
-            selectedCell = null;
+            var move = new Move(_selectedCell.Value, clicked);
+            _selectedCell = null;
             SelectionChanged?.Invoke(null);
             MoveSubmitted?.Invoke(move);
         }
         
         public void ClearSelection()
         {
-            selectedCell = null;
+            _selectedCell = null;
             SelectionChanged?.Invoke(null);
         }
     }

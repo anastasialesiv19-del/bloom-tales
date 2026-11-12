@@ -1,6 +1,6 @@
 using System;
+using Core.Board;
 using Core.Contracts;
-using Core.Matching;
 using Core.Turns;
 using NUnit.Framework;
 
@@ -18,6 +18,7 @@ namespace Tests.EditMode.Turns
         public void Ctor_NonMutatingPhaseWithoutSnapshot_DoesNotThrow()
         {
             var result = new TurnPhaseTrace(TurnPhaseType.InvalidSwap);
+            
             Assert.IsNotNull(result);
         }
 
@@ -33,6 +34,7 @@ namespace Tests.EditMode.Turns
             
             var waveSnapshot = BoardSnapshotFactory.Capture(board);
             var result = new TurnPhaseTrace(TurnPhaseType.CascadeWaveResolved, cascadeIndex: 1, boardAfterPhase: waveSnapshot);
+            
             Assert.IsNotNull(result);
         }
     }

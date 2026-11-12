@@ -1,6 +1,5 @@
 using Core.Board;
 using Core.Contracts;
-using Core.Matching;
 using NUnit.Framework;
 
 namespace Tests.EditMode.Obstacles
@@ -11,12 +10,7 @@ namespace Tests.EditMode.Obstacles
         public void Capture_WhenBoardHasObstacle_CapturesObstacle()
         {
             var board = new BoardModel(3, 3);
-
-            board.SetObstacle(1, 1, new ObstacleModel
-            {
-                Kind = ObstacleKind.Box,
-                Health = 1
-            });
+            board.SetObstacle(1, 1, new ObstacleModel { Kind = ObstacleKind.Box, Health = 1 });
 
             var snapshot = BoardSnapshotFactory.Capture(board);
 
@@ -29,12 +23,7 @@ namespace Tests.EditMode.Obstacles
         public void Capture_WhenBoardObstacleChangesAfterCapture_SnapshotStaysDetached()
         {
             var board = new BoardModel(3, 3);
-
-            board.SetObstacle(1, 1, new ObstacleModel
-            {
-                Kind = ObstacleKind.Box,
-                Health = 1
-            });
+            board.SetObstacle(1, 1, new ObstacleModel { Kind = ObstacleKind.Box, Health = 1 });
 
             var snapshot = BoardSnapshotFactory.Capture(board);
 
@@ -48,12 +37,7 @@ namespace Tests.EditMode.Obstacles
         public void ToDebugString_WhenCellHasObstacle_ShowsObstacleMarker()
         {
             var board = new BoardModel(3, 3);
-
-            board.SetObstacle(1, 1, new ObstacleModel
-            {
-                Kind = ObstacleKind.Box,
-                Health = 1
-            });
+            board.SetObstacle(1, 1, new ObstacleModel { Kind = ObstacleKind.Box, Health = 1 });
 
             var snapshot = BoardSnapshotFactory.Capture(board);
 

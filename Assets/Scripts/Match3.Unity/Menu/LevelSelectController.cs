@@ -1,5 +1,5 @@
 using Match3.Unity.Audio;
-using Match3.Unity.GameMode;
+using Match3.Unity.Levels;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

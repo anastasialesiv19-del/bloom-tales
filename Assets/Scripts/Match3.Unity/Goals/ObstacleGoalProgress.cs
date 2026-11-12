@@ -4,13 +4,12 @@ namespace Match3.Unity.Goals
 {
     public sealed class ObstacleGoalProgress : IGoal
     {
-        public GoalType Type => GoalType.Obstacle;
-
         public ObstacleKind Kind { get; }
         public int Current { get; private set; }
         public int Target { get; }
 
         public bool IsCompleted => Current >= Target;
+        public GoalType Type => GoalType.Obstacle;
 
         public ObstacleGoalProgress(ObstacleKind kind, int target)
         {
@@ -21,8 +20,6 @@ namespace Match3.Unity.Goals
 
         public void Apply(ClearResolutionStats stats)
         {
-            // MVP: зараз core рахує destroyed obstacles загалом.
-            // Коли будуть різні obstacle kinds, розширимо ClearStats до breakdown by kind.
             Current += stats.DestroyedObstacles;
         }
     }
