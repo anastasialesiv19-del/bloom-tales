@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u043B\u043E\u0433\u043E\u0442\u0438\u043F_2_0"
+      name: Logo
       rect:
         serializedVersion: 2
         x: 136
@@ -105,7 +105,7 @@ TextureImporter:
         width: 1570
         height: 868
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -128,7 +128,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      "\u043B\u043E\u0433\u043E\u0442\u0438\u043F_2_0": -731331950
+      Logo: -731331950
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

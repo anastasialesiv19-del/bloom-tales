@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\u043F\u0430\u043D\u0435\u043B\u044C \u043F\u0456\u0434 LevelSelectHeader_2_0"
+      name: LevelSelectHeader
       rect:
         serializedVersion: 2
         x: 34
@@ -105,7 +105,7 @@ TextureImporter:
         width: 1916
         height: 384
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -128,7 +128,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      "\u043F\u0430\u043D\u0435\u043B\u044C \u043F\u0456\u0434 LevelSelectHeader_2_0": 103404521
+      LevelSelectHeader: 103404521
       "\u043F\u0430\u043D\u0435\u043B\u044C \u043F\u0456\u0434 LevelSelectHeader_2_1": -781666439
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
